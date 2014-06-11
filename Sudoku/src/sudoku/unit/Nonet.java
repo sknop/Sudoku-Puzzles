@@ -25,8 +25,11 @@ public class Nonet extends AbstractUnit
 	
 	@Override
 	public void update(Cell cell) throws CellContentException {
-		// TODO Auto-generated method stub
+		Integer value = cell.getValue();
 
+		if( numbers.contains(value) ) {
+			throw new CellContentException("Value " + cell + " already exists in " + this);
+		}
 	}
 
 }
