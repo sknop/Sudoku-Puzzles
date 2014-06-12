@@ -16,11 +16,17 @@ public abstract class AbstractUnit implements Unit
 	
 	@Override
 	public void addCell(Cell cell) throws IllegalCellPositionException {
-		checkCellPosition(cell);
+//		checkCellPosition(cell);
 		
 		cells.add(cell);
 	}
 	
-	abstract protected void checkCellPosition(Cell cell) throws IllegalCellPositionException;
+//	private void checkCellPosition(Cell cell) throws IllegalCellPositionException {
+//		
+//	}
 
+	@Override
+	public String toString() {
+		return cells.toString();
+	}
 }

@@ -17,7 +17,11 @@ public class Cell
 	public Cell(Point location) {
 		this.location = location;
 	}
-	
+
+	public Cell(int x, int y) {
+		this.location = new Point(x,y);
+	}
+
 	public void setValue(Integer value) throws CellContentException {
 		this.value = value;
 		

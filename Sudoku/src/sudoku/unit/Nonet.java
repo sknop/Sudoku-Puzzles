@@ -19,17 +19,19 @@ public class Nonet extends AbstractUnit
 	}
 
 	@Override
-	protected void checkCellPosition(Cell cell) throws IllegalCellPositionException {
-		
-	}
-	
-	@Override
 	public void update(Cell cell) throws CellContentException {
 		Integer value = cell.getValue();
 
 		if( numbers.contains(value) ) {
 			throw new CellContentException("Value " + cell + " already exists in " + this);
 		}
+		else {
+			numbers.add(value);
+		}
 	}
 
+	@Override 
+	public String toString() {
+		return "Nonet " + super.toString() + " : " + numbers;
+	}
 }
