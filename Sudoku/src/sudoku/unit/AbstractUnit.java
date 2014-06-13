@@ -10,11 +10,13 @@ import sudoku.exceptions.TooManyCellsException;;
 public abstract class AbstractUnit implements Unit
 {
 	protected List<Cell> cells;
-	int maxCells;
+	protected int maxCells;
+	protected String position;
 	
-	protected AbstractUnit(int size) {
-		maxCells = size;
-		cells = new ArrayList<>(size);
+	protected AbstractUnit(int size, String position) {
+		this.maxCells = size;
+		this.cells = new ArrayList<>(size);
+		this.position = position;
 	}
 	
 	@Override
@@ -34,6 +36,6 @@ public abstract class AbstractUnit implements Unit
 
 	@Override
 	public String toString() {
-		return cells.toString();
+		return String.format("(%s) %s", position, cells.toString());
 	}
 }

@@ -12,11 +12,8 @@ public class Nonet extends AbstractUnit
 {
 	Set<Integer> numbers = new HashSet<>();
 	
-	public Nonet() {
-		super(9); // a Nonet has exactly 9 cells
-		
-		// TODO Would be useful to record the location of this Nonet
-		// would require overriding add or setting up a check function
+	public Nonet(String position) {
+		super(9, position); // a Nonet has exactly 9 cells
 	}
 
 	@Override
@@ -39,8 +36,8 @@ public class Nonet extends AbstractUnit
 	// #############################################################
 	
 	public static void main(String[] args) throws Exception {
-		Nonet nonet = new Nonet();
-		Nonet nonet2 = new Nonet();
+		Nonet nonet = new Nonet("1st row");
+		Nonet nonet2 = new Nonet("2nd row");
 		
 		List<Cell> cells = new ArrayList<>();
 		int x = 1;

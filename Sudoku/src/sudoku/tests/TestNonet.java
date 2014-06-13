@@ -16,7 +16,7 @@ public class TestNonet
 
 	@Test
 	public void testBasics() {
-		Nonet nonet = new Nonet();
+		Nonet nonet = new Nonet("2nd row");
 		
 		int x = 1;
 		for (int y = 1; y <= 9; y++) {
@@ -42,7 +42,7 @@ public class TestNonet
 
 	@Test
 	public void testCellUpdate() throws Exception {
-		Nonet nonet = new Nonet();
+		Nonet nonet = new Nonet("1st row");
 		
 		List<Cell> cells = new ArrayList<>();
 		int x = 3;
