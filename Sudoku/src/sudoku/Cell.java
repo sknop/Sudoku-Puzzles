@@ -4,8 +4,8 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
-import sudoku.exceptions.IllegalCellPositionException;
 import sudoku.unit.Unit;
 
 public class Cell 
@@ -30,9 +30,8 @@ public class Cell
 		}
 	}
 	
-	public void addToUnit(Unit unit) throws IllegalCellPositionException {
+	public void addToUnit(Unit unit) throws AddCellException {
 		belongsTo.add(unit);
-		unit.addCell(this);
 	}
 	
 	public Integer getValue() {

@@ -1,6 +1,6 @@
 package sudoku.exceptions;
 
-public class IllegalCellPositionException extends Exception
+public class IllegalCellPositionException extends AddCellException
 {
 	private static final long serialVersionUID = -7955612804865817475L;
 
