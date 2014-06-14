@@ -57,4 +57,29 @@ public class TestNonet
 			cells.get(i).setValue(i + 1);
 		}
 	}
+
+	@Test
+	public void testCellClear() throws Exception {
+		Nonet nonet = new Nonet("1st row");
+		
+		List<Cell> cells = new ArrayList<>();
+		int x = 3;
+		for (int y = 1; y <= 9; y++) {
+			Cell cell = new Cell(x,y);
+			cells.add(cell);
+			nonet.addCell(cell);
+		}
+		
+		// expected to work
+		for (int i = 0; i < 9; i++) {
+			cells.get(i).setValue(i + 1);
+		}
+		for (int i = 0; i < 9; i++) {
+			cells.get(i).setValue(null);
+		}
+		for (int i = 0; i < 9; i++) {
+			cells.get(i).setValue(i + 1);
+		}
+	}
+
 }

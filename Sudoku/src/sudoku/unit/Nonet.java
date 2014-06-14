@@ -17,14 +17,19 @@ public class Nonet extends AbstractUnit
 	}
 
 	@Override
-	public void update(Cell cell) throws CellContentException {
-		Integer value = cell.getValue();
-
-		if( numbers.contains(value) ) {
-			throw new CellContentException("Value " + cell + " already exists in " + this);
+	public void update(Integer oldValue, Integer newValue) throws CellContentException {
+		if ( oldValue != null ) {
+			// need to remove the old value
+			numbers.remove(oldValue);
 		}
-		else {
-			numbers.add(value);
+		
+		if ( newValue != null) {
+			if ( numbers.contains(newValue) ) {
+				throw new CellContentException("Value " + newValue + " already exists in " + this);
+			}
+			else {
+				numbers.add(newValue);
+			}
 		}
 	}
 

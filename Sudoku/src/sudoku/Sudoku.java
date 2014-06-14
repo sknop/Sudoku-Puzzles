@@ -74,6 +74,10 @@ public class Sudoku
 		}
 	}
 	
+	public Integer getValue(int x, int y) {
+		return cells.get(new Point(x,y)).getValue();
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder b = new StringBuilder("Sudoku\n");

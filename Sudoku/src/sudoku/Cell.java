@@ -22,11 +22,11 @@ public class Cell
 	}
 
 	public void setValue(Integer value) throws CellContentException {
-		this.value = value;
-		
 		for (Unit u : belongsTo) {
-			u.update(this);
+			u.update(this.value, value);
 		}
+		
+		this.value = value;		
 	}
 	
 	public void addToUnit(Unit unit) throws AddCellException {
