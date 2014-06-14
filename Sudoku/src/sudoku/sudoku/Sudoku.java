@@ -8,6 +8,7 @@ import java.util.Map;
 import sudoku.Cell;
 import sudoku.Point;
 import sudoku.exceptions.AddCellException;
+import sudoku.exceptions.CellContentException;
 import sudoku.unit.Nonet;
 
 public class Sudoku
@@ -77,7 +78,21 @@ public class Sudoku
 	}
 	
 	public Integer getValue(int x, int y) {
-		return cells.get(new Point(x,y)).getValue();
+		return getValue(new Point(x,y));
+	}
+
+	public Integer getValue(final Point p) {
+		return cells.get(p).getValue();
+	}
+	
+	public void setValue(int x, int y, Integer value) 
+			throws CellContentException {
+		setValue(new Point(x,y),value);
+	}
+
+	public void setValue(final Point p, Integer value) 
+			throws CellContentException {
+		cells.get(p).setValue(value);
 	}
 	
 	@Override
