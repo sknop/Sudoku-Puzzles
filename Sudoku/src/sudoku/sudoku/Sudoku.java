@@ -1,10 +1,12 @@
-package sudoku;
+package sudoku.sudoku;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import sudoku.Cell;
+import sudoku.Point;
 import sudoku.exceptions.AddCellException;
 import sudoku.unit.Nonet;
 
