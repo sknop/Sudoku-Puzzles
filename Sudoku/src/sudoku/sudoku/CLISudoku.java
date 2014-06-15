@@ -2,10 +2,10 @@ package sudoku.sudoku;
 
 public class CLISudoku extends Sudoku
 {
-	static final String BigBorder = "=========================================";
-	static final String LittleBorder = "-----------------------------------------";
-	static final String Front = "||";
-	static final String Section = " %s | %s | %s ||";
+	static final String BigBorder = "+-----------------------+";
+	static final String LittleBorder = "|-------+-------+-------|";
+	static final String Front = "|";
+	static final String Section = " %s %s %s |";
 	
 	public CLISudoku() {
 		// nothing to do for now
@@ -15,9 +15,16 @@ public class CLISudoku extends Sudoku
 		StringBuilder b = new StringBuilder();
 		
 		b.append(BigBorder); b.append("\n");
-		for (int r = 0; r < 3; r++) {
+		for (int r = 0; r < 2; r++) {
 			b.append(drawBigRow(r));
 		}
+		
+		for (int i = 1; i <= 2; i++) {
+			b.append(drawRow(2,i));
+		}
+		b.append(drawRow(2,3));
+
+		b.append(BigBorder); b.append("\n");
 		
 		System.out.println(b.toString());
 	}
@@ -28,11 +35,10 @@ public class CLISudoku extends Sudoku
 		
 		for (int i = 1; i <= 2; i++) {
 			b.append(drawRow(r,i));
-			b.append(LittleBorder); b.append("\n");
 		}
 		b.append(drawRow(r,3));
 		
-		b.append(BigBorder); b.append("\n");
+		b.append(LittleBorder); b.append("\n");
 		
 		return b.toString();
 	}
