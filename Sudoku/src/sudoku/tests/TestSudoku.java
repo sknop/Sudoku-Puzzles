@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import sudoku.Point;
 import sudoku.exceptions.CellContentException;
+import sudoku.exceptions.ValueOutsideRangeException;
 import sudoku.sudoku.Sudoku;
 
 public class TestSudoku
@@ -42,6 +43,13 @@ public class TestSudoku
 		}
 	}
 
+	@Test(expected=ValueOutsideRangeException.class)
+	public void testValueOutSideRange() throws CellContentException
+	{
+		Point p1 = new Point(1,1);
+		sudoku.setValue(p1, 0);
+	}
+	
 	@Test(expected=CellContentException.class)
 	public void testDoubleValue() throws CellContentException {
 		Point p1 = new Point(1,1);

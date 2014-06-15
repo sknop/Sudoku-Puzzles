@@ -9,6 +9,7 @@ import sudoku.Cell;
 import sudoku.Point;
 import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
+import sudoku.exceptions.ValueOutsideRangeException;
 import sudoku.unit.Nonet;
 
 public class Sudoku
@@ -85,13 +86,17 @@ public class Sudoku
 		return cells.get(p).getValue();
 	}
 	
-	public void setValue(int x, int y, Integer value) 
+	public void setValue(int x, int y, Integer value)
 			throws CellContentException {
 		setValue(new Point(x,y),value);
 	}
 
 	public void setValue(final Point p, Integer value) 
 			throws CellContentException {
+		
+		if ( value < 1 || value > 9 ) {
+			throw new ValueOutsideRangeException("Value " + value + " not in range (1-9)");
+		}
 		cells.get(p).setValue(value);
 	}
 	
