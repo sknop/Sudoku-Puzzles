@@ -1,5 +1,13 @@
 package sudoku.sudoku;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+
 public class CLISudoku extends Sudoku
 {
 	static final String BigBorder = "+-----------------------+";
@@ -87,5 +95,49 @@ public class CLISudoku extends Sudoku
 			System.err.println("Should not happen : " + e);
 		}
 		cli.draw();
+		
+		CLISudoku full = new CLISudoku();
+		Path path = FileSystems.getDefault().getPath("sudoku.csv");
+		
+		int[][] values = {
+				{ 1,2,3,4,5,6,7,8,9 },
+				{ 4,5,6,7,8,9,1,2,3 },
+				{ 7,8,9,1,2,3,4,5,6 },
+				{ 2,3,4,5,6,7,8,9,1 },
+				{ 5,6,7,8,9,1,2,3,4 },
+				{ 8,9,1,2,3,4,5,6,7 },
+				{ 3,4,5,6,7,8,9,1,2 },
+				{ 6,7,8,9,1,2,3,4,5 },
+				{ 9,1,2,3,4,5,6,7,8 }
+		};
+		
+		try {
+			OpenOption[] options = {StandardOpenOption.CREATE, StandardOpenOption.WRITE};
+			BufferedWriter writer = Files.newBufferedWriter(path, options );
+			
+			for (int row = 0; row < 9; row++) {
+				writer.append(Integer.toString(values[row][0]));
+				for (int col = 1; col < 9; col++) {
+					writer.append(",");
+					writer.append(Integer.toString(values[row][col]));
+				}
+				writer.append("\n");
+			}
+			
+			writer.close();
+			
+			full.importFile(path);
+		}
+		catch(Exception e) {
+			System.err.println("Should not happen : " + e);
+		}
+		
+		full.draw();
+
+		try {
+			Files.deleteIfExists(path);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -47,6 +47,8 @@ public class TestFileImport
 		writer.close();
 		
 		sudoku.importFile(path);
+		
+		assertTrue("First value is not 0", sudoku.getValue(1, 1) == 0);
 	}
 
 	@Test
@@ -79,6 +81,8 @@ public class TestFileImport
 		writer.close();
 		
 		sudoku.importFile(path);
+
+		assertTrue("First value is not 1", sudoku.getValue(1, 1) == 1);
 	}
 
 	@After
