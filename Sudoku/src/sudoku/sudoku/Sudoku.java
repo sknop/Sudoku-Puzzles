@@ -1,9 +1,12 @@
 package sudoku.sudoku;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -105,6 +108,15 @@ public class Sudoku
 		cells.get(p).setValue(value);
 	}
 	
+	public void importArray(int[][] values) throws CellContentException {
+		for (int row = 0; row < 9; row++) {
+			for (int col = 0; col < 9; col++) {
+				Point p = new Point(row + 1,col + 1);
+				cells.get(p).setValue(values[row][col]);
+			}
+		}
+	}
+	
 	/**
 	 * Imports a Sudoku puzzle from a file.
 	 * The expected format is
@@ -145,12 +157,7 @@ public class Sudoku
 		
 		reset();
 		
-		for (row = 0; row < 9; row++) {
-			for (int col = 0; col < 9; col++) {
-				Point p = new Point(row + 1,col + 1);
-				cells.get(p).setValue(values[row][col]);
-			}
-		}
+		importArray(values);
 	}
 
 	private void reset() {
@@ -164,8 +171,20 @@ public class Sudoku
 		}
 	}
 	
-	public void exportFile (String fileName) throws IOException {
+	public void exportFile (Path path) throws IOException {
+		OpenOption[] options = {StandardOpenOption.CREATE, StandardOpenOption.WRITE};
+		BufferedWriter writer = Files.newBufferedWriter(path, options );
 		
+		for (int row = 1; row <= 9; row++) {
+			writer.append(Integer.toString(getValue(row,1)));
+			for (int col = 2; col <= 9; col++) {
+				writer.append(",");
+				writer.append(Integer.toString(getValue(row,col)));
+			}
+			writer.append("\n");
+		}
+		
+		writer.close();
 	}
 
 	@Override

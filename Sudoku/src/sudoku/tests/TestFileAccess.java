@@ -18,7 +18,7 @@ import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
 import sudoku.sudoku.Sudoku;
 
-public class TestFileImport
+public class TestFileAccess
 {
 	Sudoku sudoku;
 	Path path;
@@ -85,6 +85,35 @@ public class TestFileImport
 		assertTrue("First value is not 1", sudoku.getValue(1, 1) == 1);
 	}
 
+	@Test
+	public void testExportFile() 
+			throws IOException, IllegalFileFormatException, CellContentException {
+		int[][] values = {
+				{ 1,2,3,4,5,6,7,8,9 },
+				{ 4,5,6,7,8,9,1,2,3 },
+				{ 7,8,9,1,2,3,4,5,6 },
+				{ 2,3,4,5,6,7,8,9,1 },
+				{ 5,6,7,8,9,1,2,3,4 },
+				{ 8,9,1,2,3,4,5,6,7 },
+				{ 3,4,5,6,7,8,9,1,2 },
+				{ 6,7,8,9,1,2,3,4,5 },
+				{ 9,1,2,3,4,5,6,7,8 }
+		};
+		
+		sudoku.importArray(values);
+		
+		sudoku.exportFile(path);
+		
+		Sudoku newSudoku = new Sudoku();
+		newSudoku.importFile(path);
+
+		for (int row = 1; row <=9; row++) {
+			for (int col = 1; col <= 9; col++) {
+				assertTrue("Values do not match", sudoku.getValue(row, col) == newSudoku.getValue(row,col));
+			}
+		}
+	}
+	
 	@After
 	public void tearDown() throws Exception {
 		Files.deleteIfExists(path);
