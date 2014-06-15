@@ -12,7 +12,7 @@ public class TestCell
 	@Test
 	public void test() {
 		Cell cell = new Cell(1,1);
-		assertTrue("Cell is not empty", cell.getValue() == null);
+		assertTrue("Cell is not empty", cell.getValue() == 0);
 		
 		try {
 			cell.setValue(1);

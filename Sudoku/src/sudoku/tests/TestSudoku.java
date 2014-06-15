@@ -43,11 +43,31 @@ public class TestSudoku
 		}
 	}
 
+	@Test
+	public void testResetValue()
+	{
+		Point p1 = new Point(1,1);
+		Point p2 = new Point(1,9);
+		try {
+			sudoku.setValue(p1, 1);
+			sudoku.setValue(p2, 9);
+
+			sudoku.setValue(p2, 0);
+			assertTrue("Correct value", sudoku.getValue(p2) == 0);
+			sudoku.setValue(p1, 9);
+			
+			assertTrue("Correct value", sudoku.getValue(p1) == 9);
+		}
+		catch( Exception e) {
+			fail("Do not expect exception here");
+		}
+	}
+
 	@Test(expected=ValueOutsideRangeException.class)
 	public void testValueOutSideRange() throws CellContentException
 	{
 		Point p1 = new Point(1,1);
-		sudoku.setValue(p1, 0);
+		sudoku.setValue(p1, -1);
 	}
 	
 	@Test(expected=CellContentException.class)

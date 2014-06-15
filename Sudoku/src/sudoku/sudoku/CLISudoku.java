@@ -55,19 +55,19 @@ public class CLISudoku extends Sudoku
 		int y = bigRow * 3 + row;
 		int x = section * 3;
 		
-		String x1 = getValueString(x + 1, y);
-		String x2 = getValueString(x + 2, y);
-		String x3 = getValueString(x + 3, y);
+		String x1 = getValueAsString(x + 1, y);
+		String x2 = getValueAsString(x + 2, y);
+		String x3 = getValueAsString(x + 3, y);
 		
 		return String.format(Section, x1, x2, x3);
 	}
 	
-	private String getValueString(int x, int y) {
-		Integer val = getValue(x, y);
-		if (val == null) {
+	private String getValueAsString(int x, int y) {
+		int val = getValue(x, y);
+		if (val == 0) {
 			return " ";
 		}
-		return val.toString();
+		return Integer.toString(val);
 	}
 	
 	public static void main(String args[]) {

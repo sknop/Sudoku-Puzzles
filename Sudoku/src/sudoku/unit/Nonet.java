@@ -18,12 +18,12 @@ public class Nonet extends AbstractUnit
 
 	@Override
 	public void update(Integer oldValue, Integer newValue) throws CellContentException {
-		if ( oldValue != null ) {
+		if ( oldValue != 0 ) {
 			// need to remove the old value
 			numbers.remove(oldValue);
 		}
 		
-		if ( newValue != null) {
+		if ( newValue != 0) {
 			if ( numbers.contains(newValue) ) {
 				throw new CellContentException("Value " + newValue + " already exists in " + this);
 			}

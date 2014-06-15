@@ -78,24 +78,24 @@ public class Sudoku
 		}
 	}
 	
-	public Integer getValue(int x, int y) {
+	public int getValue(int x, int y) {
 		return getValue(new Point(x,y));
 	}
 
-	public Integer getValue(final Point p) {
+	public int getValue(final Point p) {
 		return cells.get(p).getValue();
 	}
 	
-	public void setValue(int x, int y, Integer value)
+	public void setValue(int x, int y, int value)
 			throws CellContentException {
 		setValue(new Point(x,y),value);
 	}
 
-	public void setValue(final Point p, Integer value) 
+	public void setValue(final Point p, int value) 
 			throws CellContentException {
 		
-		if ( value < 1 || value > 9 ) {
-			throw new ValueOutsideRangeException("Value " + value + " not in range (1-9)");
+		if ( value < 0 || value > 9 ) {
+			throw new ValueOutsideRangeException("Value " + value + " not in range (0-9)");
 		}
 		cells.get(p).setValue(value);
 	}

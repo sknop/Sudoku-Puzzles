@@ -75,7 +75,7 @@ public class TestNonet
 			cells.get(i).setValue(i + 1);
 		}
 		for (int i = 0; i < 9; i++) {
-			cells.get(i).setValue(null);
+			cells.get(i).setValue(0);
 		}
 		for (int i = 0; i < 9; i++) {
 			cells.get(i).setValue(i + 1);

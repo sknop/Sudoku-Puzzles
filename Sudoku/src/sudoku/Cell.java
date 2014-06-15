@@ -9,7 +9,7 @@ import sudoku.unit.Unit;
 
 public class Cell 
 {
-	private Integer value = null;
+	private int value = 0;
 	private Point location;
 	private List<Unit> belongsTo = new ArrayList<>();
 	
@@ -21,7 +21,7 @@ public class Cell
 		this.location = new Point(x,y);
 	}
 
-	public void setValue(Integer value) throws CellContentException {
+	public void setValue(int value) throws CellContentException {
 		for (Unit u : belongsTo) {
 			u.update(this.value, value);
 		}
@@ -33,7 +33,7 @@ public class Cell
 		belongsTo.add(unit);
 	}
 	
-	public Integer getValue() {
+	public int getValue() {
 		return value;
 	}
 	
