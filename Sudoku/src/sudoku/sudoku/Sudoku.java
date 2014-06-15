@@ -1,5 +1,9 @@
 package sudoku.sudoku;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +13,7 @@ import sudoku.Cell;
 import sudoku.Point;
 import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
+import sudoku.exceptions.IllegalFileFormatException;
 import sudoku.exceptions.ValueOutsideRangeException;
 import sudoku.unit.Nonet;
 
@@ -100,6 +105,67 @@ public class Sudoku
 		cells.get(p).setValue(value);
 	}
 	
+	/**
+	 * Imports a Sudoku puzzle from a file.
+	 * The expected format is
+	 * 
+	 * CSV in 9 rows
+	 * Empty Cells are signaled by a 0
+	 * For example
+	 * 
+	 *  1,0,3,0,0,6,7,8,9
+	 *  0,0,0,0,0,0,0,0,0
+	 *  
+	 * @param path : Path
+	 * @throws IOException
+	 * @author Sven Erik Knop
+	 * @throws IOException, IllegalFileFormatException, CellContentException 
+	 */
+	public void importFile (Path path) 
+			throws IOException, IllegalFileFormatException, IOException, IllegalFileFormatException, CellContentException {
+		BufferedReader br = Files.newBufferedReader(path);
+		int[][] values = new int[9][9];
+		
+		String line;
+		int row = 0;
+		while ( (line = br.readLine()) != null) {
+			String[] lineValues = line.split(",");
+			if (lineValues.length != 9) {
+				br.close();
+				throw new IllegalFileFormatException("Illegal entry in file " + path + " : " + line);
+			}
+			
+			for (int col = 0; col < 9; col++) {
+				values[row][col] = Integer.parseInt(lineValues[col]);
+			}
+		}
+		br.close();
+		
+		reset();
+		
+		for (row = 0; row < 9; row++) {
+			for (int col = 0; col < 0; col++) {
+				Point p = new Point(row + 1,col + 1);
+				cells.get(p).setValue(values[row][col]);
+			}
+		}
+	}
+
+	private void reset() {
+		for (Cell c : cells.values()) {
+			try {
+				c.setValue(0);
+			}
+			catch(Exception e) {
+				System.err.println("Should not be able to happen");
+			}
+		}
+	}
+	
+	public void exportFile (String fileName) throws IOException {
+		
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder b = new StringBuilder("Sudoku\n");
@@ -119,6 +185,8 @@ public class Sudoku
 			b.append("\n");
 		}		
 	}
+	
+	// instant test case to prove printing
 	
 	public static void main(String args[]) {
 		Sudoku sudoku = new Sudoku();
