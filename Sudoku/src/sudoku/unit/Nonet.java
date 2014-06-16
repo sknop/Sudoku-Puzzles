@@ -17,7 +17,7 @@ public class Nonet extends AbstractUnit
 	}
 
 	@Override
-	public void update(Integer oldValue, Integer newValue) throws CellContentException {
+	public void update(int oldValue, int newValue) throws CellContentException {
 		if ( oldValue != 0 ) {
 			// need to remove the old value
 			numbers.remove(oldValue);
