@@ -134,26 +134,27 @@ public class Sudoku
 	 * @throws IOException, IllegalFileFormatException, CellContentException 
 	 */
 	public void importFile (Path path) 
-			throws IOException, IllegalFileFormatException, IOException, IllegalFileFormatException, CellContentException {
-		BufferedReader br = Files.newBufferedReader(path);
+			throws IOException, IllegalFileFormatException, CellContentException {
 		int[][] values = new int[9][9];
-		
-		String line;
-		int row = 0;
-		while ( (line = br.readLine()) != null) {
-			String[] lineValues = line.split(",");
-			if (lineValues.length != 9) {
-				br.close();
-				throw new IllegalFileFormatException("Illegal entry in file " + path + " : " + line);
-			}
+
+		try( BufferedReader br = Files.newBufferedReader(path) ) {			
+			String line;
+			int row = 0;
 			
-			for (int col = 0; col < 9; col++) {
-				values[row][col] = Integer.parseInt(lineValues[col]);
+			while ( (line = br.readLine()) != null) {
+				String[] lineValues = line.split(",");
+				if (lineValues.length != 9) {
+					br.close();
+					throw new IllegalFileFormatException("Illegal entry in file " + path + " : " + line);
+				}
+				
+				for (int col = 0; col < 9; col++) {
+					values[row][col] = Integer.parseInt(lineValues[col]);
+				}
+				
+				row++;
 			}
-			
-			row++;
 		}
-		br.close();
 		
 		reset();
 		
@@ -173,20 +174,20 @@ public class Sudoku
 	
 	public void exportFile (Path path) throws IOException {
 		OpenOption[] options = {StandardOpenOption.CREATE, StandardOpenOption.WRITE};
-		BufferedWriter writer = Files.newBufferedWriter(path, options );
 		
-		for (int row = 1; row <= 9; row++) {
-			writer.append(Integer.toString(getValue(row,1)));
-			for (int col = 2; col <= 9; col++) {
-				writer.append(",");
-				writer.append(Integer.toString(getValue(row,col)));
+		try (BufferedWriter writer = Files.newBufferedWriter(path, options )) {
+			
+			for (int row = 1; row <= 9; row++) {
+				writer.append(Integer.toString(getValue(row,1)));
+				for (int col = 2; col <= 9; col++) {
+					writer.append(",");
+					writer.append(Integer.toString(getValue(row,col)));
+				}
+				writer.append("\n");
 			}
-			writer.append("\n");
 		}
-		
-		writer.close();
 	}
-
+	
 	@Override
 	public String toString() {
 		StringBuilder b = new StringBuilder("Sudoku\n");
@@ -201,7 +202,7 @@ public class Sudoku
 		b.append(name);
 		b.append("\n");
 		
-		for (Nonet n : list) {
+		for( Nonet n : list ) {
 			b.append(n);
 			b.append("\n");
 		}		
