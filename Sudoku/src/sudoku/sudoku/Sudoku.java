@@ -32,7 +32,7 @@ public class Sudoku
 		initialize();
 	}
 	
-	private void initialize() {
+	private final void initialize() {
 		try {
 			// create the Cells first, easier to see this way
 			
