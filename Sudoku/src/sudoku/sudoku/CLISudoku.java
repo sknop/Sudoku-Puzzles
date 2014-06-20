@@ -1,18 +1,28 @@
 package sudoku.sudoku;
 
-public class CLISudoku extends Sudoku implements Runnable
+public final class CLISudoku extends Sudoku implements Runnable
 {
-	static final String BigBorder = "+-----------------------+";
-	static final String LittleBorder = "|-------+-------+-------|";
-	static final String Front = "|";
+	static final String BigBorder = "  +-----------------------+";
+	static final String LittleBorder = "  |-------+-------+-------|";
+	static final String Front = " |";
 	static final String Section = " %s %s %s |";
 	
-	public CLISudoku() {
+	public CLISudoku(String args[]) {
 		// nothing to do for now
 	}
 
 	public void draw() {
 		StringBuilder b = new StringBuilder();
+		
+		b.append("  ");
+		for (int i = 0; i < 3; i++) {
+			b.append("  ");
+			for (int j = 1; j <= 3; j++) {
+				b.append(i*3 + j);
+				b.append(" ");
+			}
+		}
+		b.append("\n");
 		
 		b.append(BigBorder); b.append("\n");
 		for (int r = 0; r < 2; r++) {
@@ -48,6 +58,7 @@ public class CLISudoku extends Sudoku implements Runnable
 		
 		StringBuilder b = new StringBuilder();
 		
+		b.append(bigRow * 3 + row);
 		b.append(Front);
 		for (int section = 0; section < 3; section++) {
 			b.append(drawOneSection(bigRow, row, section));
@@ -77,11 +88,11 @@ public class CLISudoku extends Sudoku implements Runnable
 	}
 	
 	public void run() {
-		
+		draw();
 	}
 	
 	public static void main(String args[]) {
-		CLISudoku sudoku = new CLISudoku();
+		CLISudoku sudoku = new CLISudoku(args);
 		
 		sudoku.run();
 	}
