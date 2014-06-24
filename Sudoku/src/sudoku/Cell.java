@@ -1,7 +1,9 @@
 package sudoku;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
@@ -27,6 +29,22 @@ public class Cell
 		}
 		
 		this.value = value;		
+	}
+	
+	public Set<Integer> getMarkUp() {
+		Set<Integer> markUp = new HashSet<>();
+		
+		if (value == 0) {
+			for (int i = 1; i <= 9; i++) {
+				markUp.add(i);
+			}
+			
+			for (Unit u : belongsTo) {
+				markUp.retainAll(u.getMarkUp());
+			}
+		}
+		
+		return markUp;
 	}
 	
 	public void addToUnit(Unit unit) throws AddCellException {

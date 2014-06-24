@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import sudoku.Cell;
 import sudoku.Point;
@@ -107,7 +108,16 @@ public class Sudoku
 		}
 		cells.get(p).setValue(value);
 	}
+
+	public Set<Integer> getMarkUp(int x, int y) {
+		return getMarkUp(new Point(x,y));
+	}
 	
+	
+	public Set<Integer> getMarkUp(Point point) {
+		return cells.get(point).getMarkUp();
+	}
+
 	public void importArray(int[][] values) throws CellContentException {
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++) {
@@ -144,7 +154,6 @@ public class Sudoku
 			while ( (line = br.readLine()) != null) {
 				String[] lineValues = line.split(",");
 				if (lineValues.length != 9) {
-					br.close();
 					throw new IllegalFileFormatException("Illegal entry in file " + path + " : " + line);
 				}
 				
