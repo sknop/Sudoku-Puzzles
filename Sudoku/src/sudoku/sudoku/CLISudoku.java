@@ -134,7 +134,6 @@ public class CLISudoku extends Sudoku implements Runnable
 		}
 		catch (ArgumentParserException | IOException
 				| IllegalFileFormatException | CellContentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
