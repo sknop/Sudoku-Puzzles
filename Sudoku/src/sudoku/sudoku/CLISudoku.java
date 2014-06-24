@@ -1,17 +1,47 @@
 package sudoku.sudoku;
 
-public final class CLISudoku extends Sudoku implements Runnable
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+
+import sudoku.exceptions.CellContentException;
+import sudoku.exceptions.IllegalFileFormatException;
+import net.sourceforge.argparse4j.ArgumentParsers;
+import net.sourceforge.argparse4j.inf.ArgumentParser;
+import net.sourceforge.argparse4j.inf.ArgumentParserException;
+import net.sourceforge.argparse4j.inf.Namespace;
+import net.sourceforge.argparse4j.internal.HelpScreenException;
+
+public class CLISudoku extends Sudoku implements Runnable
 {
 	static final String BigBorder = "  +-----------------------+";
 	static final String LittleBorder = "  |-------+-------+-------|";
 	static final String Front = " |";
 	static final String Section = " %s %s %s |";
 	
-	public CLISudoku(String args[]) {
-		// nothing to do for now
+	public CLISudoku(String args[]) 
+			throws ArgumentParserException, 
+				   IOException,
+				   IllegalFileFormatException,
+				   CellContentException {
+		ArgumentParser parser = ArgumentParsers.newArgumentParser("CLI Sudoku",true);
+		parser.addArgument("-i", "--input");
+		
+		Namespace options = parser.parseArgs(args);
+
+		String fileName = options.get("input");
+		if (fileName != null) {
+			Path path = FileSystems.getDefault().getPath(fileName);
+			this.importFile(path);
+		}
 	}
 
 	public void draw() {
+		System.out.println(this.toString());
+	}
+	
+	@Override
+	public String toString() {
 		StringBuilder b = new StringBuilder();
 		
 		b.append("  ");
@@ -36,7 +66,7 @@ public final class CLISudoku extends Sudoku implements Runnable
 
 		b.append(BigBorder); b.append("\n");
 		
-		System.out.println(b.toString());
+		return b.toString();
 	}
 	
 	private String drawBigRow(int r) {
@@ -92,8 +122,20 @@ public final class CLISudoku extends Sudoku implements Runnable
 	}
 	
 	public static void main(String args[]) {
-		CLISudoku sudoku = new CLISudoku(args);
+		CLISudoku sudoku;
+		try {
+			sudoku = new CLISudoku(args);
+			
+			sudoku.run();
 		
-		sudoku.run();
+		}
+		catch (HelpScreenException e) {
+			// prints out the Help screen already. Simply stop here
+		}
+		catch (ArgumentParserException | IOException
+				| IllegalFileFormatException | CellContentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
