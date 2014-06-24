@@ -1,5 +1,7 @@
 package sudoku;
 
+import sudoku.exceptions.IllegalCellPositionException;
+
 public class Point
 {
 	private final int x;
@@ -8,6 +10,20 @@ public class Point
 	public Point(int x, int y) {
 		this.x = x;
 		this.y = y;
+	}
+	
+	public static Point createChecked(int x, int y, int min, int max) 
+			throws IllegalCellPositionException {
+		if (x < min)
+			throw new IllegalCellPositionException(String.format("%d less than %d", x, min));
+		if (x > max)
+			throw new IllegalCellPositionException(String.format("%d larger than %d", x, max));
+		if (y < min)
+			throw new IllegalCellPositionException(String.format("%d less than %d", y, min));
+		if (y > max)
+			throw new IllegalCellPositionException(String.format("%d larger than %d", y, max));
+		
+		return new Point(x,y);
 	}
 	
 	public int getX() { return x; }

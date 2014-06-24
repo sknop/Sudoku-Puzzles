@@ -122,7 +122,9 @@ public class Sudoku
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++) {
 				Point p = new Point(row + 1,col + 1);
-				cells.get(p).setInitValue(values[row][col]);
+				int value = values[row][col];
+				if (value > 0)
+					cells.get(p).setInitValue(value);
 			}
 		}
 	}
@@ -172,12 +174,7 @@ public class Sudoku
 
 	private void reset() {
 		for (Cell c : cells.values()) {
-			try {
-				c.setValue(0);
-			}
-			catch(Exception e) {
-				System.err.println("Should not be able to happen");
-			}
+			c.reset();
 		}
 	}
 	

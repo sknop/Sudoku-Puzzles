@@ -3,10 +3,14 @@ package sudoku.sudoku;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 
 import sudoku.Point;
 import sudoku.exceptions.CellContentException;
+import sudoku.exceptions.IllegalCellPositionException;
 import sudoku.exceptions.IllegalFileFormatException;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
@@ -20,6 +24,8 @@ public class CLISudoku extends Sudoku implements Runnable
 	static final String LittleBorder = "  |-------+-------+-------|";
 	static final String Front = " |";
 	static final String Section = " %s %s %s |";
+
+	private Map<String, Runnable> commands = new HashMap<>();
 	
 	public CLISudoku(String args[]) 
 			throws ArgumentParserException, 
@@ -36,16 +42,123 @@ public class CLISudoku extends Sudoku implements Runnable
 			Path path = FileSystems.getDefault().getPath(fileName);
 			this.importFile(path);
 		}
+		
+		populateCommands();
 	}
 
-	public void draw() {
+	private void populateCommands() {
+		commands.put("h", () -> help());
+		commands.put("p", () -> put());
+		commands.put("d", () -> delete());
+		commands.put("m", () -> showMarkUp());
+		commands.put("s", () -> save());
+		commands.put("l", () -> load());
+		commands.put("q", () -> quit());
+	}
+
+	private void getCommand() {
+		@SuppressWarnings("resource")
+		Scanner scanner = new Scanner(System.in);
 		
-//		for (int x = 1; x <= 9; x++) {
-//			for (int y = 1; y <= 9; y++) {
-//				System.out.print(getValue(x,y) + " ");
-//			}
-//			System.out.println();
-//		}
+		System.out.print("Command (h,q,p,d,m,s,l) : ");
+		
+		String s = scanner.next();
+		String command = s.substring(0, 1).toLowerCase();
+		
+		if (commands.containsKey(command)) {
+			commands.get(command).run();
+		}
+		else {
+			System.out.println("Unknown command \"" + s + "\"");
+		}
+	}
+	
+	private void help() {
+		System.out.println("h : help");
+		System.out.println("p : put");
+		System.out.println("d : delete");
+		System.out.println("m : markUp");
+		System.out.println("q : quit");
+		System.out.println("s : save");
+		System.out.println("l : load");
+		System.out.println();
+	}
+
+	private void put() {
+		@SuppressWarnings("resource")
+		Scanner scanner = new Scanner(System.in);
+
+		System.out.print("row : ");
+		int x = scanner.nextInt();
+		System.out.print("col : ");
+		int y = scanner.nextInt();
+		
+		try {
+			Point p = Point.createChecked(x, y, 1, 9);
+			
+			System.out.print("val : ");
+			int value = scanner.nextInt();
+			
+			this.setValue(p, value);
+		} catch (IllegalCellPositionException | CellContentException e) {
+			System.out.println(e);
+		}
+		
+	}
+	
+	private void delete() {
+		@SuppressWarnings("resource")
+		Scanner scanner = new Scanner(System.in);
+
+		System.out.print("row : ");
+		int x = scanner.nextInt();
+		System.out.print("col : ");
+		int y = scanner.nextInt();
+		
+		try {
+			Point p = Point.createChecked(x, y, 1, 9);
+			
+			this.setValue(p, 0);
+		} catch (IllegalCellPositionException | CellContentException e) {
+			System.out.println(e);
+		}
+	}
+	
+	private void save() {
+		@SuppressWarnings("resource")
+		Scanner scanner = new Scanner(System.in);
+
+		System.out.print("filename : ");
+		String fileName = scanner.next();
+		
+		Path path = FileSystems.getDefault().getPath(fileName);
+		try {
+			this.exportFile(path);
+		} catch (IOException e) {
+			System.out.println(e);
+		}
+	}
+	
+	private void load() {
+		@SuppressWarnings("resource")
+		Scanner scanner = new Scanner(System.in);
+
+		System.out.print("filename : ");
+		String fileName = scanner.next();
+		
+		Path path = FileSystems.getDefault().getPath(fileName);
+		try {
+			this.importFile(path);
+		} catch (IOException | IllegalFileFormatException | CellContentException e) {
+			System.out.println(e);
+		}
+	}
+	
+	private void quit() {
+		System.exit(0);
+	}
+	
+	public void draw() {
 		System.out.println(this.toString());
 	}
 	
@@ -127,9 +240,10 @@ public class CLISudoku extends Sudoku implements Runnable
 	}
 	
 	public void run() {
-		draw();
-		
-		showMarkUp();
+		while (true) {
+			draw();
+			getCommand();
+		}
 	}
 	
 	private void showMarkUp() {
@@ -142,6 +256,7 @@ public class CLISudoku extends Sudoku implements Runnable
 				System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
 			}
 		}
+		System.out.println();
 	}
 
 	public static void main(String args[]) {

@@ -42,6 +42,15 @@ public class Cell
 		}
 	}
 	
+	public void reset() {
+		readOnly = false;
+		try {
+			setValue(0);
+		} catch (CellContentException e) {
+			System.err.println("Should not happen" + e);
+		}
+	}
+	
 	public Set<Integer> getMarkUp() {
 		Set<Integer> markUp = new HashSet<>();
 		
