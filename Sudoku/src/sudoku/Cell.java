@@ -14,6 +14,7 @@ public class Cell
 	private int value = 0;
 	private Point location;
 	private List<Unit> belongsTo = new ArrayList<>();
+	private boolean readOnly = false;
 	
 	public Cell(Point location) {
 		this.location = location;
@@ -23,12 +24,22 @@ public class Cell
 		this.location = new Point(x,y);
 	}
 
+	public void setInitValue(int value) throws CellContentException {
+		setValue(value);
+		readOnly = true;
+	}
+	
 	public void setValue(int value) throws CellContentException {
-		for (Unit u : belongsTo) {
-			u.update(this.value, value);
+		if (readOnly) {
+			throw new CellContentException(this.toString() + " is read only");
 		}
-		
-		this.value = value;		
+		else {
+			for (Unit u : belongsTo) {
+				u.update(this.value, value);
+			}
+			
+			this.value = value;
+		}
 	}
 	
 	public Set<Integer> getMarkUp() {

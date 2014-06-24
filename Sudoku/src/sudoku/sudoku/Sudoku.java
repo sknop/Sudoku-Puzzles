@@ -122,7 +122,7 @@ public class Sudoku
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++) {
 				Point p = new Point(row + 1,col + 1);
-				cells.get(p).setValue(values[row][col]);
+				cells.get(p).setInitValue(values[row][col]);
 			}
 		}
 	}
