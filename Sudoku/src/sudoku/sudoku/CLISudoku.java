@@ -3,7 +3,9 @@ package sudoku.sudoku;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.Set;
 
+import sudoku.Point;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
 import net.sourceforge.argparse4j.ArgumentParsers;
@@ -37,6 +39,13 @@ public class CLISudoku extends Sudoku implements Runnable
 	}
 
 	public void draw() {
+		
+//		for (int x = 1; x <= 9; x++) {
+//			for (int y = 1; y <= 9; y++) {
+//				System.out.print(getValue(x,y) + " ");
+//			}
+//			System.out.println();
+//		}
 		System.out.println(this.toString());
 	}
 	
@@ -99,12 +108,12 @@ public class CLISudoku extends Sudoku implements Runnable
 	}
 	
 	private String drawOneSection(int bigRow, int row, int section) {
-		int y = bigRow * 3 + row;
-		int x = section * 3;
+		int x = bigRow * 3 + row;
+		int y = section * 3;
 		
-		String x1 = getValueAsString(x + 1, y);
-		String x2 = getValueAsString(x + 2, y);
-		String x3 = getValueAsString(x + 3, y);
+		String x1 = getValueAsString(x, y + 1);
+		String x2 = getValueAsString(x, y + 2);
+		String x3 = getValueAsString(x, y + 3);
 		
 		return String.format(Section, x1, x2, x3);
 	}
@@ -119,8 +128,22 @@ public class CLISudoku extends Sudoku implements Runnable
 	
 	public void run() {
 		draw();
+		
+		showMarkUp();
 	}
 	
+	private void showMarkUp() {
+		for (int x = 1; x <= 9; x++) {
+			for (int y = 1; y <= 9; y++) {
+				Point p = new Point(x,y);
+				
+				Set<Integer> markUp = getMarkUp(p);
+				
+				System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
+			}
+		}
+	}
+
 	public static void main(String args[]) {
 		CLISudoku sudoku;
 		try {
