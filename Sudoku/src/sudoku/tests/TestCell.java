@@ -37,7 +37,7 @@ public class TestCell
 			fail("Not supposed to throw an exception yet");
 		}
 		
-		cell.setValue(2);
+		cell.setValue(0);
 	}
 
 }
