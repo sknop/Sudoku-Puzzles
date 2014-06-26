@@ -16,6 +16,10 @@ public class Cell
 	private List<Unit> belongsTo = new ArrayList<>();
 	private boolean readOnly = false;
 	
+	public boolean isReadOnly() {
+		return readOnly;
+	}
+
 	public Cell(Point location) {
 		this.location = location;
 	}
