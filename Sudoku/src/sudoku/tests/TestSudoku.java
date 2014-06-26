@@ -2,6 +2,8 @@ package sudoku.tests;
 
 import static org.junit.Assert.*;
 
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -77,6 +79,41 @@ public class TestSudoku
 
 		sudoku.setValue(p1, 1);
 		sudoku.setValue(p2, 1);
+	}
+	
+	private boolean checkMarkup(Point p, int value) {
+		Set<Integer> markUp = sudoku.getMarkUp(p);
+		
+		return markUp.contains(value);
+	}
+	
+	@Test
+	public void testMarkUp() {
+		try {
+			Point p = new Point(1,1);
+			sudoku.setValue(p, 1);
+
+			
+			for (int row = 2; row <= 9; row++) {
+				Point t = new Point(row, 1);
+				
+				assertTrue(String.format("Found 1 in %s", t), ! checkMarkup(t, 1));
+				assertTrue(String.format("No 2 in %s", t), checkMarkup(t, 2));
+			}
+
+			for (int col = 2; col <= 9; col++) {
+				Point t = new Point(1, col);
+				
+				assertTrue(String.format("Found 1 in %s", t), ! checkMarkup(t,1));
+				assertTrue(String.format("No 2 in %s", t), checkMarkup(t, 2));
+			}
+
+			assertTrue("Markup not empty", sudoku.getMarkUp(p).isEmpty());
+		}
+		catch( Exception e) {
+			fail("Do not expect exception here");
+		}
+
 	}
 
 }
