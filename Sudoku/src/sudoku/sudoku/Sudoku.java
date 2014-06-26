@@ -118,6 +118,22 @@ public class Sudoku
 		return cells.get(point).getMarkUp();
 	}
 
+	/**
+	 * Returns true if every cell in this Sudoku 
+	 * has a value different than 0
+	 * 
+	 * @return true if this Sudoku is solved
+	 */
+	public boolean isSolved() {
+		for (Cell cell : cells.values()) {
+			if (cell.empty()) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	public void importArray(int[][] values) throws CellContentException {
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++) {

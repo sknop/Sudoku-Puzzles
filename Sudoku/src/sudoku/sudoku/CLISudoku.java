@@ -242,6 +242,11 @@ public class CLISudoku extends Sudoku implements Runnable
 	public void run() {
 		while (true) {
 			draw();
+			
+			if (isSolved()) {
+				System.out.println("Done.");
+				return;
+			}
 			getCommand();
 		}
 	}

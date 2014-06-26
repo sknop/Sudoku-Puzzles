@@ -20,6 +20,10 @@ public class Cell
 		return readOnly;
 	}
 
+	public boolean empty() {
+		return (value == 0);
+	}
+	
 	public Cell(Point location) {
 		this.location = location;
 	}
