@@ -52,6 +52,7 @@ public class CLISudoku extends Sudoku implements Runnable
 		commands.put("d", () -> delete());
 		commands.put("m", () -> showMarkUp());
 		commands.put("s", () -> save());
+		commands.put("b", () -> bruteForce());
 		commands.put("l", () -> load());
 		commands.put("q", () -> quit());
 	}
@@ -60,7 +61,7 @@ public class CLISudoku extends Sudoku implements Runnable
 		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 		
-		System.out.print("Command (h,q,p,d,m,s,l) : ");
+		System.out.print("Command (h,q,p,d,m,b,s,l) : ");
 		
 		String s = scanner.next();
 		String command = s.substring(0, 1).toLowerCase();
@@ -78,6 +79,7 @@ public class CLISudoku extends Sudoku implements Runnable
 		System.out.println("p : put");
 		System.out.println("d : delete");
 		System.out.println("m : markUp");
+		System.out.println("b : bruteForce");
 		System.out.println("q : quit");
 		System.out.println("s : save");
 		System.out.println("l : load");
@@ -154,6 +156,10 @@ public class CLISudoku extends Sudoku implements Runnable
 		}
 	}
 	
+	private void bruteForce() {
+		solveBruteForce();
+		draw();
+	}
 	private void quit() {
 		System.exit(0);
 	}

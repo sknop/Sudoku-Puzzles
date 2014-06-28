@@ -8,10 +8,14 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import sudoku.Cell;
 import sudoku.Point;
@@ -132,6 +136,53 @@ public class Sudoku
 		}
 		
 		return true;
+	}
+	
+	/**
+	 * Solves the Sudoku, trying out every combination
+	 */
+	public boolean solveBruteForce() {
+		LinkedList<Cell> emptyCells = cells.values()
+				.stream()
+				.filter(c -> c.empty())
+				.sorted( (a,b) -> a.getLocation().compareTo(b.getLocation()))
+				.collect(Collectors.toCollection(LinkedList::new));
+		
+		
+		for (Cell c : emptyCells) {
+			System.out.println(c + " " + c.getMarkUp());
+		}
+		
+		@SuppressWarnings("unchecked")
+		boolean solved = solveRecursive((LinkedList<Cell>)emptyCells.clone());
+		
+		return solved;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private boolean solveRecursive(LinkedList<Cell> empties) {
+		// recursive bottom
+		if (empties.size() == 0) 
+			return true;
+		
+		Cell cell = empties.remove();
+		
+		for (int i : cell.getMarkUp()) {
+			try {
+				System.out.println("Trying value " + i + " for " + cell + " " + cell.getMarkUp());
+				
+				cell.setValue(i);
+				
+				if (solveRecursive((LinkedList<Cell>)empties.clone())) {
+					return true;
+				}
+
+				cell.reset();
+			} catch (CellContentException e) {
+				continue;
+			}
+		}
+ 		return false; // did not find a solution, back track
 	}
 	
 	public void importArray(int[][] values) throws CellContentException {
