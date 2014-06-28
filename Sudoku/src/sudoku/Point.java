@@ -2,7 +2,7 @@ package sudoku;
 
 import sudoku.exceptions.IllegalCellPositionException;
 
-public class Point
+public class Point implements Comparable<Point>
 {
 	private final int x;
 	private final int y;
@@ -48,5 +48,14 @@ public class Point
 	@Override
 	public String toString() {
 		return String.format("(%d,%d)", getX(), getY());
+	}
+
+	@Override
+	public int compareTo(Point o) {
+		if (getX() == o.getX()) 
+			return getY() - o.getX();
+		else {
+			return getX() - o.getX();
+		}
 	}
 }
