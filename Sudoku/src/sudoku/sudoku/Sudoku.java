@@ -169,6 +169,8 @@ public class Sudoku
 
 				head.reset();
 			} catch (CellContentException e) {
+				// now violates a condition, therefore incorrect entry
+				// try next value
 				continue;
 			}
 		}
