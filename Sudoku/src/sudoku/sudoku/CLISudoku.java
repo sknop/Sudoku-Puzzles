@@ -157,9 +157,11 @@ public class CLISudoku extends Sudoku implements Runnable
 	}
 	
 	private void bruteForce() {
-		solveBruteForce();
-		draw();
+		if (!solveBruteForce()) {
+			System.out.println("This Sudoku does not have a solution");
+		}
 	}
+	
 	private void quit() {
 		System.exit(0);
 	}

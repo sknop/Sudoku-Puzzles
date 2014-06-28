@@ -8,7 +8,6 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -142,47 +141,38 @@ public class Sudoku
 	 * Solves the Sudoku, trying out every combination
 	 */
 	public boolean solveBruteForce() {
-		LinkedList<Cell> emptyCells = cells.values()
+		Deque<Cell> emptyCells = cells.values()
 				.stream()
-				.filter(c -> c.empty())
-				.sorted( (a,b) -> a.getLocation().compareTo(b.getLocation()))
-				.collect(Collectors.toCollection(LinkedList::new));
-		
-		
-		for (Cell c : emptyCells) {
-			System.out.println(c + " " + c.getMarkUp());
-		}
-		
-		@SuppressWarnings("unchecked")
-		boolean solved = solveRecursive((LinkedList<Cell>)emptyCells.clone());
-		
-		return solved;
+				.filter( c -> c.empty() )
+				.sorted( (a,b) -> a.getLocation().compareTo(b.getLocation()) )
+				.collect( Collectors.toCollection(LinkedList::new) );
+				
+		return solveRecursive(emptyCells);
 	}
 	
-	@SuppressWarnings("unchecked")
-	private boolean solveRecursive(LinkedList<Cell> empties) {
+	private boolean solveRecursive(Deque<Cell> empties) {
 		// recursive bottom
 		if (empties.size() == 0) 
 			return true;
+
+		// separate into head and tail
+		LinkedList<Cell> tail = new LinkedList<Cell>(empties);
+		Cell head = tail.remove();
 		
-		Cell cell = empties.remove();
-		
-		for (int i : cell.getMarkUp()) {
+		for (int i : head.getMarkUp()) {
 			try {
-				System.out.println("Trying value " + i + " for " + cell + " " + cell.getMarkUp());
+				head.setValue(i);
 				
-				cell.setValue(i);
-				
-				if (solveRecursive((LinkedList<Cell>)empties.clone())) {
+				if (solveRecursive(tail)) {
 					return true;
 				}
 
-				cell.reset();
+				head.reset();
 			} catch (CellContentException e) {
 				continue;
 			}
 		}
- 		return false; // did not find a solution, back track
+ 		return false; // did not find a solution here, back track
 	}
 	
 	public void importArray(int[][] values) throws CellContentException {
