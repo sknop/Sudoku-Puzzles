@@ -111,9 +111,19 @@ public class TestSudoku
 			assertTrue("Markup not empty", sudoku.getMarkUp(p).isEmpty());
 		}
 		catch( Exception e) {
-			fail("Do not expect exception here");
+			fail("Do not expect exception here: " + e);
 		}
 
 	}
 
+	@Test
+	public void testBruteForce() {
+		try {
+			assertTrue("Cannot solve empty Sudoku brute force", sudoku.solveBruteForce());
+			assertTrue("Not solved after brute force", sudoku.isSolved());
+		}
+		catch( Exception e) {
+			fail("Do not expect exception here " + e);
+		}
+	}
 }
