@@ -8,13 +8,7 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import sudoku.Cell;
 import sudoku.Point;
@@ -24,15 +18,15 @@ import sudoku.exceptions.IllegalFileFormatException;
 import sudoku.exceptions.ValueOutsideRangeException;
 import sudoku.unit.Nonet;
 
-public class Sudoku
+public class Sudoku extends Puzzle
 {
-	private final Map<Point, Cell> cells = new HashMap<>();
 	private final List<Nonet> rows = new ArrayList<>();
 	private final List<Nonet> columns = new ArrayList<>();
 	private final List<Nonet> boxes = new ArrayList<>();
 	
 	
 	public Sudoku() {
+		super();
 		initialize();
 	}
 	
@@ -88,93 +82,6 @@ public class Sudoku
 		catch(AddCellException e) {
 			System.err.println("Should never happen:" + e);
 		}
-	}
-	
-	public int getValue(int x, int y) {
-		return getValue(new Point(x,y));
-	}
-
-	public int getValue(final Point p) {
-		return cells.get(p).getValue();
-	}
-	
-	public void setValue(int x, int y, int value)
-			throws CellContentException {
-		setValue(new Point(x,y),value);
-	}
-
-	public void setValue(final Point p, int value) 
-			throws CellContentException {
-		
-		if ( value < 0 || value > 9 ) {
-			throw new ValueOutsideRangeException("Value " + value + " not in range (0-9)");
-		}
-		cells.get(p).setValue(value);
-	}
-
-	public Set<Integer> getMarkUp(int x, int y) {
-		return getMarkUp(new Point(x,y));
-	}
-	
-	
-	public Set<Integer> getMarkUp(Point point) {
-		return cells.get(point).getMarkUp();
-	}
-
-	/**
-	 * Returns true if every cell in this Sudoku 
-	 * has a value different than 0
-	 * 
-	 * @return true if this Sudoku is solved
-	 */
-	public boolean isSolved() {
-		for (Cell cell : cells.values()) {
-			if (cell.empty()) {
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	
-	/**
-	 * Solves the Sudoku, trying out every combination
-	 */
-	public boolean solveBruteForce() {
-		Deque<Cell> emptyCells = cells.values()
-				.stream()
-				.filter( c -> c.empty() )
-				.sorted( (a,b) -> a.getLocation().compareTo(b.getLocation()) )
-				.collect( Collectors.toCollection(LinkedList::new) );
-				
-		return solveRecursive(emptyCells);
-	}
-	
-	private boolean solveRecursive(Deque<Cell> empties) {
-		// recursive bottom
-		if (empties.size() == 0) 
-			return true;
-
-		// separate into head and tail
-		LinkedList<Cell> tail = new LinkedList<Cell>(empties);
-		Cell head = tail.remove();
-		
-		for (int i : head.getMarkUp()) {
-			try {
-				head.setValue(i);
-				
-				if (solveRecursive(tail)) {
-					return true;
-				}
-
-				head.reset();
-			} catch (CellContentException e) {
-				// now violates a condition, therefore incorrect entry
-				// try next value
-				continue;
-			}
-		}
- 		return false; // did not find a solution here, back track
 	}
 	
 	public void importArray(int[][] values) throws CellContentException {
@@ -275,6 +182,19 @@ public class Sudoku
 	
 	// instant test case to prove printing
 	
+	public void setValue(int x, int y, int value)
+			throws CellContentException {
+				setValue(new Point(x,y),value);
+			}
+
+	public void setValue(final Point p, int value)
+			throws CellContentException {	
+				if ( value < 0 || value > 9 ) {
+					throw new ValueOutsideRangeException("Value " + value + " not in range (0-9)");
+				}
+				cells.get(p).setValue(value);
+			}
+
 	public static void main(String args[]) {
 		Sudoku sudoku = new Sudoku();
 		
