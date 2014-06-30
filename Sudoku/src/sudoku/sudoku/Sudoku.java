@@ -12,6 +12,7 @@ import java.util.List;
 
 import sudoku.Cell;
 import sudoku.Point;
+import sudoku.Puzzle;
 import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
@@ -189,11 +190,11 @@ public class Sudoku extends Puzzle
 
 	public void setValue(final Point p, int value)
 			throws CellContentException {	
-				if ( value < 0 || value > 9 ) {
-					throw new ValueOutsideRangeException("Value " + value + " not in range (0-9)");
-				}
-				cells.get(p).setValue(value);
-			}
+		if ( value < 0 || value > 9 ) {
+			throw new ValueOutsideRangeException("Value " + value + " not in range (0-9)");
+		}
+		cells.get(p).setValue(value);
+	}
 
 	public static void main(String args[]) {
 		Sudoku sudoku = new Sudoku();
