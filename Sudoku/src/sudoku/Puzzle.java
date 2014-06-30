@@ -1,4 +1,4 @@
-package sudoku.sudoku;
+package sudoku;
 
 import java.util.Deque;
 import java.util.HashMap;
@@ -7,11 +7,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import sudoku.Cell;
-import sudoku.Point;
 import sudoku.exceptions.CellContentException;
 
-public class Puzzle
+public abstract class Puzzle
 {
 	protected final Map<Point, Cell> cells = new HashMap<>();
 
