@@ -114,6 +114,12 @@ public class Samurai extends Puzzle
 		}
 	}
 
+	private void reset() {
+		for (Cell c : cells.values()) {
+			c.reset();
+		}
+	}
+	
 	public void setValue(int x, int y, int value)
 			throws CellContentException {
 		setValue(new Point(x,y),value);
