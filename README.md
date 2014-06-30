@@ -25,3 +25,10 @@ Samurai
 =======
 
 Framework created, cannot read or write yet (or play for that matter).
+
+Requirements
+============
+
+JDK 1.8 
+argparse4j 0.4.3
+junit 4.11 (for test cases)
