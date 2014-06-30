@@ -181,12 +181,10 @@ public class Sudoku extends Puzzle
 		}		
 	}
 	
-	// instant test case to prove printing
-	
 	public void setValue(int x, int y, int value)
 			throws CellContentException {
-				setValue(new Point(x,y),value);
-			}
+		setValue(new Point(x,y),value);
+	}
 
 	public void setValue(final Point p, int value)
 			throws CellContentException {	
