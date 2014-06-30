@@ -2,7 +2,6 @@ package sudoku.samurai;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import sudoku.Cell;
 import sudoku.Point;
@@ -45,12 +44,7 @@ public class Samurai extends Puzzle
 				cells.put(p, cell);
 			}
 		}
-		
-//		System.out.println(cells.values().stream()
-//				.sorted( (a,b) -> a.getLocation().compareTo(b.getLocation()) )
-//				.collect(Collectors.toCollection(ArrayList::new))
-//				);
-		
+				
 		Object[][] sections = { 
 				{ "A", 0, 0, false },
 				{ "B", 12, 0, false },
