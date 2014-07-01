@@ -31,10 +31,11 @@ public class Samurai extends Puzzle
 		initialize();
 	}
 	
-	private final void initialize() {
-		// create Cells first
-		// leave gaps where there are no cells
-		
+	private interface CellAccess {
+		public void apply(int x, int y) throws CellContentException;
+	}
+	
+	private void eachCell(CellAccess access) throws CellContentException {
 		for (int x = 1; x <= 21; x++) {
 			for (int y = 1; y <= 21; y++) {
 				if ((x > 9) && (x < 13)) {
@@ -48,10 +49,28 @@ public class Samurai extends Puzzle
 					}
 				}
 				
-				Point p = new Point(x,y);
-				Cell cell = new Cell(p);
-				cells.put(p, cell);
+				access.apply(x, y);
 			}
+		}
+	}
+	
+	private final void initialize() {
+		// create Cells first
+		// leave gaps where there are no cells
+
+		try {
+			eachCell(new CellAccess() {
+
+				@Override
+				public void apply(int x, int y) {
+					Point p = new Point(x,y);
+					Cell cell = new Cell(p);
+					cells.put(p, cell);
+				}
+				
+			});
+		} catch (CellContentException e) {
+			System.out.println("Should not happen " + e);
 		}
 				
 		Object[][] sections = { 
@@ -165,26 +184,18 @@ public class Samurai extends Puzzle
 	}
 	
 	public void importArray(int[][] values) throws CellContentException {
-		for ( int x = 0; x < 21; x++ ) {
-			for ( int y = 0; y < 21; y++ ) {
-				if ((x > 9) && (x < 13)) {
-					if ((y<7) || (y > 15)) {
-						continue; // top and bottom gaps
-					}
-				}
-				if ((y > 9) && (y < 13)) {
-					if ((x<7) || (x > 15)) {
-						continue; // left and right gaps
-					}
-				}
+		eachCell(new CellAccess() {
 
+			@Override
+			public void apply(int x, int y) throws CellContentException {
 				try {
-					setValue(x + 1, y + 1, values[x][y]);
+					setValue(x, y, values[x-1][y-1]);
 				} catch (IllegalCellPositionException e) {
 					System.out.println("Should not happen " + e);
 				}
 			}
-		}
+			
+		});
 	}
 	
 
@@ -266,7 +277,7 @@ public class Samurai extends Puzzle
 			{ 0,9,0,8,0,5,0,3,0,0,0,0,0,8,0,3,0,5,0,1,0 },
 			{ 0,0,3,7,0,8,9,0,0,0,0,0,0,0,6,1,0,2,4,0,0 },
 			{ 0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,6,0,0,0,0 },
-			{ 0,0,7,6,0,3,4,0,0,0,0,0,0,0,8,4,0,8,3,0,0 },
+			{ 0,0,7,6,0,3,4,0,0,0,0,0,0,0,8,4,0,9,3,0,0 },
 			{ 0,2,0,3,0,1,0,8,0,0,0,0,0,2,0,7,0,4,0,9,0 },
 			{ 7,0,4,0,0,0,1,0,6,0,0,0,9,0,5,0,0,0,7,0,3 },
 			{ 1,8,0,0,0,0,0,5,2,0,0,0,1,6,0,0,0,0,0,4,2 }
