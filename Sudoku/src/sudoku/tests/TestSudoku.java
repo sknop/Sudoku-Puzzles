@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import sudoku.Point;
 import sudoku.exceptions.CellContentException;
+import sudoku.exceptions.IllegalCellPositionException;
 import sudoku.exceptions.ValueOutsideRangeException;
 import sudoku.sudoku.Sudoku;
 
@@ -66,21 +67,28 @@ public class TestSudoku
 	}
 
 	@Test(expected=ValueOutsideRangeException.class)
-	public void testValueOutSideRange() throws CellContentException
+	public void testValueOutSideRange() throws CellContentException, IllegalCellPositionException
 	{
 		Point p1 = new Point(1,1);
 		sudoku.setValue(p1, -1);
 	}
 	
 	@Test(expected=CellContentException.class)
-	public void testDoubleValue() throws CellContentException {
+	public void testDoubleValue() throws CellContentException, IllegalCellPositionException {
 		Point p1 = new Point(1,1);
 		Point p2 = new Point(2,1);
 
 		sudoku.setValue(p1, 1);
 		sudoku.setValue(p2, 1);
 	}
-	
+
+	@Test(expected=IllegalCellPositionException.class)
+	public void testIllegalCell() throws CellContentException, IllegalCellPositionException {
+		Point p1 = new Point(9,10);
+
+		sudoku.setValue(p1, 1);
+	}
+
 	private boolean checkMarkup(Point p, int value) {
 		Set<Integer> markUp = sudoku.getMarkUp(p);
 		

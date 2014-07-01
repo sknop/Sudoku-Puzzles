@@ -27,7 +27,7 @@ public class Sudoku extends Puzzle
 	
 	
 	public Sudoku() {
-		super();
+		super(9);
 		initialize();
 	}
 	
@@ -181,19 +181,6 @@ public class Sudoku extends Puzzle
 		}		
 	}
 	
-	public void setValue(int x, int y, int value)
-			throws CellContentException {
-		setValue(new Point(x,y),value);
-	}
-
-	public void setValue(final Point p, int value)
-			throws CellContentException {	
-		if ( value < 0 || value > 9 ) {
-			throw new ValueOutsideRangeException("Value " + value + " not in range (0-9)");
-		}
-		cells.get(p).setValue(value);
-	}
-
 	public static void main(String args[]) {
 		Sudoku sudoku = new Sudoku();
 		

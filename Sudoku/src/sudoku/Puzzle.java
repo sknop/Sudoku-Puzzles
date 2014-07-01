@@ -8,12 +8,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import sudoku.exceptions.CellContentException;
+import sudoku.exceptions.IllegalCellPositionException;
+import sudoku.exceptions.ValueOutsideRangeException;
 
 public abstract class Puzzle
 {
+	protected int maxValue;
 	protected final Map<Point, Cell> cells = new HashMap<>();
 
-	public Puzzle() {
+	public Puzzle(int maxValue) {
+		this.maxValue = maxValue;
 	}
 
 	public int getValue(int x, int y) {
@@ -46,6 +50,23 @@ public abstract class Puzzle
 		}
 		
 		return true;
+	}
+
+	public void setValue(int x, int y, int value)
+			throws CellContentException, IllegalCellPositionException {
+		setValue(new Point(x,y),value);
+	}
+
+	public void setValue(final Point p, int value)
+			throws CellContentException, IllegalCellPositionException {	
+		if ( value < 0 || value > maxValue ) {
+			String error = String.format("Value %d not in range (1-%d)", value, maxValue);
+			throw new ValueOutsideRangeException(error);
+		}
+		if ( cells.containsKey(p))
+			cells.get(p).setValue(value);
+		else
+			throw new IllegalCellPositionException("No cell at " + p);
 	}
 
 	/**
