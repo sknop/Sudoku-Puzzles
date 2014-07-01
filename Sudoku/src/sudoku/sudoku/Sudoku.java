@@ -16,7 +16,6 @@ import sudoku.Puzzle;
 import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
-import sudoku.exceptions.ValueOutsideRangeException;
 import sudoku.unit.Nonet;
 
 public class Sudoku extends Puzzle
