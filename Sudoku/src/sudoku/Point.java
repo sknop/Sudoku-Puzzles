@@ -52,10 +52,14 @@ public class Point implements Comparable<Point>
 
 	@Override
 	public int compareTo(Point o) {
+		int result = 0;
+		
 		if (getX() == o.getX()) 
-			return getY() - o.getX();
+			result = getY() - o.getY();
 		else {
-			return getX() - o.getX();
+			result = getX() - o.getX();
 		}
+
+		return result;
 	}
 }
