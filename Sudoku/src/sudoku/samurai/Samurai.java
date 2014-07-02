@@ -1,3 +1,26 @@
+/*******************************************************************************
+ * Copyright (c) 2014 Sven Erik Knop.
+ * Licensed under the EUPL V.1.1
+ *
+ * This Software is provided to You under the terms of the European 
+ * Union Public License (the "EUPL") version 1.1 as published by the 
+ * European Union. Any use of this Software, other than as authorized 
+ * under this License is strictly prohibited (to the extent such use 
+ * is covered by a right of the copyright holder of this Software).
+ *
+ * This Software is provided under the License on an "AS IS" basis and 
+ * without warranties of any kind concerning the Software, including 
+ * without limitation merchantability, fitness for a particular purpose, 
+ * absence of defects or errors, accuracy, and non-infringement of 
+ * intellectual property rights other than copyright. This disclaimer 
+ * of warranty is an essential part of the License and a condition for 
+ * the grant of any rights to this Software.
+ *
+ * For more details, see http://joinup.ec.europa.eu/software/page/eupl.
+ *
+ * Contributors:
+ *     2014 - Sven Erik Knop - initial API and implementation
+ *******************************************************************************/
 package sudoku.samurai;
 
 import java.io.BufferedReader;
@@ -26,6 +49,8 @@ public class Samurai extends Puzzle
 	private final List<Nonet> columns = new ArrayList<>();
 	private final List<Nonet> boxes = new ArrayList<>();
 	
+	public final int PUZZLE_WIDTH = 21;
+	
 	public Samurai() {
 		super(9);
 		initialize();
@@ -35,9 +60,15 @@ public class Samurai extends Puzzle
 		public void apply(int x, int y) throws CellContentException;
 	}
 	
+	/**
+	 * Iterates through all the cells and applies the CellAccess functor
+	 * Will exclude the empty regions.
+	 * @param access
+	 * @throws CellContentException
+	 */
 	private void eachCell(CellAccess access) throws CellContentException {
-		for (int x = 1; x <= 21; x++) {
-			for (int y = 1; y <= 21; y++) {
+		for (int x = 1; x <= PUZZLE_WIDTH; x++) {
+			for (int y = 1; y <= PUZZLE_WIDTH; y++) {
 				if ((x > 9) && (x < 13)) {
 					if ((y<7) || (y > 15)) {
 						continue; // top and bottom gaps
@@ -217,7 +248,7 @@ public class Samurai extends Puzzle
 	 */
 	public void importFile (Path path) 
 			throws IOException, IllegalFileFormatException, CellContentException {
-		int[][] values = new int[9][9];
+		int[][] values = new int[PUZZLE_WIDTH][PUZZLE_WIDTH];
 
 		try( BufferedReader br = Files.newBufferedReader(path) ) {			
 			String line;
@@ -225,11 +256,11 @@ public class Samurai extends Puzzle
 			
 			while ( (line = br.readLine()) != null) {
 				String[] lineValues = line.split(",");
-				if (lineValues.length != 21) {
+				if (lineValues.length != PUZZLE_WIDTH) {
 					throw new IllegalFileFormatException("Illegal entry in file " + path + " : " + line);
 				}
 				
-				for (int col = 0; col < 21; col++) {
+				for (int col = 0; col < PUZZLE_WIDTH; col++) {
 					values[row][col] = Integer.parseInt(lineValues[col]);
 				}
 				
@@ -244,14 +275,29 @@ public class Samurai extends Puzzle
 	
 	public void exportFile (Path path) throws IOException {
 		OpenOption[] options = {StandardOpenOption.CREATE, StandardOpenOption.WRITE};
+
+		int[][] values = new int[PUZZLE_WIDTH][PUZZLE_WIDTH];
 		
+		try {
+			eachCell( new CellAccess() {
+
+				@Override
+				public void apply(int x, int y) throws CellContentException {
+					values[x-1][y-1] = getValue(x,y);
+				}
+				
+			});
+		} catch (CellContentException e) {
+			System.out.println("Should not happen: " + e);
+		}
+
 		try (BufferedWriter writer = Files.newBufferedWriter(path, options )) {
-			
-			for (int row = 1; row <= 21; row++) {
-				writer.append(Integer.toString(getValue(row,1)));
-				for (int col = 2; col <= 21; col++) {
+						
+			for (int row = 0; row < PUZZLE_WIDTH; row++) {
+				writer.append(Integer.toString(values[row][0]));
+				for (int col = 1; col < PUZZLE_WIDTH; col++) {
 					writer.append(",");
-					writer.append(Integer.toString(getValue(row,col)));
+					writer.append(Integer.toString(values[row][col]));
 				}
 				writer.append("\n");
 			}
