@@ -25,20 +25,32 @@ package sudoku.tests;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalCellPositionException;
+import sudoku.exceptions.IllegalFileFormatException;
 import sudoku.samurai.Samurai;
 
 public class TestSamurai
 {
 	Samurai samurai;
-	
+	Path path;
+
 	@Before
 	public void setUp() {
 		samurai = new Samurai();
+		path = FileSystems.getDefault().getPath("test.samurai");
 	}
 
 	@Test
@@ -53,6 +65,74 @@ public class TestSamurai
 		assertTrue("Cell (1,1) is not 1", samurai.getValue(1, 1) == 1);
 		
 		assertFalse("Samurai claims to be finished", samurai.isSolved());
+	}
+
+	@Test
+	public void testImportEmptyFile() 
+			throws IOException, IllegalFileFormatException, CellContentException {
+		OpenOption[] options = {StandardOpenOption.CREATE, StandardOpenOption.WRITE};
+
+		try(BufferedWriter writer = Files.newBufferedWriter(path, options )) {
+		
+			for (int row = 0; row < 21; row++) {
+				writer.append("0");
+				for (int col = 1; col < 21; col++) {
+					writer.append(",");
+					writer.append("0");
+				}
+				writer.append("\n");
+			}
+		}
+		
+		samurai.importFile(path);
+		
+		assertTrue("First value is not 0", samurai.getValue(1, 1) == 0);
+	}
+
+	@Test
+	public void testImportFullFile() 
+			throws IOException, IllegalFileFormatException, CellContentException {
+		int[][] values = { 
+				{ 5,8,0,0,0,0,0,1,7,0,0,0,3,1,0,0,0,0,0,9,2 },
+				{ 9,0,2,0,0,0,8,0,5,0,0,0,6,0,2,0,0,0,4,0,5 },
+				{ 0,4,0,5,0,8,0,9,0,0,0,0,0,5,0,1,0,2,0,7,0 },
+				{ 0,0,9,1,0,2,5,0,0,0,0,0,0,0,1,8,0,4,7,0,0 },
+				{ 0,0,0,0,7,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0 },
+				{ 0,0,5,9,0,3,2,0,0,0,0,0,0,0,6,7,0,5,2,0,0 },
+				{ 0,9,0,6,0,1,0,5,0,0,0,0,0,9,0,4,0,6,0,5,0 },
+				{ 6,0,4,0,0,0,1,0,3,0,0,0,2,0,5,0,0,0,9,0,8 },
+				{ 7,1,0,0,0,0,0,2,6,0,8,0,1,4,0,0,0,0,0,2,3 },
+				{ 0,0,0,0,0,0,0,0,0,9,0,8,0,0,0,0,0,0,0,0,0 },
+				{ 0,0,0,0,0,0,0,0,5,0,0,0,9,0,0,0,0,0,0,0,0 },
+				{ 0,0,0,0,0,0,0,0,0,4,0,2,0,0,0,0,0,0,0,0,0 },
+				{ 3,4,0,0,0,0,0,6,9,0,7,0,5,1,0,0,0,0,0,3,8 },
+				{ 8,0,2,0,0,0,5,0,1,0,0,0,7,0,2,0,0,0,9,0,4 },
+				{ 0,9,0,8,0,5,0,3,0,0,0,0,0,8,0,3,0,5,0,1,0 },
+				{ 0,0,3,7,0,8,9,0,0,0,0,0,0,0,6,1,0,2,4,0,0 },
+				{ 0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,6,0,0,0,0 },
+				{ 0,0,7,6,0,3,4,0,0,0,0,0,0,0,8,4,0,9,3,0,0 },
+				{ 0,2,0,3,0,1,0,8,0,0,0,0,0,2,0,7,0,4,0,9,0 },
+				{ 7,0,4,0,0,0,1,0,6,0,0,0,9,0,5,0,0,0,7,0,3 },
+				{ 1,8,0,0,0,0,0,5,2,0,0,0,1,6,0,0,0,0,0,4,2 }
+			};
+		
+		OpenOption[] options = {StandardOpenOption.CREATE, StandardOpenOption.WRITE};
+		try (BufferedWriter writer = Files.newBufferedWriter(path, options ) ) {
+		
+			for (int row = 0; row < 21; row++) {
+				writer.append(Integer.toString(values[row][0]));
+				for (int col = 1; col < 21; col++) {
+					writer.append(",");
+					writer.append(Integer.toString(values[row][col]));
+				}
+				writer.append("\n");
+			}
+		}
+		
+		samurai.importFile(path);
+
+		assertTrue("First value is not 5", samurai.getValue(1, 1) == 5);
+		assertTrue("Last value is not 2", samurai.getValue(21, 21) == 2);
 	}
 
 	@Test
@@ -81,16 +161,15 @@ public class TestSamurai
 			{ 1,8,0,0,0,0,0,5,2,0,0,0,1,6,0,0,0,0,0,4,2 }
 		};
 		
-		for ( int x = 0; x < samurai.PUZZLE_WIDTH; x++ ) {
-			for ( int y = 0; y < samurai.PUZZLE_WIDTH; y++ ) {
-				try {
-					samurai.setValue(x + 1, y + 1, values[x][y]);
-				} catch (CellContentException e) {
-					fail("Should not happen " + e);
-				} catch (IllegalCellPositionException e) {
-					// expected for gaps
-				}
-			}
+		try {
+			samurai.importArray(values);
+		} catch (CellContentException e) {
+			fail("Should not happen " + e);
 		}
+	}
+	
+	@After
+	public void tearDown() throws Exception {
+		Files.deleteIfExists(path);
 	}
 }
