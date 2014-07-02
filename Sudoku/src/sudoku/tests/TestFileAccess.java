@@ -56,18 +56,17 @@ public class TestFileAccess
 	public void testImportEmptyFile() 
 			throws IOException, IllegalFileFormatException, CellContentException {
 		OpenOption[] options = {StandardOpenOption.CREATE, StandardOpenOption.WRITE};
-		BufferedWriter writer = Files.newBufferedWriter(path, options );
 		
-		for (int row = 0; row < 9; row++) {
-			writer.append("0");
-			for (int col = 1; col < 9; col++) {
-				writer.append(",");
+		try (BufferedWriter writer = Files.newBufferedWriter(path, options ) ) {		
+			for (int row = 0; row < 9; row++) {
 				writer.append("0");
+				for (int col = 1; col < 9; col++) {
+					writer.append(",");
+					writer.append("0");
+				}
+				writer.append("\n");
 			}
-			writer.append("\n");
-		}
-		
-		writer.close();
+		}		
 		
 		sudoku.importFile(path);
 		
@@ -90,18 +89,17 @@ public class TestFileAccess
 		};
 		
 		OpenOption[] options = {StandardOpenOption.CREATE, StandardOpenOption.WRITE};
-		BufferedWriter writer = Files.newBufferedWriter(path, options );
 		
-		for (int row = 0; row < 9; row++) {
-			writer.append(Integer.toString(values[row][0]));
-			for (int col = 1; col < 9; col++) {
-				writer.append(",");
-				writer.append(Integer.toString(values[row][col]));
+		try (BufferedWriter writer = Files.newBufferedWriter(path, options )) {		
+			for (int row = 0; row < 9; row++) {
+				writer.append(Integer.toString(values[row][0]));
+				for (int col = 1; col < 9; col++) {
+					writer.append(",");
+					writer.append(Integer.toString(values[row][col]));
+				}
+				writer.append("\n");
 			}
-			writer.append("\n");
-		}
-		
-		writer.close();
+		}		
 		
 		sudoku.importFile(path);
 
