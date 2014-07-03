@@ -160,12 +160,6 @@ public class Sudoku extends Puzzle
 		
 		importArray(values);
 	}
-
-	private void reset() {
-		for (Cell c : cells.values()) {
-			c.reset();
-		}
-	}
 	
 	public void exportFile (Path path) throws IOException {
 		OpenOption[] options = {StandardOpenOption.CREATE, StandardOpenOption.WRITE};

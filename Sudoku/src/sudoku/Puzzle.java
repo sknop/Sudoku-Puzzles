@@ -23,6 +23,7 @@
  *******************************************************************************/
 package sudoku;
 
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -92,6 +93,12 @@ public abstract class Puzzle
 			throw new IllegalCellPositionException("No cell at " + p);
 	}
 
+	protected void reset() {
+		for (Cell c : cells.values()) {
+			c.reset();
+		}
+	}
+
 	/**
 	 * Solves the Sudoku, trying out every combination
 	 */
@@ -105,13 +112,24 @@ public abstract class Puzzle
 		return solveRecursive(emptyCells);
 	}
 
+	public boolean createRandomPuzzle() {
+		reset(); // first, clear out any existing entries
+		
+		LinkedList<Cell> random = cells.values()
+				.parallelStream()
+				.collect( Collectors.toCollection(LinkedList::new));
+		Collections.shuffle(random);
+		
+		return solveRecursive(random);
+	}
+	
 	private boolean solveRecursive(Deque<Cell> empties) {
 		// recursive bottom
 		if (empties.size() == 0) 
 			return true;
 	
-		// separate into head and tail
-		LinkedList<Cell> tail = new LinkedList<Cell>(empties);
+		Deque<Cell> tail = empties; //not a copy
+		
 		Cell head = tail.remove();
 		
 		for (int i : head.getMarkUp()) {
@@ -129,6 +147,9 @@ public abstract class Puzzle
 				continue;
 			}
 		}
+		
+		empties.addFirst(head); // add back to the front of the queue
+		
 		return false; // did not find a solution here, back track
 	}
 

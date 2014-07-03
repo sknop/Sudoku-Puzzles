@@ -174,12 +174,6 @@ public class Samurai extends Puzzle
 		}
 	}
 
-	private void reset() {
-		for (Cell c : cells.values()) {
-			c.reset();
-		}
-	}
-	
 	@Override
 	public String toString() {
 		StringBuilder b = new StringBuilder("Sudoku\n");
