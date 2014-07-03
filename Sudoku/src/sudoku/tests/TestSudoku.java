@@ -25,6 +25,7 @@ package sudoku.tests;
 
 import static org.junit.Assert.*;
 
+import java.util.BitSet;
 import java.util.Set;
 
 import org.junit.Before;
@@ -113,9 +114,9 @@ public class TestSudoku
 	}
 
 	private boolean checkMarkup(Point p, int value) {
-		Set<Integer> markUp = sudoku.getMarkUp(p);
+		BitSet markUp = sudoku.getMarkUp(p);
 		
-		return markUp.contains(value);
+		return markUp.get(value);
 	}
 	
 	@Test

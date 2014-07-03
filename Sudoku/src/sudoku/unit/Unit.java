@@ -23,6 +23,7 @@
  *******************************************************************************/
 package sudoku.unit;
 
+import java.util.BitSet;
 import java.util.Set;
 
 import sudoku.Cell;
@@ -35,5 +36,5 @@ public interface Unit
 
 	public void update(int oldValue, int newValue) throws CellContentException;
 	
-	public Set<Integer> getMarkUp();
+	public BitSet getNumbers();
 }
