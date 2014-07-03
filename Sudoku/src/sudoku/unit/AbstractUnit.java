@@ -44,18 +44,12 @@ public abstract class AbstractUnit implements Unit
 	
 	@Override
 	public void addCell(Cell cell) throws AddCellException {
-//		checkCellPosition(cell);
-		
 		if ( cells.size() == maxCells ) {
 			throw new TooManyCellsException("Exceeded " + maxCells + " entries");
 		}
 		cells.add(cell);
 		cell.addToUnit(this);
 	}
-	
-//	private void checkCellPosition(Cell cell) throws IllegalCellPositionException {
-//		
-//	}
 
 	@Override
 	public String toString() {
