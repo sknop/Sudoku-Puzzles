@@ -25,7 +25,6 @@ package sudoku.unit;
 
 import java.util.List;
 import java.util.BitSet;
-import java.util.Set;
 
 import sudoku.Cell;
 import sudoku.exceptions.AddCellException;

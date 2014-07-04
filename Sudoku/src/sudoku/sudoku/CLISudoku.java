@@ -30,7 +30,6 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.Set;
 
 import sudoku.Point;
 import sudoku.exceptions.CellContentException;

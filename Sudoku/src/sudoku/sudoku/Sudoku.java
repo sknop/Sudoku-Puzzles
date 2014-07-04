@@ -41,7 +41,6 @@ import sudoku.Point;
 import sudoku.Puzzle;
 import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
-import sudoku.exceptions.IllegalCellPositionException;
 import sudoku.exceptions.IllegalFileFormatException;
 import sudoku.unit.Nonet;
 
