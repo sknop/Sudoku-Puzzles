@@ -26,6 +26,7 @@ package sudoku.sudoku;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -295,7 +296,7 @@ public class CLISudoku extends Sudoku implements Runnable
 			for (int y = 1; y <= 9; y++) {
 				Point p = new Point(x,y);
 				
-				Set<Integer> markUp = getMarkUp(p);
+				BitSet markUp = getMarkUp(p);
 				
 				System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
 			}

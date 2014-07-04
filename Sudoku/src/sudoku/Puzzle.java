@@ -23,15 +23,11 @@
  *******************************************************************************/
 package sudoku;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.BitSet;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import sudoku.exceptions.CellContentException;
@@ -55,11 +51,11 @@ public abstract class Puzzle
 		return cells.get(p).getValue();
 	}
 
-	public Set<Integer> getMarkUp(int x, int y) {
+	public BitSet getMarkUp(int x, int y) {
 		return getMarkUp(new Point(x,y));
 	}
 
-	public Set<Integer> getMarkUp(Point point) {
+	public BitSet getMarkUp(Point point) {
 		return cells.get(point).getMarkUp();
 	}
 
@@ -126,7 +122,8 @@ public abstract class Puzzle
 		
 		Cell head = tail.remove();
 		
-		for (int i : head.getMarkUp()) {
+		BitSet markUp = head.getMarkUp();
+		for (int i = markUp.nextSetBit(0); i >= 0; i = markUp.nextSetBit(i+1)) {
 			try {
 				head.setValue(i);
 				

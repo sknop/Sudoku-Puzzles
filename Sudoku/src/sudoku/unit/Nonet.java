@@ -24,24 +24,16 @@
 package sudoku.unit;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.BitSet;
 import java.util.List;
-import java.util.Set;
 
 import sudoku.Cell;
 import sudoku.exceptions.CellContentException;
 
 public class Nonet extends AbstractUnit
 {
-	Set<Integer> numbers = new HashSet<>();
-	
-	/**
-	 * Complement of numbers, these are the potential values still available
-	 */
-	Set<Integer> markUp = new HashSet<>(Arrays.asList(1,2,3,4,5,6,7,8,9));
-	
+	BitSet numbers = new BitSet(9);
+		
 	public Nonet(String position) {
 		super(9, position); // a Nonet has exactly 9 cells
 	
@@ -51,24 +43,24 @@ public class Nonet extends AbstractUnit
 	public void update(int oldValue, int newValue) throws CellContentException {
 		if ( oldValue != 0 ) {
 			// need to remove the old value
-			numbers.remove(oldValue);
-			markUp.add(oldValue);
+			numbers.clear(oldValue);
 		}
 		
 		if ( newValue != 0) {
-			if ( numbers.contains(newValue) ) {
+			if ( numbers.get(newValue) ) {
 				throw new CellContentException("Value " + newValue + " already exists in " + this);
 			}
 			else {
-				numbers.add(newValue);
-				markUp.remove(newValue);
+				numbers.set(newValue);
 			}
 		}
 	}
 
 	@Override 
 	public String toString() {
-		return "Nonet " + super.toString() + " : " + numbers + " : " + markUp;
+		BitSet complement = (BitSet) numbers.clone();
+		complement.flip(1, 10);
+		return "Nonet " + super.toString() + " : " + numbers + " : " + complement;
 	}
 
 	// #############################################################
@@ -95,7 +87,7 @@ public class Nonet extends AbstractUnit
 	}
 
 	@Override
-	public Set<Integer> getMarkUp() {
-		return Collections.unmodifiableSet(markUp);
+	public BitSet getNumbers() {
+		return (BitSet) numbers.clone();
 	}
 }

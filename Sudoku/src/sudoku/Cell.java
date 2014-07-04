@@ -24,6 +24,7 @@
 package sudoku;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -82,17 +83,14 @@ public class Cell
 		}
 	}
 	
-	public Set<Integer> getMarkUp() {
-		Set<Integer> markUp = new HashSet<>();
+	public BitSet getMarkUp() {
+		BitSet markUp = new BitSet();
 		
-		if (value == 0) {
-			for (int i = 1; i <= 9; i++) {
-				markUp.add(i);
-			}
-			
+		if (value == 0) {			
 			for (Unit u : belongsTo) {
-				markUp.retainAll(u.getMarkUp());
+				markUp.or(u.getNumbers());
 			}
+			markUp.flip(1, 10);
 		}
 		
 		return markUp;
