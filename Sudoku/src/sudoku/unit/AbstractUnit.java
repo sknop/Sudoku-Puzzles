@@ -24,6 +24,7 @@
 package sudoku.unit;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import sudoku.Cell;
@@ -51,6 +52,11 @@ public abstract class AbstractUnit implements Unit
 		cell.addToUnit(this);
 	}
 
+	@Override
+	public List<Cell> getCells() {
+		return Collections.unmodifiableList(cells);
+	}
+	
 	@Override
 	public String toString() {
 		return String.format("(%s) %s", position, cells.toString());

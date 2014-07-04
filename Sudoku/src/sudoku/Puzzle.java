@@ -23,11 +23,14 @@
  *******************************************************************************/
 package sudoku;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -112,16 +115,7 @@ public abstract class Puzzle
 		return solveRecursive(emptyCells);
 	}
 
-	public boolean createRandomPuzzle() {
-		reset(); // first, clear out any existing entries
-		
-		LinkedList<Cell> random = cells.values()
-				.parallelStream()
-				.collect( Collectors.toCollection(LinkedList::new));
-		Collections.shuffle(random);
-		
-		return solveRecursive(random);
-	}
+	public abstract boolean createRandomPuzzle() ;
 	
 	private boolean solveRecursive(Deque<Cell> empties) {
 		// recursive bottom

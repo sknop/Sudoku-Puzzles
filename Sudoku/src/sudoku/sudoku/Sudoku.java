@@ -31,13 +31,17 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import sudoku.Cell;
 import sudoku.Point;
 import sudoku.Puzzle;
 import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
+import sudoku.exceptions.IllegalCellPositionException;
 import sudoku.exceptions.IllegalFileFormatException;
 import sudoku.unit.Nonet;
 
@@ -201,5 +205,44 @@ public class Sudoku extends Puzzle
 		Sudoku sudoku = new Sudoku();
 		
 		System.out.println(sudoku);
+	}
+
+	@Override
+	public boolean createRandomPuzzle() {
+		reset(); // first, clear out any existing entries
+		
+		// let's try a different approach
+		// independent boxes : I can set any number in any of these boxes without constraint
+		
+		Random random = new Random();
+		
+		int[][] independent = {
+				{ 1, 5, 9 },
+				{ 1, 6, 8 },
+				{ 2, 4, 9 },
+				{ 2, 6, 7 },
+				{ 3, 4, 8 },
+				{ 3, 5, 7 }
+		};
+		
+		int[] boxSeeds = independent[ random.nextInt(independent.length)];
+		for (int i : boxSeeds) {
+			Nonet box = boxes.get(i - 1);
+			List<Cell> cells = box.getCells();
+			
+			List<Integer> seed = Arrays.asList( 1,2,3,4,5,6,7,8,9 );
+			Collections.shuffle(seed);
+
+			for (int c = 0; c < 9; c++) {
+				try {
+					Cell cell = cells.get(c);
+					cell.setValue(seed.get(c));
+				} catch (CellContentException e) {
+					System.err.println("Shouldn't happen " + e);
+				} 
+			}			
+		}
+		
+		return solveBruteForce();
 	}
 }

@@ -339,4 +339,10 @@ public class Samurai extends Puzzle
 		
 		System.out.println(samurai);		
 	}
+
+	@Override
+	public boolean createRandomPuzzle() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
