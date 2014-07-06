@@ -173,6 +173,7 @@ public abstract class Puzzle
 				
 				result = uniqueRecursive(tail, result);
 				if (result > 1) {
+					head.reset(); // need to reset, or the puzzle is solved
 					return result;
 				}
 	
