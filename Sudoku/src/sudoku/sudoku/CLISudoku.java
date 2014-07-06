@@ -77,6 +77,7 @@ public class CLISudoku extends Sudoku implements Runnable
 		commands.put("s", () -> save());
 		commands.put("b", () -> bruteForce());
 		commands.put("c", () -> createNewPuzzle());
+		commands.put("u", () -> unique());
 		commands.put("l", () -> load());
 		commands.put("q", () -> quit());
 	}
@@ -85,7 +86,7 @@ public class CLISudoku extends Sudoku implements Runnable
 		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 		
-		System.out.print("Command (h,q,p,d,m,b,c,s,l) : ");
+		System.out.print("Command (h,q,p,d,m,b,c,u,s,l) : ");
 		
 		String s = scanner.next();
 		String command = s.substring(0, 1).toLowerCase();
@@ -105,6 +106,7 @@ public class CLISudoku extends Sudoku implements Runnable
 		System.out.println("m : markUp");
 		System.out.println("b : bruteForce");
 		System.out.println("c : create");
+		System.out.println("c : unique");
 		System.out.println("q : quit");
 		System.out.println("s : save");
 		System.out.println("l : load");
@@ -184,6 +186,15 @@ public class CLISudoku extends Sudoku implements Runnable
 	private void bruteForce() {
 		if (!solveBruteForce()) {
 			System.out.println("This Sudoku does not have a solution");
+		}
+	}
+	
+	private void unique() {
+		if (!isUnique()) {
+			System.out.println("This puzzle has more than one solution");
+		}
+		else {
+			System.out.println("This puzzle is unique");
 		}
 	}
 	

@@ -102,13 +102,17 @@ public abstract class Puzzle
 	 * Solves the Sudoku, trying out every combination
 	 */
 	public boolean solveBruteForce() {
-		Deque<Cell> emptyCells = cells.values()
+		Deque<Cell> emptyCells = getEmpties();
+				
+		return solveRecursive(emptyCells);
+	}
+
+	private LinkedList<Cell> getEmpties() {
+		return cells.values()
 				.stream()
 				.filter( c -> c.empty() )
 				.sorted( (a,b) -> a.getLocation().compareTo(b.getLocation()) )
 				.collect( Collectors.toCollection(LinkedList::new) );
-				
-		return solveRecursive(emptyCells);
 	}
 
 	public abstract boolean createRandomPuzzle() ;
@@ -122,8 +126,7 @@ public abstract class Puzzle
 		
 		Cell head = tail.remove();
 		
-		BitSet markUp = head.getMarkUp();
-		for (int i = markUp.nextSetBit(0); i >= 0; i = markUp.nextSetBit(i+1)) {
+		for (int i : head) {
 			try {
 				head.setValue(i);
 				
@@ -144,4 +147,45 @@ public abstract class Puzzle
 		return false; // did not find a solution here, back track
 	}
 
+	public boolean isUnique() {
+		Deque<Cell> emptyCells = getEmpties();
+		
+		int solutions = uniqueRecursive(emptyCells, 0);
+		
+		return (solutions == 1);
+	}
+	
+	private int uniqueRecursive(Deque<Cell> empties, int solutions) {
+		// recursive bottom
+		if (empties.size() == 0) {
+			return solutions + 1;			
+		}
+	
+		int result = solutions;
+		
+		Deque<Cell> tail = empties; //not a copy
+		
+		Cell head = tail.remove();
+		
+		for (int i : head) {
+			try {
+				head.setValue(i);
+				
+				result = uniqueRecursive(tail, result);
+				if (result > 1) {
+					return result;
+				}
+	
+				head.reset();
+			} catch (CellContentException e) {
+				// now violates a condition, therefore incorrect entry
+				// try next value
+				continue;
+			}
+		}
+		
+		empties.addFirst(head); // add back to the front of the queue
+		
+		return result;
+	}
 }

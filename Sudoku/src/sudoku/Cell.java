@@ -25,13 +25,14 @@ package sudoku;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Iterator;
 import java.util.List;
 
 import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
 import sudoku.unit.Unit;
 
-public class Cell 
+public class Cell implements Iterable<Integer>
 {
 	private int value = 0;
 	private Point location;
@@ -109,5 +110,27 @@ public class Cell
 	@Override
 	public String toString() {
 		return location.toString() + " : " + value;
+	}
+
+	@Override
+	public Iterator<Integer> iterator() {
+		return new Iterator<Integer>() {
+			BitSet  markUp = getMarkUp();
+			int nextValue = markUp.nextSetBit(0);
+			
+			@Override
+			public boolean hasNext() {
+				return nextValue >= 0;
+			}
+
+			@Override
+			public Integer next() {
+				int result = nextValue;
+				nextValue = markUp.nextSetBit(nextValue + 1);
+				
+				return result;
+			}
+			
+		};
 	}
 }
