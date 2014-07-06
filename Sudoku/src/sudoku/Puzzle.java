@@ -115,7 +115,7 @@ public abstract class Puzzle
 				.collect( Collectors.toCollection(LinkedList::new) );
 	}
 
-	public abstract boolean createRandomPuzzle() ;
+	public abstract void createRandomPuzzle() ;
 	
 	private boolean solveRecursive(Deque<Cell> empties) {
 		// recursive bottom

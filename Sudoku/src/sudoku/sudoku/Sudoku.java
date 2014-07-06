@@ -35,6 +35,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import sudoku.Cell;
 import sudoku.Point;
@@ -207,7 +209,7 @@ public class Sudoku extends Puzzle
 	}
 
 	@Override
-	public boolean createRandomPuzzle() {
+	public void createRandomPuzzle() {
 		reset(); // first, clear out any existing entries
 		
 		// let's try a different approach
@@ -215,7 +217,7 @@ public class Sudoku extends Puzzle
 		
 		Random random = new Random();
 		
-		int[][] independent = {
+		int[][] independentBoxes = {
 				{ 1, 5, 9 },
 				{ 1, 6, 8 },
 				{ 2, 4, 9 },
@@ -224,7 +226,7 @@ public class Sudoku extends Puzzle
 				{ 3, 5, 7 }
 		};
 		
-		int[] boxSeeds = independent[ random.nextInt(independent.length)];
+		int[] boxSeeds = independentBoxes[ random.nextInt(independentBoxes.length)];
 		for (int i : boxSeeds) {
 			Nonet box = boxes.get(i - 1);
 			List<Cell> cells = box.getCells();
@@ -242,6 +244,28 @@ public class Sudoku extends Puzzle
 			}			
 		}
 		
-		return solveBruteForce();
+		// fill in the missing entries
+		
+		solveBruteForce();
+		
+		// now try to remove entries until the solution is not unique anymore
+		
+		// first, we get all Cells and shuffle them
+		
+		List<Cell> allCells = cells.values().stream().collect(Collectors.toList());
+		Collections.shuffle(allCells);
+		
+		for (Cell c : allCells) {
+			int value = c.getValue();
+			c.reset();
+			if (!isUnique()) {
+				try {
+					// does not produce unique puzzle, reset this value
+					c.setValue(value);
+				} catch (CellContentException e) {
+					System.err.println("Should not happen " + e);
+				}
+			}
+		}
 	}
 }

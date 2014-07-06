@@ -199,9 +199,7 @@ public class CLISudoku extends Sudoku implements Runnable
 	}
 	
 	private void createNewPuzzle() {
-		if (!createRandomPuzzle()) {
-			System.out.println("Cannot be done!");
-		}
+		createRandomPuzzle();
 	}
 	
 	private void quit() {

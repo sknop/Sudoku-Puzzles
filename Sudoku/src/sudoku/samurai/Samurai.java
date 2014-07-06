@@ -341,8 +341,7 @@ public class Samurai extends Puzzle
 	}
 
 	@Override
-	public boolean createRandomPuzzle() {
+	public void createRandomPuzzle() {
 		// TODO Auto-generated method stub
-		return false;
 	}
 }
