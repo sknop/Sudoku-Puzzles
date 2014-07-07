@@ -22,21 +22,21 @@ CLI interface for playing and testing in a terminal.
 
 Commands are now:
 
-Command (h,q,p,d,m,b,c,u,s,l) : h
-h : help
-p : put
-d : delete
-m : markUp
-b : bruteForce
-c : create
-u : unique
-q : quit
-s : save
-l : load
+    Command (h,q,p,d,m,b,c,u,s,l) : h
+    h : help
+    p : put
+    d : delete
+    m : markUp
+    b : bruteForce
+    c : create
+    u : unique
+    q : quit
+    s : save
+    l : load
 
-(p) puts a value. Asks for row, column and value. 
-(c) generates new puzzles. Puzzles are not graded at the moment.
-(u) proves that a puzzle has a unique solution
+    (p) puts a value. Asks for row, column and value. 
+    (c) generates new puzzles. Puzzles are not graded at the moment.
+    (u) proves that a puzzle has a unique solution
 
 
 Rudimentary Swing interface
