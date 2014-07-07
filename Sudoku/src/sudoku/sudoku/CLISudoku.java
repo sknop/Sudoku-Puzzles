@@ -106,7 +106,7 @@ public class CLISudoku extends Sudoku implements Runnable
 		System.out.println("m : markUp");
 		System.out.println("b : bruteForce");
 		System.out.println("c : create");
-		System.out.println("c : unique");
+		System.out.println("u : unique");
 		System.out.println("q : quit");
 		System.out.println("s : save");
 		System.out.println("l : load");
