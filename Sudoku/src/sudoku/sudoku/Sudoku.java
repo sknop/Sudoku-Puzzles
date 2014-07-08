@@ -212,69 +212,37 @@ public class Sudoku extends Puzzle
 	public String toCLIString() {
 		StringBuilder b = new StringBuilder();
 		
-		b.append("  ");
-		for (int i = 0; i < 3; i++) {
-			b.append("  ");
-			for (int j = 1; j <= 3; j++) {
-				b.append(i*3 + j);
-				b.append(" ");
-			}
-		}
-		b.append("\n");
+		b.append("    1 2 3   4 5 6   7 8 9\n");
 		
 		b.append(BigBorder); b.append("\n");
-		for (int r = 0; r < 2; r++) {
-			b.append(drawBigRow(r));
+
+		for (int row = 1; row <= 9; row++) {
+			b.append(String.format("%d", row)); // prepend each row with its number
+			
+			b.append(Front);
+			for (int section = 0; section < 3; section++) {
+				drawOneSection(row, section, b);
+			}
+			b.append("\n");
+
+			if ( row == 3 || row == 6) {
+				b.append(LittleBorder); b.append("\n"); 				
+			}
 		}
-		
-		for (int i = 1; i <= 2; i++) {
-			b.append(drawRow(2,i));
-		}
-		b.append(drawRow(2,3));
 
 		b.append(BigBorder); b.append("\n");
 		
 		return b.toString();
 	}
-	
-	private String drawBigRow(int r) {
-		// made of 3 rows, finished with a Big Border
-		StringBuilder b = new StringBuilder();
-		
-		for (int i = 1; i <= 2; i++) {
-			b.append(drawRow(r,i));
-		}
-		b.append(drawRow(r,3));
-		
-		b.append(LittleBorder); b.append("\n");
-		
-		return b.toString();
-	}
-	
-	private String drawRow(int bigRow, int row) {
-		// made up of one front and 3 sections
-		
-		StringBuilder b = new StringBuilder();
-		
-		b.append(bigRow * 3 + row);
-		b.append(Front);
-		for (int section = 0; section < 3; section++) {
-			b.append(drawOneSection(bigRow, row, section));
-		}
-		b.append("\n");
-		
-		return b.toString();
-	}
-	
-	private String drawOneSection(int bigRow, int row, int section) {
-		int x = bigRow * 3 + row;
+
+	private void drawOneSection(int row, int section, StringBuilder b) {
 		int y = section * 3;
 		
-		String x1 = getValueAsString(x, y + 1);
-		String x2 = getValueAsString(x, y + 2);
-		String x3 = getValueAsString(x, y + 3);
+		String x1 = getValueAsString(row, y + 1);
+		String x2 = getValueAsString(row, y + 2);
+		String x3 = getValueAsString(row, y + 3);
 		
-		return String.format(Section, x1, x2, x3);
+		b.append( String.format(Section, x1, x2, x3) );
 	}
 	
 	private void addNonet(String name, List<Nonet> list, StringBuilder b) {
