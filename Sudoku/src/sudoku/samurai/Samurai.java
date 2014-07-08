@@ -31,6 +31,7 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -186,6 +187,103 @@ public class Samurai extends Puzzle
 		return b.toString();
 	}
 
+	static String FULL_BORDER = "   +---------------+-------+-------+-------+---------------+";
+	static String INNER_BORDER = "   |-------+-------+-------+-------+-------+-------+-------|";
+	
+	@Override
+	public String toCLIString() {
+		StringBuilder b = new StringBuilder();
+		
+		b.append("    0 0 0   0 0 0   0 0 0    1 1 1   1 1 1   1 1 1   1 2 2\n");
+		b.append("    1 2 3   4 5 6   7 8 9    0 1 2   3 4 5   6 7 8   9 0 1\n");
+		
+		
+		border(b, BigBorder);
+		
+		for (int row = 1; row <= 21; row++) {
+			b.append(String.format("%02d", row)); // prepend each row with its number
+			
+			if (row <= 6 || row >= 16) {
+				drawOneBlankOne(row, b);
+			}
+			else if ( (row >= 7 && row <= 9) || (row >= 13 && row <= 15) ) {
+				drawFull(row, b);				
+			}
+			else if ( row >= 10 && row <= 12 ) {
+				drawBlankOneBlank(row, b);
+			}
+			
+			b.append("\n");
+
+			if ( row == 3 || row == 18) {
+				border(b, LittleBorder); 				
+			}
+			if ( row == 9 || row == 12 ) {
+				b.append(FULL_BORDER);
+				b.append("\n");
+			}
+			if ( row == 6 || row == 15 ) {
+				b.append(INNER_BORDER);
+				b.append("\n");
+			}
+		}
+		
+		border(b, BigBorder);
+
+		return b.toString();
+	}
+
+	private void border(StringBuilder b, String theBorder) {
+		b.append(" ");
+		b.append(theBorder); 
+		b.append("     ");
+		b.append(theBorder); 
+		
+		b.append("\n");
+	}
+	
+	private void drawOneBlankOne(int row, StringBuilder b) {
+		b.append(Front);
+		
+		for (int section = 0; section < 3; section++) {
+			drawOneSection(row, section, b);			
+		}
+		b.append("      ");
+		b.append(Front);
+
+		for (int section = 4; section < 7; section++) {
+			drawOneSection(row, section, b);			
+		}
+	}
+	
+	private void drawFull(int row, StringBuilder b) {
+		b.append(Front);
+
+		for (int section = 0; section < 7; section++) {
+			drawOneSection(row, section, b);			
+		}
+
+	}
+	
+	private void drawBlankOneBlank(int row, StringBuilder b) {
+		b.append("                ");
+		b.append(Front);
+	
+		for (int section = 2; section < 5; section++) {
+			drawOneSection(row, section, b);			
+		}
+	}
+
+	private void drawOneSection(int row, int section, StringBuilder b) {
+		int y = section * 3;
+		
+		String x1 = getValueAsString(row, y + 1);
+		String x2 = getValueAsString(row, y + 2);
+		String x3 = getValueAsString(row, y + 3);
+		
+		b.append( String.format(Section, x1, x2, x3) );
+	}
+
 	private void addNonet(String name, List<Nonet> list, StringBuilder b) {
 		b.append(name);
 		b.append("\n");
@@ -240,6 +338,7 @@ public class Samurai extends Puzzle
 	 * @author Sven Erik Knop
 	 * @throws IOException, IllegalFileFormatException, CellContentException 
 	 */
+	@Override
 	public void importFile (Path path) 
 			throws IOException, IllegalFileFormatException, CellContentException {
 		int[][] values = new int[PUZZLE_WIDTH][PUZZLE_WIDTH];
@@ -267,6 +366,7 @@ public class Samurai extends Puzzle
 		importArray(values);
 	}
 	
+	@Override
 	public void exportFile (Path path) throws IOException {
 		OpenOption[] options = {StandardOpenOption.CREATE, StandardOpenOption.WRITE};
 
@@ -297,7 +397,49 @@ public class Samurai extends Puzzle
 			}
 		}
 	}
-	
+
+
+	@Override
+	public void createRandomPuzzle() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public int getLow() {
+		return 1;
+	}
+
+	@Override
+	public int getHigh() {
+		return 21;
+	}
+
+	@Override
+	public void showMarkUp() {
+		try {
+			eachCell( new CellAccess() {
+
+				@Override
+				public void apply(int x, int y) throws CellContentException {
+					Point p = new Point(x,y);
+							
+					BitSet markUp = getMarkUp(p);
+							
+					System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
+					
+				}
+				
+			});
+		} catch (CellContentException e) {
+			System.out.println("Shouldn't happen " + e);
+		}
+		System.out.println();
+
+		
+	}
+
 	public void testFullSamurai() {
 		int[][] values = { 
 			{ 5,8,0,0,0,0,0,1,7,0,0,0,3,1,0,0,0,0,0,9,2 },
@@ -340,8 +482,4 @@ public class Samurai extends Puzzle
 		System.out.println(samurai);		
 	}
 
-	@Override
-	public void createRandomPuzzle() {
-		// TODO Auto-generated method stub
-	}
 }

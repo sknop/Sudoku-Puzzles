@@ -32,6 +32,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -138,6 +139,7 @@ public class Sudoku extends Puzzle
 	 * @author Sven Erik Knop
 	 * @throws IOException, IllegalFileFormatException, CellContentException 
 	 */
+	@Override
 	public void importFile (Path path) 
 			throws IOException, IllegalFileFormatException, CellContentException {
 		int[][] values = new int[9][9];
@@ -165,6 +167,21 @@ public class Sudoku extends Puzzle
 		importArray(values);
 	}
 	
+	@Override
+	public void showMarkUp() {
+		for (int x = 1; x <= 9; x++) {
+			for (int y = 1; y <= 9; y++) {
+				Point p = new Point(x,y);
+				
+				BitSet markUp = getMarkUp(p);
+				
+				System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
+			}
+		}
+		System.out.println();
+	}
+
+	@Override
 	public void exportFile (Path path) throws IOException {
 		OpenOption[] options = {StandardOpenOption.CREATE, StandardOpenOption.WRITE};
 		
@@ -191,6 +208,75 @@ public class Sudoku extends Puzzle
 		return b.toString();
 	}
 
+	@Override
+	public String toCLIString() {
+		StringBuilder b = new StringBuilder();
+		
+		b.append("  ");
+		for (int i = 0; i < 3; i++) {
+			b.append("  ");
+			for (int j = 1; j <= 3; j++) {
+				b.append(i*3 + j);
+				b.append(" ");
+			}
+		}
+		b.append("\n");
+		
+		b.append(BigBorder); b.append("\n");
+		for (int r = 0; r < 2; r++) {
+			b.append(drawBigRow(r));
+		}
+		
+		for (int i = 1; i <= 2; i++) {
+			b.append(drawRow(2,i));
+		}
+		b.append(drawRow(2,3));
+
+		b.append(BigBorder); b.append("\n");
+		
+		return b.toString();
+	}
+	
+	private String drawBigRow(int r) {
+		// made of 3 rows, finished with a Big Border
+		StringBuilder b = new StringBuilder();
+		
+		for (int i = 1; i <= 2; i++) {
+			b.append(drawRow(r,i));
+		}
+		b.append(drawRow(r,3));
+		
+		b.append(LittleBorder); b.append("\n");
+		
+		return b.toString();
+	}
+	
+	private String drawRow(int bigRow, int row) {
+		// made up of one front and 3 sections
+		
+		StringBuilder b = new StringBuilder();
+		
+		b.append(bigRow * 3 + row);
+		b.append(Front);
+		for (int section = 0; section < 3; section++) {
+			b.append(drawOneSection(bigRow, row, section));
+		}
+		b.append("\n");
+		
+		return b.toString();
+	}
+	
+	private String drawOneSection(int bigRow, int row, int section) {
+		int x = bigRow * 3 + row;
+		int y = section * 3;
+		
+		String x1 = getValueAsString(x, y + 1);
+		String x2 = getValueAsString(x, y + 2);
+		String x3 = getValueAsString(x, y + 3);
+		
+		return String.format(Section, x1, x2, x3);
+	}
+	
 	private void addNonet(String name, List<Nonet> list, StringBuilder b) {
 		b.append(name);
 		b.append("\n");
@@ -201,10 +287,14 @@ public class Sudoku extends Puzzle
 		}		
 	}
 	
-	public static void main(String args[]) {
-		Sudoku sudoku = new Sudoku();
-		
-		System.out.println(sudoku);
+	@Override
+	public int getLow() {
+		return 1;
+	}
+
+	@Override
+	public int getHigh() {
+		return 9;
 	}
 
 	@Override
@@ -267,4 +357,11 @@ public class Sudoku extends Puzzle
 			}
 		}
 	}
+
+	public static void main(String args[]) {
+		Sudoku sudoku = new Sudoku();
+		
+		System.out.println(sudoku);
+	}
+
 }

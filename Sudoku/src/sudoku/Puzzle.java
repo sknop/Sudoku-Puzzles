@@ -23,6 +23,8 @@
  *******************************************************************************/
 package sudoku;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.BitSet;
 import java.util.Deque;
 import java.util.HashMap;
@@ -32,10 +34,16 @@ import java.util.stream.Collectors;
 
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalCellPositionException;
+import sudoku.exceptions.IllegalFileFormatException;
 import sudoku.exceptions.ValueOutsideRangeException;
 
 public abstract class Puzzle
 {
+	protected static final String BigBorder = "  +-----------------------+";
+	protected static final String LittleBorder = "  |-------+-------+-------|";
+	protected static final String Front = " |";
+	protected static final String Section = " %s %s %s |";
+
 	protected int maxValue;
 	protected final Map<Point, Cell> cells = new HashMap<>();
 
@@ -58,6 +66,27 @@ public abstract class Puzzle
 	public BitSet getMarkUp(Point point) {
 		return cells.get(point).getMarkUp();
 	}
+
+	public abstract void importFile (Path path) 
+			throws IOException, IllegalFileFormatException, CellContentException ;
+	
+	public abstract void exportFile (Path path) throws IOException;
+
+	public abstract void showMarkUp();
+	
+	public abstract String toCLIString();
+	
+	public abstract int getLow();
+	public abstract int getHigh();
+	
+	protected String getValueAsString(int x, int y) {
+		int val = getValue(x, y);
+		if (val == 0) {
+			return " ";
+		}
+		return Integer.toString(val);
+	}
+	
 
 	/**
 	 * Returns true if every cell in this Sudoku 
