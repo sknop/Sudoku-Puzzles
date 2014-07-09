@@ -60,6 +60,12 @@ public class Cell implements Iterable<Integer>
 		readOnly = true;
 	}
 	
+	public void makeReadOnly() {
+		if (value != 0) {
+			readOnly = true;
+		}
+	}
+	
 	public void setValue(int value) throws CellContentException {
 		if (readOnly) {
 			throw new CellContentException(this.toString() + " is read only");

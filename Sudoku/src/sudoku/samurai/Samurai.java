@@ -31,8 +31,13 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import sudoku.Cell;
@@ -401,8 +406,65 @@ public class Samurai extends Puzzle
 
 	@Override
 	public void createRandomPuzzle() {
-		// TODO Auto-generated method stub
+		reset(); // first, clear out any existing entries
 		
+		// independent boxes : I can set any number in any of these boxes without constraint
+		
+		Random random = new Random();
+		
+		int[][] independentBoxes = {
+				{ 3, 5, 7, 10, 14, 18, 21, 24, 28, 32, 35, 37, 39 }
+		};
+		
+		int[] boxSeeds = independentBoxes[ random.nextInt(independentBoxes.length)];
+		for (int i : boxSeeds) {
+			Nonet box = boxes.get(i - 1); // indexed from 0, but written from 1 for easy debugging
+			List<Cell> cells = box.getCells();
+			
+			List<Integer> seed = Arrays.asList( 1,2,3,4,5,6,7,8,9 );
+			Collections.shuffle(seed);
+
+			for (int c = 0; c < 9; c++) {
+				try {
+					Cell cell = cells.get(c);
+					cell.setValue(seed.get(c));
+				} catch (CellContentException e) {
+					System.err.println("Shouldn't happen " + e);
+				} 
+			}			
+		}
+
+		System.out.println(toCLIString());
+		solveBruteForce();
+		System.out.println(toCLIString());
+
+		List<Cell> allCells = cells.values().stream().collect(Collectors.toList());
+		Collections.shuffle(allCells);
+		
+		int total = allCells.size();
+		int counter = 0;
+		
+		for (Cell c : allCells) {
+			int value = c.getValue();
+			c.reset();
+			counter++;
+			if (!isUnique()) {
+				try {
+					// does not produce unique puzzle, reset this value
+					c.setValue(value);
+				} catch (CellContentException e) {
+					System.err.println("Should not happen " + e);
+				}
+			}
+			else {
+				System.out.println(toCLIString());
+				System.out.println("Total = " + total + " counter = " + counter);
+			}
+		}
+
+		for (Cell c : allCells) {
+			c.makeReadOnly();
+		}
 	}
 
 

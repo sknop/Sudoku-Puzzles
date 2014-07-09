@@ -146,7 +146,7 @@ public abstract class Puzzle
 
 	public abstract void createRandomPuzzle() ;
 	
-	private boolean solveRecursive(Deque<Cell> empties) {
+	protected boolean solveRecursive(Deque<Cell> empties) {
 		// recursive bottom
 		if (empties.size() == 0) 
 			return true;

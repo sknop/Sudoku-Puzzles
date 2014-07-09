@@ -269,7 +269,6 @@ public class Sudoku extends Puzzle
 	public void createRandomPuzzle() {
 		reset(); // first, clear out any existing entries
 		
-		// let's try a different approach
 		// independent boxes : I can set any number in any of these boxes without constraint
 		
 		Random random = new Random();
@@ -323,6 +322,10 @@ public class Sudoku extends Puzzle
 					System.err.println("Should not happen " + e);
 				}
 			}
+		}
+		
+		for (Cell c : allCells) {
+			c.makeReadOnly();
 		}
 	}
 
