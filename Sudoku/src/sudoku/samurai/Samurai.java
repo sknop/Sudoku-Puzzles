@@ -413,7 +413,7 @@ public class Samurai extends Puzzle
 		Random random = new Random();
 		
 		int[][] independentBoxes = {
-				{ 3, 5, 7, 10, 14, 18, 21, 24, 28, 32, 35, 37, 39 }
+				{ 9, 21, 33 }
 		};
 		
 		int[] boxSeeds = independentBoxes[ random.nextInt(independentBoxes.length)];
@@ -434,6 +434,15 @@ public class Samurai extends Puzzle
 			}			
 		}
 
+		System.out.println(toCLIString());
+		
+		int[] solveThese = { 19, 30, 20, 22, 12, 23, };
+		Deque<Cell> smallSolve = new LinkedList<>();
+		for (int i : solveThese) {
+			smallSolve.addAll( boxes.get(i-1).getCells() );
+		}
+		solveRecursive(smallSolve);
+		
 		System.out.println(toCLIString());
 		solveBruteForce();
 		System.out.println(toCLIString());
