@@ -314,7 +314,7 @@ public class Sudoku extends Puzzle
 		for (Cell c : allCells) {
 			int value = c.getValue();
 			c.reset();
-			if (!isUnique()) {
+			if (isUnique() > 1) {
 				try {
 					// does not produce unique puzzle, reset this value
 					c.setValue(value);

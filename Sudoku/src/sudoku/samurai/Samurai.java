@@ -56,6 +56,7 @@ public class Samurai extends Puzzle
 	private final List<Nonet> boxes = new ArrayList<>();
 	
 	public final int PUZZLE_WIDTH = 21;
+	public final int removeLimit = 250;
 	
 	public Samurai() {
 		super(9);
@@ -410,13 +411,7 @@ public class Samurai extends Puzzle
 		
 		// independent boxes : I can set any number in any of these boxes without constraint
 		
-		Random random = new Random();
-		
-		int[][] independentBoxes = {
-				{ 9, 21, 33 }
-		};
-		
-		int[] boxSeeds = independentBoxes[ random.nextInt(independentBoxes.length)];
+		int[] boxSeeds = { 9, 21, 33 };
 		for (int i : boxSeeds) {
 			Nonet box = boxes.get(i - 1); // indexed from 0, but written from 1 for easy debugging
 			List<Cell> cells = box.getCells();
@@ -434,30 +429,26 @@ public class Samurai extends Puzzle
 			}			
 		}
 
-		System.out.println(toCLIString());
-		
 		int[] solveThese = { 19, 30, 20, 22, 12, 23, };
 		Deque<Cell> smallSolve = new LinkedList<>();
 		for (int i : solveThese) {
-			smallSolve.addAll( boxes.get(i-1).getCells() );
+			Nonet box = boxes.get(i - 1); // indexed from 0, but written from 1 for easy debugging
+			smallSolve.addAll( box.getCells() );
 		}
 		solveRecursive(smallSolve);
 		
-		System.out.println(toCLIString());
 		solveBruteForce();
-		System.out.println(toCLIString());
 
 		List<Cell> allCells = cells.values().stream().collect(Collectors.toList());
 		Collections.shuffle(allCells);
 		
-		int total = allCells.size();
 		int counter = 0;
 		
 		for (Cell c : allCells) {
 			int value = c.getValue();
 			c.reset();
 			counter++;
-			if (!isUnique()) {
+			if (isUnique() > 1) {
 				try {
 					// does not produce unique puzzle, reset this value
 					c.setValue(value);
@@ -465,9 +456,9 @@ public class Samurai extends Puzzle
 					System.err.println("Should not happen " + e);
 				}
 			}
-			else {
-				System.out.println(toCLIString());
-				System.out.println("Total = " + total + " counter = " + counter);
+			
+			if (counter > removeLimit) {
+				break;
 			}
 		}
 

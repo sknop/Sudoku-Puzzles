@@ -176,12 +176,12 @@ public abstract class Puzzle
 		return false; // did not find a solution here, back track
 	}
 
-	public boolean isUnique() {
+	public int isUnique() {
 		Deque<Cell> emptyCells = getEmpties();
 		
 		int solutions = uniqueRecursive(emptyCells, 0);
 		
-		return (solutions == 1);
+		return solutions;
 	}
 	
 	private int uniqueRecursive(Deque<Cell> empties, int solutions) {

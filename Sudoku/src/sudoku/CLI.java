@@ -170,8 +170,12 @@ public class CLI implements Runnable
 	}
 	
 	private void unique() {
-		if (!puzzle.isUnique()) {
+		int unique = puzzle.isUnique();
+		if (unique > 1) {
 			System.out.println("This puzzle has more than one solution");
+		}
+		else if (unique == 0) {
+			System.out.println("This puzzle has no solutions");
 		}
 		else {
 			System.out.println("This puzzle is unique");
