@@ -101,6 +101,12 @@ public class Cell implements Iterable<Integer>
 		return markUp;
 	}
 	
+	public BitSet getHints(int level) {
+		BitSet markUp = getMarkUp();
+		
+		return markUp;
+	}
+	
 	public void addToUnit(Unit unit) throws AddCellException {
 		belongsTo.add(unit);
 	}

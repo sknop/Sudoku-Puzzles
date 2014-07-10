@@ -54,6 +54,7 @@ public class CLI implements Runnable
 		commands.put("p", () -> put());
 		commands.put("d", () -> delete());
 		commands.put("m", () -> showMarkUp());
+		commands.put("t", () -> showHints());
 		commands.put("s", () -> save());
 		commands.put("b", () -> bruteForce());
 		commands.put("c", () -> createNewPuzzle());
@@ -66,7 +67,7 @@ public class CLI implements Runnable
 		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 		
-		System.out.print("Command (h,q,p,d,m,b,c,u,s,l) : ");
+		System.out.print("Command (h,q,p,d,m,t,b,c,u,s,l) : ");
 		
 		String s = scanner.next();
 		String command = s.substring(0, 1).toLowerCase();
@@ -84,6 +85,7 @@ public class CLI implements Runnable
 		System.out.println("p : put");
 		System.out.println("d : delete");
 		System.out.println("m : markUp");
+		System.out.println("t : hints (tricks)");
 		System.out.println("b : bruteForce");
 		System.out.println("c : create");
 		System.out.println("u : unique");
@@ -185,7 +187,18 @@ public class CLI implements Runnable
 	private void showMarkUp() {
 		puzzle.showMarkUp();
 	}
+
+	private void showHints() {
+		@SuppressWarnings("resource")
+		Scanner scanner = new Scanner(System.in);
+
+		System.out.print("level : ");
+		int level = scanner.nextInt();
+
+		puzzle.showHints(level);
+	}
 	
+
 	private void createNewPuzzle() {
 		puzzle.createRandomPuzzle();
 	}

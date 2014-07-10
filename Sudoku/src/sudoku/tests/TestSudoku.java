@@ -113,7 +113,7 @@ public class TestSudoku
 	}
 
 	private boolean checkMarkup(Point p, int value) {
-		BitSet markUp = sudoku.getMarkUp(p);
+		BitSet markUp = sudoku.getHints(p,0);
 		
 		return markUp.get(value);
 	}
@@ -139,7 +139,7 @@ public class TestSudoku
 				assertTrue(String.format("No 2 in %s", t), checkMarkup(t, 2));
 			}
 
-			assertTrue("Markup not empty", sudoku.getMarkUp(p).isEmpty());
+			assertTrue("Markup not empty", sudoku.getHints(p,0).isEmpty());
 		}
 		catch( Exception e) {
 			fail("Do not expect exception here: " + e);

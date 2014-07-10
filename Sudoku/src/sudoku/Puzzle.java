@@ -59,20 +59,26 @@ public abstract class Puzzle
 		return cells.get(p).getValue();
 	}
 
-	public BitSet getMarkUp(int x, int y) {
-		return getMarkUp(new Point(x,y));
+	public BitSet getHints(int x, int y, int level) {
+		return getHints(new Point(x,y), level);
 	}
 
-	public BitSet getMarkUp(Point point) {
-		return cells.get(point).getMarkUp();
+	public BitSet getHints(Point point, int level) {
+		return cells.get(point).getHints(level);
 	}
 
+	public boolean isReadOnly(Point p) {
+		return cells.get(p).isReadOnly();
+	}
+	
 	public abstract void importFile (Path path) 
 			throws IOException, IllegalFileFormatException, CellContentException ;
 	
 	public abstract void exportFile (Path path) throws IOException;
 
 	public abstract void showMarkUp();
+	
+	public abstract void showHints(int level);
 	
 	public abstract String toCLIString();
 	

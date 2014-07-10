@@ -44,7 +44,6 @@ import sudoku.Point;
 import sudoku.Puzzle;
 import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
-import sudoku.exceptions.IllegalCellPositionException;
 import sudoku.exceptions.IllegalFileFormatException;
 import sudoku.unit.Nonet;
 
@@ -316,10 +315,10 @@ public class Samurai extends Puzzle
 
 			@Override
 			public void apply(int x, int y) throws CellContentException {
-				try {
-					setValue(x, y, values[x-1][y-1]);
-				} catch (IllegalCellPositionException e) {
-					System.out.println("Should not happen " + e);
+				int value = values[x-1][y-1];
+				if (value > 0) {
+					Point p = new Point(x,y);
+					cells.get(p).setInitValue(value);
 				}
 			}
 			
@@ -479,17 +478,23 @@ public class Samurai extends Puzzle
 
 	@Override
 	public void showMarkUp() {
+		showHints(0);
+	}
+
+	@Override
+	public void showHints(int level) {
 		try {
 			eachCell( new CellAccess() {
 
 				@Override
 				public void apply(int x, int y) throws CellContentException {
 					Point p = new Point(x,y);
-							
-					BitSet markUp = getMarkUp(p);
-							
-					System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
 					
+					if (!isReadOnly(p)) {
+						BitSet markUp = getHints(p, level);
+								
+						System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
+					}					
 				}
 				
 			});
@@ -497,8 +502,6 @@ public class Samurai extends Puzzle
 			System.out.println("Shouldn't happen " + e);
 		}
 		System.out.println();
-
-		
 	}
 
 	public void testFullSamurai() {

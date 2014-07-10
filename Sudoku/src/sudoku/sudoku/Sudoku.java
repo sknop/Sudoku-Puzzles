@@ -169,13 +169,20 @@ public class Sudoku extends Puzzle
 	
 	@Override
 	public void showMarkUp() {
+		showHints(0);
+	}
+
+	@Override
+	public void showHints(int level) {
 		for (int x = 1; x <= 9; x++) {
 			for (int y = 1; y <= 9; y++) {
 				Point p = new Point(x,y);
 				
-				BitSet markUp = getMarkUp(p);
-				
-				System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
+				if (!isReadOnly(p)) {
+					BitSet markUp = getHints(p, level);
+					
+					System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
+				}
 			}
 		}
 		System.out.println();
