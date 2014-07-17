@@ -407,35 +407,44 @@ public class Samurai extends Puzzle
 	public void createRandomPuzzle() {
 		reset(); // first, clear out any existing entries
 		
-		// independent boxes : I can set any number in any of these boxes without constraint
-		
-		int[] boxSeeds = { 9, 21, 33 };
-		for (int i : boxSeeds) {
-			Nonet box = boxes.get(i - 1); // indexed from 0, but written from 1 for easy debugging
-			List<Cell> cells = box.getCells();
-			
-			List<Integer> seed = Arrays.asList( 1,2,3,4,5,6,7,8,9 );
-			Collections.shuffle(seed);
+		int[][] boxSeeds = { { 9, 21, 33 },
+							 { 1, 5 },
+							 { 14, 16 },
+							 { 26, 28 },
+							 { 37, 41 }
+						   };
+		int[][] solveThese = { { 19, 30, 20, 22, 12, 23}, 
+							   { 2, 3, 4, 6, 7, 8 },
+							   { 10, 11, 13, 15, 17, 18 },
+							   { 24, 25, 27, 29, 31, 32 },
+							   { 34, 35, 36, 38, 39, 40 }
+							 };
 
-			for (int c = 0; c < 9; c++) {
-				try {
-					Cell cell = cells.get(c);
-					cell.setValue(seed.get(c));
-				} catch (CellContentException e) {
-					System.err.println("Shouldn't happen " + e);
-				} 
-			}			
+		for (int b = 0; b < 5; b++) {
+			for (int i : boxSeeds[b]) {
+				Nonet box = boxes.get(i - 1); // indexed from 0, but written from 1 for easy debugging
+				List<Cell> cells = box.getCells();
+				
+				List<Integer> seed = Arrays.asList( 1,2,3,4,5,6,7,8,9 );
+				Collections.shuffle(seed);
+	
+				for (int c = 0; c < 9; c++) {
+					try {
+						Cell cell = cells.get(c);
+						cell.setValue(seed.get(c));
+					} catch (CellContentException e) {
+						System.err.println("Shouldn't happen " + e);
+					} 
+				}			
+			}
+	
+			Deque<Cell> smallSolve = new LinkedList<>();
+			for (int i : solveThese[b]) {
+				Nonet box = boxes.get(i - 1); // indexed from 0, but written from 1 for easy debugging
+				smallSolve.addAll( box.getCells() );
+			}
+			solveRecursive(smallSolve);
 		}
-
-		int[] solveThese = { 19, 30, 20, 22, 12, 23, };
-		Deque<Cell> smallSolve = new LinkedList<>();
-		for (int i : solveThese) {
-			Nonet box = boxes.get(i - 1); // indexed from 0, but written from 1 for easy debugging
-			smallSolve.addAll( box.getCells() );
-		}
-		solveRecursive(smallSolve);
-		
-		solveBruteForce();
 
 		List<Cell> allCells = cells.values().stream().collect(Collectors.toList());
 		Collections.shuffle(allCells);
@@ -493,7 +502,12 @@ public class Samurai extends Puzzle
 					if (!isReadOnly(p)) {
 						BitSet markUp = getHints(p, level);
 								
-						System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
+						if (level == 0) {
+							System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
+						}
+						else {
+							System.out.println(String.format("(%s, %s) : %s [%s]", x, y, markUp, getHints(p, 0)));						
+						}
 					}					
 				}
 				
