@@ -180,8 +180,12 @@ public class Sudoku extends Puzzle
 				
 				if (!isReadOnly(p)) {
 					BitSet markUp = getHints(p, level);
-					
-					System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
+					if (level == 0) {
+						System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
+					}
+					else {
+						System.out.println(String.format("(%s, %s) : %s [%s]", x, y, markUp, getHints(p, 0)));						
+					}
 				}
 			}
 		}
@@ -221,7 +225,7 @@ public class Sudoku extends Puzzle
 		
 		b.append("    1 2 3   4 5 6   7 8 9\n");
 		
-		b.append(BigBorder); b.append("\n");
+		b.append(getBigBorder(3)); b.append("\n");
 
 		for (int row = 1; row <= 9; row++) {
 			b.append(String.format("%d", row)); // prepend each row with its number
@@ -233,11 +237,11 @@ public class Sudoku extends Puzzle
 			b.append("\n");
 
 			if ( row == 3 || row == 6) {
-				b.append(LittleBorder); b.append("\n"); 				
+				b.append(getLittleBorder(3)); b.append("\n"); 				
 			}
 		}
 
-		b.append(BigBorder); b.append("\n");
+		b.append(getBigBorder(3)); b.append("\n");
 		
 		return b.toString();
 	}

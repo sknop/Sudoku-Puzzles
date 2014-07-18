@@ -39,8 +39,8 @@ import sudoku.exceptions.ValueOutsideRangeException;
 
 public abstract class Puzzle
 {
-	protected static final String BigBorder = "  +-----------------------+";
-	protected static final String LittleBorder = "  |-------+-------+-------|";
+	// protected static final String BigBorder = "  +-----------------------+";
+	// protected static final String LittleBorder = "  |-------+-------+-------|";
 	protected static final String Front = " |";
 	protected static final String Section = " %s %s %s |";
 
@@ -69,6 +69,33 @@ public abstract class Puzzle
 
 	public boolean isReadOnly(Point p) {
 		return cells.get(p).isReadOnly();
+	}
+
+	private void times(StringBuilder b, String what, int times) {
+		for (int i = 0; i < times; i++) {
+			b.append(what);
+		}
+	}
+	
+	protected String getBigBorder(int size) {
+		StringBuilder b = new StringBuilder();
+		b.append("  +");
+		times(b, "-",  size * 7 + 2);
+		b.append("+");
+		
+		return b.toString();
+	}
+	
+	protected String getLittleBorder(int size) {
+		StringBuilder b = new StringBuilder();
+		b.append("  |");
+		times(b, "-", size * 2 + 1);
+		for (int i = 1; i < size; i++) {
+			b.append("+");
+			times(b, "-", size * 2 + 1);
+		}
+		b.append("|");
+		return b.toString();
 	}
 	
 	public abstract void importFile (Path path) 
