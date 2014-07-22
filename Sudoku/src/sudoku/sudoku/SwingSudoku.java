@@ -28,6 +28,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 
 import java.awt.BorderLayout;
 import java.io.IOException;
@@ -57,47 +58,24 @@ public class SwingSudoku extends Sudoku
 	{
 		@Override
 		public int getRowCount() {
-			return 9 + 1; // extra column for column header
+			return 9;
 		}
 
 		@Override
 		public int getColumnCount() {
-			return 9 + 1; // extra column for the row headers
-		}
-
-		@Override
-		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) {
-				return null;
-			}
-			else {
-				return Integer.toString(columnIndex);
-			}
+			return 9;
 		}
 		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			if (columnIndex == 0) {
-				if (rowIndex == 0) {
-					return null; // upper left corner should be empty
-				}
-				else {
-					return Integer.toString(rowIndex);
-				}
-			}
-			else if (rowIndex == 0) {
-				return Integer.toString(columnIndex);
+			int value = getValue(rowIndex + 1, columnIndex + 1);
+			if (value == 0) {
+				return null;
 			}
 			else {
-				int value = getValue(rowIndex, columnIndex);
-				if (value == 0) {
-					return null;
-				}
-				else {
-					return Integer.toString(value);
-				}
+				return Integer.toString(value);
 			}
-		}		
+		}
 	}
 	
 	/**
@@ -151,20 +129,14 @@ public class SwingSudoku extends Sudoku
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		table = new JTable(new SudokuTableModel()) {
-	            @Override
-	            public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
-	                if (col == 0) {
-	                    return this.getTableHeader().getDefaultRenderer()
-	                        .getTableCellRendererComponent(this,
-	                        this.getValueAt(row, col), false, false, row, col);
-	                } else {
-	                    return super.prepareRenderer(renderer, row, col);
-	                }
-	            };
-		};
-        final JTableHeader header = table.getTableHeader();
-        header.setDefaultRenderer(new HeaderRenderer(table));
+		table = new JTable(new SudokuTableModel());
+
+	    table.setCellSelectionEnabled(true);
+	    table.setRowSelectionAllowed(false);
+	    table.setColumnSelectionAllowed(false);
+
+	    ListSelectionModel cellSelectionModel = table.getSelectionModel();
+	    cellSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		frame.getContentPane().add(table, BorderLayout.CENTER);
 		
@@ -175,18 +147,4 @@ public class SwingSudoku extends Sudoku
 		frame.getContentPane().add(panel_1, BorderLayout.SOUTH);
 	}
 
-}
-
-class HeaderRenderer implements TableCellRenderer {
-TableCellRenderer renderer;
-    public HeaderRenderer(JTable jTable1) {
-        renderer = jTable1.getTableHeader().getDefaultRenderer();
-    }
-    @Override
-    public Component getTableCellRendererComponent(
-        JTable table, Object value, boolean isSelected,
-        boolean hasFocus, int row, int col) {
-        return renderer.getTableCellRendererComponent(
-            table, value, isSelected, hasFocus, row, col);
-    }
 }
