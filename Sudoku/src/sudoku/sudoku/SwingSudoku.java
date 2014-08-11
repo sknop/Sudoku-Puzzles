@@ -23,12 +23,16 @@
  *******************************************************************************/
 package sudoku.sudoku;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
 
 import java.awt.BorderLayout;
 import java.io.IOException;
@@ -36,11 +40,16 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
 import javax.swing.JPanel;
+import javax.swing.border.MatteBorder;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.JTableHeader;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
+import sudoku.Point;
 import sudoku.exceptions.CellContentException;
+import sudoku.exceptions.IllegalCellPositionException;
 import sudoku.exceptions.IllegalFileFormatException;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
@@ -76,6 +85,28 @@ public class SwingSudoku extends Sudoku
 				return Integer.toString(value);
 			}
 		}
+		
+		@Override
+		public boolean isCellEditable(int rowIndex, int columnIndex) {
+	        Point p = new Point(rowIndex + 1, columnIndex + 1);
+			boolean isReadOnly = isReadOnly(p);
+			return !isReadOnly;
+		}
+		
+		@Override
+		public void setValueAt(Object value, int row, int col) {
+	        Point p = new Point(row + 1, col + 1);
+	        int intValue = Integer.parseInt((String) value);
+	        try {
+				setValue(p, intValue);
+			} catch (IllegalCellPositionException e) {
+				System.err.println("Should never happen " + e);
+			} catch (CellContentException e) {
+				e.printStackTrace();
+			}
+	        
+	        fireTableCellUpdated(row, col);
+	    }
 	}
 	
 	/**
@@ -126,15 +157,43 @@ public class SwingSudoku extends Sudoku
 	@SuppressWarnings("serial")
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
+		frame.setLayout(new BorderLayout());
+		frame.setBounds(100, 100, 400, 400);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		table = new JTable(new SudokuTableModel());
+		table = new JTable(new SudokuTableModel()) {
+			@Override
+    		public Component prepareRenderer(
+        			TableCellRenderer renderer, int row, int column)
+        		{
+        			Component c = super.prepareRenderer(renderer, row, column);
+        			JComponent jc = (JComponent)c;
 
+    				jc.setBorder(new MatteBorder(1, 1, 1, 1, Color.BLACK) );
+
+
+        			//  Use bold font on selected row
+
+        			return c;
+        		}
+		};
+
+		
 	    table.setCellSelectionEnabled(true);
 	    table.setRowSelectionAllowed(false);
 	    table.setColumnSelectionAllowed(false);
 
+		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+		centerRenderer.setHorizontalAlignment( JLabel.CENTER );
+
+		TableColumnModel cm = table.getColumnModel();
+	    table.setRowHeight(40);
+	    for (int c = 0; c < cm.getColumnCount(); c++) {
+	    	TableColumn tc = cm.getColumn(c);
+	    	tc.setPreferredWidth(20);
+	    	tc.setCellRenderer(centerRenderer);
+	    }
+	    
 	    ListSelectionModel cellSelectionModel = table.getSelectionModel();
 	    cellSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
