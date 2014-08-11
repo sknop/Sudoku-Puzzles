@@ -169,7 +169,12 @@ public class SwingSudoku extends Sudoku
         			Component c = super.prepareRenderer(renderer, row, column);
         			JComponent jc = (JComponent)c;
 
-    				jc.setBorder(new MatteBorder(1, 1, 1, 1, Color.BLACK) );
+        			int top = 1;
+        			int left = 1;
+        			int bottom = ((row -2) % 3 == 0) ? 1 : 0;
+        			int right = ((column - 2) % 3 == 0) ? 1 : 0;
+        			
+    				jc.setBorder(new MatteBorder(top, left, bottom, right, Color.BLACK) );
 
 
         			//  Use bold font on selected row
@@ -183,6 +188,8 @@ public class SwingSudoku extends Sudoku
 	    table.setRowSelectionAllowed(false);
 	    table.setColumnSelectionAllowed(false);
 
+	    table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
+	    
 		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 		centerRenderer.setHorizontalAlignment( JLabel.CENTER );
 
@@ -190,7 +197,9 @@ public class SwingSudoku extends Sudoku
 	    table.setRowHeight(40);
 	    for (int c = 0; c < cm.getColumnCount(); c++) {
 	    	TableColumn tc = cm.getColumn(c);
-	    	tc.setPreferredWidth(20);
+	    	tc.setPreferredWidth(40);
+	    	tc.setMinWidth(40);
+	    	tc.setMaxWidth(40);
 	    	tc.setCellRenderer(centerRenderer);
 	    }
 	    
