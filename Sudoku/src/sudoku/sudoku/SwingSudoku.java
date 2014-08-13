@@ -190,7 +190,20 @@ public class SwingSudoku extends Sudoku
 
 	    table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 	    
-		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer() {
+			@Override
+			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+		        if ( row == 1 ) {
+		            c.setBackground( Color.RED );
+		        }
+		        else {
+		        	c.setBackground( Color.WHITE );
+		        }
+		        return this;
+		    }
+		};
 		centerRenderer.setHorizontalAlignment( JLabel.CENTER );
 
 		TableColumnModel cm = table.getColumnModel();
