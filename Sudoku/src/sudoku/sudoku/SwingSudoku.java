@@ -26,6 +26,7 @@ package sudoku.sudoku;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
+import java.awt.Font;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -38,6 +39,8 @@ import java.awt.BorderLayout;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
@@ -62,6 +65,8 @@ public class SwingSudoku extends Sudoku
 	private JFrame frame;
 	private JTable table;
 
+	private Map<Point, Integer> illegalEntries = new HashMap<>();
+	
 	@SuppressWarnings("serial")
 	class SudokuTableModel extends AbstractTableModel
 	{
@@ -99,10 +104,13 @@ public class SwingSudoku extends Sudoku
 	        int intValue = Integer.parseInt((String) value);
 	        try {
 				setValue(p, intValue);
+				if (illegalEntries.containsKey(p)) {
+					illegalEntries.remove(p);
+				}
 			} catch (IllegalCellPositionException e) {
 				System.err.println("Should never happen " + e);
 			} catch (CellContentException e) {
-				e.printStackTrace();
+				illegalEntries.put(p, intValue);
 			}
 	        
 	        fireTableCellUpdated(row, col);
@@ -195,12 +203,16 @@ public class SwingSudoku extends Sudoku
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-		        if ( row == 1 ) {
+				Point p = new Point(row + 1, column + 1);
+				
+		        if ( illegalEntries.containsKey(p) ) {
 		            c.setBackground( Color.RED );
 		        }
 		        else {
 		        	c.setBackground( Color.WHITE );
 		        }
+				c.setFont(new Font("Lucida Grande", Font.BOLD, 32));
+
 		        return this;
 		    }
 		};
