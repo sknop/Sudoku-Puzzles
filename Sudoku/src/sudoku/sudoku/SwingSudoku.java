@@ -82,8 +82,12 @@ public class SwingSudoku extends Sudoku
 		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			int value = getValue(rowIndex + 1, columnIndex + 1);
+			Point p = new Point(rowIndex + 1, columnIndex + 1);
+			int value = getValue(p);
 			if (value == 0) {
+				if (illegalEntries.containsKey(p)) {
+					return illegalEntries.get(p).toString();
+				}
 				return null;
 			}
 			else {
@@ -103,14 +107,19 @@ public class SwingSudoku extends Sudoku
 	        Point p = new Point(row + 1, col + 1);
 	        int intValue = Integer.parseInt((String) value);
 	        try {
-				setValue(p, intValue);
 				if (illegalEntries.containsKey(p)) {
 					illegalEntries.remove(p);
 				}
+				setValue(p, intValue);
 			} catch (IllegalCellPositionException e) {
 				System.err.println("Should never happen " + e);
 			} catch (CellContentException e) {
 				illegalEntries.put(p, intValue);
+				try {
+					setValue(p, 0);
+				} catch (IllegalCellPositionException | CellContentException e1) {
+					System.err.println("Should never happen " + e);
+				}
 			}
 	        
 	        fireTableCellUpdated(row, col);
@@ -205,13 +214,20 @@ public class SwingSudoku extends Sudoku
 
 				Point p = new Point(row + 1, column + 1);
 				
-		        if ( illegalEntries.containsKey(p) ) {
-		            c.setBackground( Color.RED );
+	        	c.setBackground( Color.WHITE );
+				c.setFont(new Font("Lucida Grande", Font.BOLD, 28));
+
+				if ( illegalEntries.containsKey(p) ) {
+		            c.setForeground( Color.RED );
 		        }
 		        else {
-		        	c.setBackground( Color.WHITE );
+		        	if (isReadOnly(p)) {
+		        		c.setForeground( Color.BLUE );
+		        	}
+		        	else {
+		        		c.setForeground( Color.BLACK );
+		        	}
 		        }
-				c.setFont(new Font("Lucida Grande", Font.BOLD, 32));
 
 		        return this;
 		    }
@@ -238,6 +254,8 @@ public class SwingSudoku extends Sudoku
 		
 		JPanel panel_1 = new JPanel();
 		frame.getContentPane().add(panel_1, BorderLayout.SOUTH);
+		
+		frame.pack();
 	}
 
 }

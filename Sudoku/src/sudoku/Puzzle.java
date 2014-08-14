@@ -67,6 +67,10 @@ public abstract class Puzzle
 		return cells.get(point).getHints(level);
 	}
 
+	public boolean isReadOnly(int x, int y) {
+		return isReadOnly(new Point(x,y));
+	}
+	
 	public boolean isReadOnly(Point p) {
 		return cells.get(p).isReadOnly();
 	}
@@ -112,12 +116,12 @@ public abstract class Puzzle
 	public abstract int getLow();
 	public abstract int getHigh();
 	
+	private final String CHARS = " 123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	
 	protected String getValueAsString(int x, int y) {
 		int val = getValue(x, y);
-		if (val == 0) {
-			return " ";
-		}
-		return Integer.toString(val);
+		
+		return CHARS.substring(val, val+1);
 	}
 	
 
