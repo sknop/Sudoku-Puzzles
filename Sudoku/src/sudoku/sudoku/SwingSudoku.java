@@ -28,11 +28,14 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Font;
 
+import javax.swing.DefaultCellEditor;
 import javax.swing.JComponent;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
 import java.awt.BorderLayout;
@@ -105,7 +108,13 @@ public class SwingSudoku extends Sudoku
 		@Override
 		public void setValueAt(Object value, int row, int col) {
 	        Point p = new Point(row + 1, col + 1);
-	        int intValue = Integer.parseInt((String) value);
+	        String stringValue = (String) value;
+	        int intValue = 0;
+	        
+	        if (!stringValue.isEmpty()) {
+	        	intValue = Integer.parseInt(stringValue);
+	        }
+
 	        try {
 				if (illegalEntries.containsKey(p)) {
 					illegalEntries.remove(p);
@@ -173,6 +182,8 @@ public class SwingSudoku extends Sudoku
 	 */
 	@SuppressWarnings("serial")
 	private void initialize() {
+		final Font font = new Font("Lucida Grande", Font.BOLD, 28);
+		
 		frame = new JFrame();
 		frame.setLayout(new BorderLayout());
 		frame.setBounds(100, 100, 400, 400);
@@ -204,6 +215,7 @@ public class SwingSudoku extends Sudoku
 	    table.setCellSelectionEnabled(true);
 	    table.setRowSelectionAllowed(false);
 	    table.setColumnSelectionAllowed(false);
+	    table.setDefaultEditor(Object.class, new MyEditor(font));
 
 	    table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 	    
@@ -215,7 +227,7 @@ public class SwingSudoku extends Sudoku
 				Point p = new Point(row + 1, column + 1);
 				
 	        	c.setBackground( Color.WHITE );
-				c.setFont(new Font("Lucida Grande", Font.BOLD, 28));
+				c.setFont(font);
 
 				if ( illegalEntries.containsKey(p) ) {
 		            c.setForeground( Color.RED );
@@ -258,4 +270,27 @@ public class SwingSudoku extends Sudoku
 		frame.pack();
 	}
 
+}
+
+@SuppressWarnings("serial")
+class MyEditor extends DefaultCellEditor
+{
+	private Font font;
+	public MyEditor(Font font) {
+		super(new JFormattedTextField());
+		this.font = font;
+	}
+
+	public Component getTableCellEditorComponent(JTable table, Object value,
+			boolean isSelected, int row, int column) {
+		JFormattedTextField editor = (JFormattedTextField) super
+				.getTableCellEditorComponent(table, value, isSelected, row,
+						column);
+
+		if (value != null)
+			editor.setText(value.toString());
+		editor.setHorizontalAlignment(SwingConstants.CENTER);
+		editor.setFont(font);
+		return editor;
+	}
 }
