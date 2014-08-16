@@ -220,6 +220,8 @@ public class SwingSudoku extends Sudoku
 	    table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 	    
 		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer() {
+			Color backgroundColor = getBackground();
+			
 			@Override
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
@@ -241,6 +243,13 @@ public class SwingSudoku extends Sudoku
 		        	}
 		        }
 
+				if (hasFocus) {
+					c.setBackground(Color.green.darker());
+				}
+				else {
+					c.setBackground(backgroundColor);
+				}
+				
 		        return this;
 		    }
 		};
