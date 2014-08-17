@@ -29,6 +29,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 
 import javax.swing.DefaultCellEditor;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
@@ -39,6 +40,8 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -67,6 +70,7 @@ public class SwingSudoku extends Sudoku
 
 	private JFrame frame;
 	private JTable table;
+	private AbstractTableModel tableModel;
 
 	private Map<Point, Integer> illegalEntries = new HashMap<>();
 	
@@ -189,7 +193,9 @@ public class SwingSudoku extends Sudoku
 		frame.setBounds(100, 100, 400, 400);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		table = new JTable(new SudokuTableModel()) {
+		tableModel = new SudokuTableModel();
+		
+		table = new JTable(tableModel) {
 			@Override
     		public Component prepareRenderer(
         			TableCellRenderer renderer, int row, int column)
@@ -270,13 +276,50 @@ public class SwingSudoku extends Sudoku
 
 		frame.getContentPane().add(table, BorderLayout.CENTER);
 		
-		JPanel panel = new JPanel();
-		frame.getContentPane().add(panel, BorderLayout.EAST);
+		JPanel buttons = new JPanel();
+		frame.getContentPane().add(buttons, BorderLayout.SOUTH);
 		
-		JPanel panel_1 = new JPanel();
-		frame.getContentPane().add(panel_1, BorderLayout.SOUTH);
+		createButtons(buttons);
+		
+		JPanel hints = new JPanel();
+		frame.getContentPane().add(hints, BorderLayout.EAST);
 		
 		frame.pack();
+	}
+
+	private void createButtons(JPanel buttons) {
+		JButton createButton = new JButton("Create");
+		createButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				createRandomPuzzle();
+				tableModel.fireTableDataChanged();
+			}
+		});
+		buttons.add(createButton);
+
+		JButton solveButton = new JButton("Solve");
+		solveButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				solveBruteForce();
+				tableModel.fireTableDataChanged();
+			}
+		});
+		buttons.add(solveButton);
+		
+		JButton quitButton = new JButton("Quit");
+		quitButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				frame.dispose();
+				System.exit(0);
+			}
+		});
+		buttons.add(quitButton);
 	}
 
 }
