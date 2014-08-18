@@ -31,13 +31,12 @@ import java.awt.Font;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -55,6 +54,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
 
 import sudoku.Point;
 import sudoku.exceptions.CellContentException;
@@ -293,6 +295,7 @@ public class SwingSudoku extends Sudoku
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				illegalEntries.clear();
 				createRandomPuzzle();
 				tableModel.fireTableDataChanged();
 			}
@@ -325,17 +328,48 @@ public class SwingSudoku extends Sudoku
 }
 
 @SuppressWarnings("serial")
+class FieldLimit extends PlainDocument {
+    private int limit;
+
+    FieldLimit(int limit) {
+       super();
+       this.limit = limit;
+    }
+
+    static boolean isNumeric(String str)
+    {
+        for (char c : str.toCharArray())
+        {
+            if (!Character.isDigit(c)) return false;
+        }
+        return true;
+    }
+    
+    public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
+       if (str == null)
+         return;
+
+       if (isNumeric(str)) {
+	       int value = Integer.parseInt(str);
+	       if ((value <= limit) && getLength() == 0) {
+	         super.insertString(offset, str.toUpperCase(), attr);
+	       }
+       }
+    }
+}
+
+@SuppressWarnings("serial")
 class MyEditor extends DefaultCellEditor
 {
 	private Font font;
 	public MyEditor(Font font) {
-		super(new JFormattedTextField());
+		super(new JTextField());
 		this.font = font;
 	}
 
 	public Component getTableCellEditorComponent(JTable table, Object value,
 			boolean isSelected, int row, int column) {
-		JFormattedTextField editor = (JFormattedTextField) super
+		JTextField editor = (JTextField) super
 				.getTableCellEditorComponent(table, value, isSelected, row,
 						column);
 
@@ -343,6 +377,7 @@ class MyEditor extends DefaultCellEditor
 			editor.setText(value.toString());
 		editor.setHorizontalAlignment(SwingConstants.CENTER);
 		editor.setFont(font);
+		editor.setDocument(new FieldLimit(9));
 		return editor;
 	}
 }
