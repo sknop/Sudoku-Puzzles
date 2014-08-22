@@ -45,6 +45,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -258,7 +259,7 @@ public class SwingSudoku extends Sudoku
 				if (hasFocus) {
 					c.setBackground(Color.green.darker());
 					Cell cell = cells.get(p);
-					markup.setText(cell.getMarkUp().toString());
+					markup.setText(formatMarkup(cell.getMarkUp()));
 				}
 				else {
 					c.setBackground(backgroundColor);
@@ -266,6 +267,14 @@ public class SwingSudoku extends Sudoku
 				
 		        return this;
 		    }
+			
+			private String formatMarkup(BitSet set) {
+				StringBuilder b = new StringBuilder();
+				for (int i = 1; i <= 9; i++) {
+					b.append( set.get(i) ? i : " ");
+				}
+				return b.toString();
+			}
 		};
 		centerRenderer.setHorizontalAlignment( JLabel.CENTER );
 
@@ -295,7 +304,7 @@ public class SwingSudoku extends Sudoku
 		JLabel hintLabel = new JLabel("Markup:");
 		hints.add(hintLabel);
 		
-		markup = new JLabel("");
+		markup = new JLabel("        ");
 		hints.add(markup);
 		
 		frame.pack();
