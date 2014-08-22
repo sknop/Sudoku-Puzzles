@@ -266,8 +266,6 @@ public class SwingSudoku extends Sudoku
 				CellWrapper cellWrapper = (CellWrapper) value;
 				Cell cell = cellWrapper.cell;
 				
-				Point p = new Point(row + 1, column + 1);
-				
 				JPanel panel = new JPanel();
 				panel.setLayout(new BorderLayout(0, 0));
 				
@@ -324,13 +322,15 @@ public class SwingSudoku extends Sudoku
 
 		table.setDefaultRenderer(CellWrapper.class, centerRenderer);
 		
+		final int height = 50;
+		
 		TableColumnModel cm = table.getColumnModel();
-	    table.setRowHeight(45);
+	    table.setRowHeight(height);
 	    for (int c = 0; c < cm.getColumnCount(); c++) {
 	    	TableColumn tc = cm.getColumn(c);
-	    	tc.setPreferredWidth(45);
-	    	tc.setMinWidth(45);
-	    	tc.setMaxWidth(45);
+	    	tc.setPreferredWidth(height);
+	    	tc.setMinWidth(height);
+	    	tc.setMaxWidth(height);
 	    }
 	    
 	    ListSelectionModel cellSelectionModel = table.getSelectionModel();
