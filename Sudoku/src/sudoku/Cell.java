@@ -25,6 +25,7 @@ package sudoku;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -58,6 +59,10 @@ public class Cell implements Iterable<Integer>
 	public void setInitValue(int value) throws CellContentException {
 		setValue(value);
 		readOnly = true;
+	}
+	
+	public List<Unit> getUnits() {
+		return Collections.unmodifiableList(belongsTo);
 	}
 	
 	public void makeReadOnly() {
@@ -104,6 +109,26 @@ public class Cell implements Iterable<Integer>
 	public BitSet getHints(int level) {
 		BitSet markUp = getMarkUp();
 		
+		if (level > 0) {
+			markUp = removeUniques(markUp, level);
+		}
+		return markUp;
+	}
+	
+	private BitSet removeUniques(BitSet markUp, int level) {
+		System.out.println("RemoveUniques " + level);
+		for (Unit u : belongsTo) {
+			for (Cell c : u.getCells()) {
+				if (c != this) {
+					BitSet itsMarkUp = c.getHints(level - 1);
+					if (itsMarkUp.cardinality() == 1) {
+						int uniqueValue = itsMarkUp.nextSetBit(0);
+						System.out.println("Unique : " + uniqueValue + " @ " + c);
+						markUp.clear(uniqueValue);
+					}
+				}
+			}
+		}
 		return markUp;
 	}
 	

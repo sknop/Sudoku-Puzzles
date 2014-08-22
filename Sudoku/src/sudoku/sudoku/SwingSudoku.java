@@ -27,7 +27,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.GridLayout;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -65,6 +64,8 @@ import sudoku.Point;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalCellPositionException;
 import sudoku.exceptions.IllegalFileFormatException;
+import sudoku.swing.CellRenderer;
+import sudoku.unit.Unit;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
@@ -75,11 +76,20 @@ public class SwingSudoku extends Sudoku
 
 	private JFrame frame;
 	private JTable table;
-	private JLabel markup;
 	
 	private AbstractTableModel tableModel;
 
 	private Map<Point, Integer> illegalEntries = new HashMap<>();
+	
+	class CellWrapper {
+		Cell cell;
+		int illegalValue = 0;
+		
+		public CellWrapper(Cell cell, int illegalValue) {
+			this.cell = cell;
+			this.illegalValue = illegalValue;
+		}
+	}
 	
 	@SuppressWarnings("serial")
 	class SudokuTableModel extends AbstractTableModel
@@ -95,17 +105,20 @@ public class SwingSudoku extends Sudoku
 		}
 		
 		@Override
-		public Object getValueAt(int rowIndex, int columnIndex) {
+		public CellWrapper getValueAt(int rowIndex, int columnIndex) {
 			Point p = new Point(rowIndex + 1, columnIndex + 1);
-			int value = getValue(p);
-			if (value == 0) {
+			Cell cell = cells.get(p);
+			
+			if (cell.getValue() == 0) {
+				int illegal = 0;
+				
 				if (illegalEntries.containsKey(p)) {
-					return illegalEntries.get(p).toString();
+					illegal = illegalEntries.get(p);
 				}
-				return null;
+				return new CellWrapper(cell, illegal);
 			}
 			else {
-				return Integer.toString(value);
+				return new CellWrapper(cell, 0);
 			}
 		}
 		
@@ -118,7 +131,7 @@ public class SwingSudoku extends Sudoku
 		
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			return Cell.class;
+			return CellWrapper.class;
 		}
 		
 		@Override
@@ -148,6 +161,14 @@ public class SwingSudoku extends Sudoku
 			}
 	        
 	        fireTableCellUpdated(row, col);
+	        
+	        Cell cell = cells.get(p);
+	        for (Unit u : cell.getUnits()) {
+	        	for (Cell c : u.getCells()) {
+	        		Point point = c.getLocation();
+	        		fireTableCellUpdated(point.getX() - 1, point.getY() - 1);
+	        	}
+	        }
 	    }
 	}
 	
@@ -202,7 +223,7 @@ public class SwingSudoku extends Sudoku
 		
 		frame = new JFrame();
 		frame.setLayout(new BorderLayout());
-		frame.setBounds(100, 100, 400, 400);
+		frame.setBounds(100, 100, 450, 450);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		tableModel = new SudokuTableModel();
@@ -233,7 +254,7 @@ public class SwingSudoku extends Sudoku
 	    table.setCellSelectionEnabled(true);
 	    table.setRowSelectionAllowed(false);
 	    table.setColumnSelectionAllowed(false);
-	    table.setDefaultEditor(Cell.class, new MyEditor(font));
+	    table.setDefaultEditor(CellWrapper.class, new MyEditor(font));
 
 	    table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 	    
@@ -242,35 +263,54 @@ public class SwingSudoku extends Sudoku
 			
 			@Override
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
+				CellWrapper cellWrapper = (CellWrapper) value;
+				Cell cell = cellWrapper.cell;
+				
 				Point p = new Point(row + 1, column + 1);
 				
-	        	c.setBackground( Color.WHITE );
-				c.setFont(font);
+				JPanel panel = new JPanel();
+				panel.setLayout(new BorderLayout(0, 0));
+				
+				JTextField textField = new JTextField(1);
+				textField.setHorizontalAlignment(SwingConstants.CENTER);
+				panel.add(textField, BorderLayout.CENTER);
 
-				if ( illegalEntries.containsKey(p) ) {
-		            c.setForeground( Color.RED );
+				textField.setColumns(1);				
+				textField.setFont(font);
+
+	        	textField.setBackground( Color.WHITE );
+	        	
+	        	if (cell.getValue() > 0) {
+		        		textField.setText(Integer.toString(cell.getValue()));
+	
+		        		if (cell.isReadOnly()) {
+			        		textField.setForeground( Color.BLUE );
+			        	}
+			        	else {
+			        		textField.setForeground( Color.BLACK );
+			        	}
 		        }
 		        else {
-		        	if (isReadOnly(p)) {
-		        		c.setForeground( Color.BLUE );
-		        	}
-		        	else {
-		        		c.setForeground( Color.BLACK );
-		        	}
+	        		if ( cellWrapper.illegalValue > 0 ) {
+			            textField.setForeground( Color.RED );
+			            textField.setText(Integer.toString(cellWrapper.illegalValue));
+			        }
 		        }
 
+	    		JLabel label = new JLabel(formatMarkup(cell.getMarkUp()));
+	    		label.setFont(new Font("Lucida Grande", Font.PLAIN, 8));
+	    		label.setBackground(Color.WHITE);
+	    		label.setHorizontalAlignment(0);
+	    		panel.add(label, BorderLayout.NORTH);
+
 				if (hasFocus) {
-					c.setBackground(Color.green.darker());
-					Cell cell = cells.get(p);
-					markup.setText(formatMarkup(cell.getMarkUp()));
+					panel.setBackground(Color.green.darker());
 				}
 				else {
-					c.setBackground(backgroundColor);
+					panel.setBackground(backgroundColor);
 				}
-				
-		        return this;
+
+				return panel;
 		    }
 			
 			private String formatMarkup(BitSet set) {
@@ -281,17 +321,16 @@ public class SwingSudoku extends Sudoku
 				return b.toString();
 			}
 		};
-		centerRenderer.setHorizontalAlignment( JLabel.CENTER );
 
-		table.setDefaultRenderer(Cell.class, centerRenderer);
+		table.setDefaultRenderer(CellWrapper.class, centerRenderer);
 		
 		TableColumnModel cm = table.getColumnModel();
-	    table.setRowHeight(40);
+	    table.setRowHeight(45);
 	    for (int c = 0; c < cm.getColumnCount(); c++) {
 	    	TableColumn tc = cm.getColumn(c);
-	    	tc.setPreferredWidth(40);
-	    	tc.setMinWidth(40);
-	    	tc.setMaxWidth(40);
+	    	tc.setPreferredWidth(45);
+	    	tc.setMinWidth(45);
+	    	tc.setMaxWidth(45);
 	    }
 	    
 	    ListSelectionModel cellSelectionModel = table.getSelectionModel();
@@ -303,16 +342,7 @@ public class SwingSudoku extends Sudoku
 		frame.getContentPane().add(buttons, BorderLayout.SOUTH);
 		
 		createButtons(buttons);
-		
-		JPanel hints = new JPanel();
-		frame.getContentPane().add(hints, BorderLayout.EAST);
-		hints.setLayout(new GridLayout(2, 1));
-		JLabel hintLabel = new JLabel("Markup:");
-		hints.add(hintLabel);
-		
-		markup = new JLabel("        ");
-		hints.add(markup);
-		
+				
 		frame.pack();
 	}
 
