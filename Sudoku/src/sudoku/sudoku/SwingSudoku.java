@@ -27,6 +27,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.GridLayout;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -58,6 +59,7 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
+import sudoku.Cell;
 import sudoku.Point;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalCellPositionException;
@@ -72,6 +74,8 @@ public class SwingSudoku extends Sudoku
 
 	private JFrame frame;
 	private JTable table;
+	private JLabel markup;
+	
 	private AbstractTableModel tableModel;
 
 	private Map<Point, Integer> illegalEntries = new HashMap<>();
@@ -253,6 +257,8 @@ public class SwingSudoku extends Sudoku
 
 				if (hasFocus) {
 					c.setBackground(Color.green.darker());
+					Cell cell = cells.get(p);
+					markup.setText(cell.getMarkUp().toString());
 				}
 				else {
 					c.setBackground(backgroundColor);
@@ -275,7 +281,7 @@ public class SwingSudoku extends Sudoku
 	    
 	    ListSelectionModel cellSelectionModel = table.getSelectionModel();
 	    cellSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
+	    
 		frame.getContentPane().add(table, BorderLayout.CENTER);
 		
 		JPanel buttons = new JPanel();
@@ -285,6 +291,12 @@ public class SwingSudoku extends Sudoku
 		
 		JPanel hints = new JPanel();
 		frame.getContentPane().add(hints, BorderLayout.EAST);
+		hints.setLayout(new GridLayout(2, 1));
+		JLabel hintLabel = new JLabel("Markup:");
+		hints.add(hintLabel);
+		
+		markup = new JLabel("");
+		hints.add(markup);
 		
 		frame.pack();
 	}
