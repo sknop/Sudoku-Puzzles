@@ -117,6 +117,11 @@ public class SwingSudoku extends Sudoku
 		}
 		
 		@Override
+		public Class<?> getColumnClass(int columnIndex) {
+			return Cell.class;
+		}
+		
+		@Override
 		public void setValueAt(Object value, int row, int col) {
 	        Point p = new Point(row + 1, col + 1);
 	        String stringValue = (String) value;
@@ -228,7 +233,7 @@ public class SwingSudoku extends Sudoku
 	    table.setCellSelectionEnabled(true);
 	    table.setRowSelectionAllowed(false);
 	    table.setColumnSelectionAllowed(false);
-	    table.setDefaultEditor(Object.class, new MyEditor(font));
+	    table.setDefaultEditor(Cell.class, new MyEditor(font));
 
 	    table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 	    
@@ -278,6 +283,8 @@ public class SwingSudoku extends Sudoku
 		};
 		centerRenderer.setHorizontalAlignment( JLabel.CENTER );
 
+		table.setDefaultRenderer(Cell.class, centerRenderer);
+		
 		TableColumnModel cm = table.getColumnModel();
 	    table.setRowHeight(40);
 	    for (int c = 0; c < cm.getColumnCount(); c++) {
@@ -285,7 +292,6 @@ public class SwingSudoku extends Sudoku
 	    	tc.setPreferredWidth(40);
 	    	tc.setMinWidth(40);
 	    	tc.setMaxWidth(40);
-	    	tc.setCellRenderer(centerRenderer);
 	    }
 	    
 	    ListSelectionModel cellSelectionModel = table.getSelectionModel();
