@@ -422,7 +422,9 @@ class CellEditor extends AbstractCellEditor implements TableCellEditor, TableCel
 	final Font bigFont = new Font("Lucida Grande", Font.BOLD, 28);
 	final Font smallFont = new Font("Lucida Grande", Font.PLAIN, 8);
 	
+	JPanel panel;
 	JTextField textField;
+	JLabel label;
 	
 	public CellEditor() {
 	}
@@ -433,7 +435,7 @@ class CellEditor extends AbstractCellEditor implements TableCellEditor, TableCel
 	}
 
 	private JPanel updateData(CellWrapper wrapper, boolean hasFocus) {
-		JPanel panel = new JPanel();
+		panel = new JPanel();
 		panel.setLayout(new BorderLayout(0, 0));
 		
 		textField = new JTextField(1);
@@ -445,7 +447,7 @@ class CellEditor extends AbstractCellEditor implements TableCellEditor, TableCel
 		
     	textField.setBackground( backgroundColor );
     	
-		JLabel label = new JLabel();
+		label = new JLabel();
 		label.setFont(smallFont);
 		label.setBackground(Color.WHITE);
 		label.setHorizontalAlignment(0);
