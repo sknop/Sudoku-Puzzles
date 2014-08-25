@@ -30,6 +30,7 @@ import java.awt.EventQueue;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 
@@ -68,6 +69,7 @@ public class SwingSudoku extends Sudoku
 
 	private JFrame frame;
 	private JTable table;
+	private JLabel solved;
 	
 	private AbstractTableModel tableModel;
 
@@ -153,6 +155,10 @@ public class SwingSudoku extends Sudoku
 	        		fireTableCellUpdated(point.getX() - 1, point.getY() - 1);
 	        	}
 	        }
+	        
+	        if (isSolved()) {
+	        	solved.setText("Solved!");
+	        }
 	    }
 	}
 	
@@ -224,7 +230,6 @@ public class SwingSudoku extends Sudoku
                 	this.editCellAt(row, column);
                 	this.transferFocus();
                 }
-                System.out.println("Called changeSelection with " + row + " and " + column);
             }
 		};
 		
@@ -280,6 +285,7 @@ public class SwingSudoku extends Sudoku
 			public void actionPerformed(ActionEvent e) {
 				solveBruteForce();
 				tableModel.fireTableDataChanged();
+				solved.setText("Solved (cheated)!");
 			}
 		});
 		buttons.add(solveButton);
@@ -294,6 +300,9 @@ public class SwingSudoku extends Sudoku
 			}
 		});
 		buttons.add(quitButton);
+		
+		solved = new JLabel();
+		buttons.add(solved);
 	}
 
 	/**

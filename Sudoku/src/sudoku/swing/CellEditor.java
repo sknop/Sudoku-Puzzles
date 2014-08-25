@@ -116,7 +116,6 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
 	@Override
 	public Component getTableCellEditorComponent(JTable table, Object value,
 			boolean isSelected, int row, int column) {
-		// TODO Auto-generated method stub
 		CellWrapper wrapper = (CellWrapper) value;
 		
 		JPanel panel = updateData(wrapper, true);
