@@ -149,28 +149,13 @@ public class SwingSudoku extends Sudoku
 	        for (Unit u : cell.getUnits()) {
 	        	for (Cell c : u.getCells()) {
 	        		Point point = c.getLocation();
+	        		// Sudoku is 1 based, JTable is 0 based, so need to remove 1
 	        		fireTableCellUpdated(point.getX() - 1, point.getY() - 1);
 	        	}
 	        }
 	    }
 	}
 	
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					SwingSudoku window = new SwingSudoku(args);
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
 	/**
 	 * Create the application.
 	 * @throws ArgumentParserException 
@@ -311,5 +296,20 @@ public class SwingSudoku extends Sudoku
 		buttons.add(quitButton);
 	}
 
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					SwingSudoku window = new SwingSudoku(args);
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 }
 
