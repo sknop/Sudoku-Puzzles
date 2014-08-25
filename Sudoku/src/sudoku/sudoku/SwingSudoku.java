@@ -28,6 +28,7 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Font;
 
+import javax.swing.AbstractCellEditor;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -51,7 +52,7 @@ import java.util.Map;
 import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -64,12 +65,21 @@ import sudoku.Point;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalCellPositionException;
 import sudoku.exceptions.IllegalFileFormatException;
-import sudoku.swing.CellRenderer;
 import sudoku.unit.Unit;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
+
+class CellWrapper {
+	Cell cell;
+	int illegalValue = 0;
+	
+	public CellWrapper(Cell cell, int illegalValue) {
+		this.cell = cell;
+		this.illegalValue = illegalValue;
+	}
+}
 
 public class SwingSudoku extends Sudoku
 {
@@ -81,15 +91,6 @@ public class SwingSudoku extends Sudoku
 
 	private Map<Point, Integer> illegalEntries = new HashMap<>();
 	
-	class CellWrapper {
-		Cell cell;
-		int illegalValue = 0;
-		
-		public CellWrapper(Cell cell, int illegalValue) {
-			this.cell = cell;
-			this.illegalValue = illegalValue;
-		}
-	}
 	
 	@SuppressWarnings("serial")
 	class SudokuTableModel extends AbstractTableModel
@@ -219,8 +220,6 @@ public class SwingSudoku extends Sudoku
 	 */
 	@SuppressWarnings("serial")
 	private void initialize() {
-		final Font font = new Font("Lucida Grande", Font.BOLD, 28);
-		
 		frame = new JFrame();
 		frame.setLayout(new BorderLayout());
 		frame.setBounds(100, 100, 450, 450);
@@ -254,73 +253,74 @@ public class SwingSudoku extends Sudoku
 	    table.setCellSelectionEnabled(true);
 	    table.setRowSelectionAllowed(false);
 	    table.setColumnSelectionAllowed(false);
-	    table.setDefaultEditor(CellWrapper.class, new MyEditor(font));
 
+	    table.setDefaultEditor(CellWrapper.class, new CellEditor());
+	    table.setDefaultRenderer(CellWrapper.class, new CellEditor());
 	    table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 	    
-		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer() {
-			Color backgroundColor = getBackground();
-			
-			@Override
-			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-				CellWrapper cellWrapper = (CellWrapper) value;
-				Cell cell = cellWrapper.cell;
-				
-				JPanel panel = new JPanel();
-				panel.setLayout(new BorderLayout(0, 0));
-				
-				JTextField textField = new JTextField(1);
-				textField.setHorizontalAlignment(SwingConstants.CENTER);
-				panel.add(textField, BorderLayout.CENTER);
-
-				textField.setColumns(1);				
-				textField.setFont(font);
-
-	        	textField.setBackground( Color.WHITE );
-	        	
-	        	if (cell.getValue() > 0) {
-		        		textField.setText(Integer.toString(cell.getValue()));
-	
-		        		if (cell.isReadOnly()) {
-			        		textField.setForeground( Color.BLUE );
-			        	}
-			        	else {
-			        		textField.setForeground( Color.BLACK );
-			        	}
-		        }
-		        else {
-	        		if ( cellWrapper.illegalValue > 0 ) {
-			            textField.setForeground( Color.RED );
-			            textField.setText(Integer.toString(cellWrapper.illegalValue));
-			        }
-		        }
-
-	    		JLabel label = new JLabel(formatMarkup(cell.getMarkUp()));
-	    		label.setFont(new Font("Lucida Grande", Font.PLAIN, 8));
-	    		label.setBackground(Color.WHITE);
-	    		label.setHorizontalAlignment(0);
-	    		panel.add(label, BorderLayout.NORTH);
-
-				if (hasFocus) {
-					panel.setBackground(Color.green.darker());
-				}
-				else {
-					panel.setBackground(backgroundColor);
-				}
-
-				return panel;
-		    }
-			
-			private String formatMarkup(BitSet set) {
-				StringBuilder b = new StringBuilder();
-				for (int i = 1; i <= 9; i++) {
-					b.append( set.get(i) ? i : " ");
-				}
-				return b.toString();
-			}
-		};
-
-		table.setDefaultRenderer(CellWrapper.class, centerRenderer);
+//		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer() {
+//			Color backgroundColor = getBackground();
+//			
+//			@Override
+//			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+//				CellWrapper cellWrapper = (CellWrapper) value;
+//				Cell cell = cellWrapper.cell;
+//				
+//				JPanel panel = new JPanel();
+//				panel.setLayout(new BorderLayout(0, 0));
+//				
+//				JTextField textField = new JTextField(1);
+//				textField.setHorizontalAlignment(SwingConstants.CENTER);
+//				panel.add(textField, BorderLayout.CENTER);
+//
+//				textField.setColumns(1);				
+//				textField.setFont(font);
+//
+//	        	textField.setBackground( Color.WHITE );
+//	        	
+//	        	if (cell.getValue() > 0) {
+//		        		textField.setText(Integer.toString(cell.getValue()));
+//	
+//		        		if (cell.isReadOnly()) {
+//			        		textField.setForeground( Color.BLUE );
+//			        	}
+//			        	else {
+//			        		textField.setForeground( Color.BLACK );
+//			        	}
+//		        }
+//		        else {
+//	        		if ( cellWrapper.illegalValue > 0 ) {
+//			            textField.setForeground( Color.RED );
+//			            textField.setText(Integer.toString(cellWrapper.illegalValue));
+//			        }
+//		        }
+//
+//	    		JLabel label = new JLabel(formatMarkup(cell.getMarkUp()));
+//	    		label.setFont(new Font("Lucida Grande", Font.PLAIN, 8));
+//	    		label.setBackground(Color.WHITE);
+//	    		label.setHorizontalAlignment(0);
+//	    		panel.add(label, BorderLayout.NORTH);
+//
+//				if (hasFocus) {
+//					panel.setBackground(Color.green.darker());
+//				}
+//				else {
+//					panel.setBackground(backgroundColor);
+//				}
+//
+//				return panel;
+//		    }
+//			
+//			private String formatMarkup(BitSet set) {
+//				StringBuilder b = new StringBuilder();
+//				for (int i = 1; i <= 9; i++) {
+//					b.append( set.get(i) ? i : " ");
+//				}
+//				return b.toString();
+//			}
+//		};
+//
+//		table.setDefaultRenderer(CellWrapper.class, centerRenderer);
 		
 		final int height = 50;
 		
@@ -415,6 +415,103 @@ class FieldLimit extends PlainDocument {
     }
 }
 
+@SuppressWarnings("serial")
+class CellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer
+{
+	final Color backgroundColor = Color.WHITE;
+	final Font bigFont = new Font("Lucida Grande", Font.BOLD, 28);
+	final Font smallFont = new Font("Lucida Grande", Font.PLAIN, 8);
+	
+	JTextField textField;
+	
+	public CellEditor() {
+	}
+	
+	@Override
+	public Object getCellEditorValue() {
+		return textField.getText();
+	}
+
+	private JPanel updateData(CellWrapper wrapper, boolean hasFocus) {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout(0, 0));
+		
+		textField = new JTextField(1);
+		textField.setHorizontalAlignment(SwingConstants.CENTER);
+		panel.add(textField, BorderLayout.CENTER);
+
+		textField.setColumns(1);				
+		textField.setFont(bigFont);
+		
+    	textField.setBackground( backgroundColor );
+    	
+		JLabel label = new JLabel();
+		label.setFont(smallFont);
+		label.setBackground(Color.WHITE);
+		label.setHorizontalAlignment(0);
+		panel.add(label, BorderLayout.NORTH);
+
+		Cell cell = wrapper.cell;
+
+    	if (cell.getValue() > 0) {
+    		textField.setText(Integer.toString(cell.getValue()));
+
+    		if (cell.isReadOnly()) {
+        		textField.setForeground( Color.BLUE );
+        	}
+        	else {
+        		textField.setForeground( Color.BLACK );
+        	}
+		}
+		else {
+			if ( wrapper.illegalValue > 0 ) {
+		        textField.setForeground( Color.RED );
+		        textField.setText(Integer.toString(wrapper.illegalValue));
+		    }
+		}
+		
+		if (hasFocus) {
+			panel.setBackground(Color.green.darker());
+		}
+		else {
+			panel.setBackground(backgroundColor);
+		}
+		
+		label.setText( formatMarkup( cell.getMarkUp() ));
+
+		return panel;
+	}
+
+	private String formatMarkup(BitSet set) {
+		StringBuilder b = new StringBuilder();
+		for (int i = 1; i <= 9; i++) {
+			b.append( set.get(i) ? i : " ");
+		}
+		return b.toString();
+	}
+
+	@Override
+	public Component getTableCellRendererComponent(JTable table, Object value,
+			boolean isSelected, boolean hasFocus, int row, int column) {
+		CellWrapper wrapper = (CellWrapper) value;
+		
+		JPanel panel = updateData(wrapper, hasFocus);
+		
+		return panel;
+	}
+
+	@Override
+	public Component getTableCellEditorComponent(JTable table, Object value,
+			boolean isSelected, int row, int column) {
+		// TODO Auto-generated method stub
+		CellWrapper wrapper = (CellWrapper) value;
+		
+		JPanel panel = updateData(wrapper, true);
+		
+		return panel;
+	}
+	
+}
 @SuppressWarnings("serial")
 class MyEditor extends DefaultCellEditor
 {
