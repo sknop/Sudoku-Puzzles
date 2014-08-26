@@ -4,13 +4,19 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.util.BitSet;
 
+import javax.swing.AbstractAction;
 import javax.swing.AbstractCellEditor;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -119,7 +125,72 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
 		CellWrapper wrapper = (CellWrapper) value;
 		
 		JPanel panel = updateData(wrapper, true);
-		
+
+    	InputMap im = textField.getInputMap();
+    	im.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "Arrow.up");
+    	im.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "Arrow.down");
+    	im.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "Arrow.left");
+    	im.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "Arrow.right");
+    	
+    	class UpAction extends AbstractAction {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int newRow = row - 1;
+				if (newRow < 0) newRow = 8;
+				int newColumn = column;
+				if (table.editCellAt(newRow, newColumn)) {
+					boolean toggle = false;
+				    boolean extend = false;
+				    table.changeSelection(newRow, newColumn, toggle, extend);
+				}
+			}
+    	};
+    	class DownAction extends AbstractAction {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int newRow = row + 1;
+				if (newRow > 8) newRow = 0;
+				int newColumn = column;
+				if (table.editCellAt(newRow, newColumn)) {
+					boolean toggle = false;
+				    boolean extend = false;
+				    table.changeSelection(newRow, newColumn, toggle, extend);
+				}
+			}
+    	};
+    	class LeftAction extends AbstractAction {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int newRow = row;
+				int newColumn = column - 1;
+				if (newColumn < 0) newColumn = 8;
+				if (table.editCellAt(newRow, newColumn)) {
+					boolean toggle = false;
+				    boolean extend = false;
+				    table.changeSelection(newRow, newColumn, toggle, extend);
+				}
+			}
+    	};
+    	class RightAction extends AbstractAction {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int newRow = row;
+				int newColumn = column + 1;
+				if (newColumn > 8) newColumn = 0;
+				if (table.editCellAt(newRow, newColumn)) {
+					boolean toggle = false;
+				    boolean extend = false;
+				    table.changeSelection(newRow, newColumn, toggle, extend);
+				}
+			}
+    	};
+
+    	ActionMap am = textField.getActionMap();
+    	am.put("Arrow.up", new UpAction());
+    	am.put("Arrow.down", new DownAction());
+    	am.put("Arrow.left", new LeftAction());
+    	am.put("Arrow.right", new RightAction());
+    	
 		return panel;
 	}
 	
