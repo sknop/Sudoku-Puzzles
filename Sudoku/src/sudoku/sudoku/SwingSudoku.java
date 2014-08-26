@@ -109,6 +109,9 @@ public class SwingSudoku extends Sudoku
 		
 		@Override
 		public boolean isCellEditable(int rowIndex, int columnIndex) {
+			if (isSolved()) 
+				return false;
+			
 	        Point p = new Point(rowIndex + 1, columnIndex + 1);
 			boolean isReadOnly = isReadOnly(p);
 			return !isReadOnly;
