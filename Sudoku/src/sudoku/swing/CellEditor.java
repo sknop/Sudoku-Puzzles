@@ -132,56 +132,46 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
     	im.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "Arrow.left");
     	im.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "Arrow.right");
     	
-    	class UpAction extends AbstractAction {
+    	abstract class ArrowAction extends AbstractAction {
+    		void moveToCell(int row, int column) {
+				table.editCellAt(row, column);
+			    table.changeSelection(row, column, false, false);
+    		}
+    	}
+    	class UpAction extends ArrowAction {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int newRow = row - 1;
 				if (newRow < 0) newRow = 8;
 				int newColumn = column;
-				if (table.editCellAt(newRow, newColumn)) {
-					boolean toggle = false;
-				    boolean extend = false;
-				    table.changeSelection(newRow, newColumn, toggle, extend);
-				}
+				moveToCell(newRow, newColumn);
 			}
     	};
-    	class DownAction extends AbstractAction {
+    	class DownAction extends ArrowAction {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int newRow = row + 1;
 				if (newRow > 8) newRow = 0;
 				int newColumn = column;
-				if (table.editCellAt(newRow, newColumn)) {
-					boolean toggle = false;
-				    boolean extend = false;
-				    table.changeSelection(newRow, newColumn, toggle, extend);
-				}
+				moveToCell(newRow, newColumn);
 			}
     	};
-    	class LeftAction extends AbstractAction {
+    	class LeftAction extends ArrowAction {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int newRow = row;
 				int newColumn = column - 1;
 				if (newColumn < 0) newColumn = 8;
-				if (table.editCellAt(newRow, newColumn)) {
-					boolean toggle = false;
-				    boolean extend = false;
-				    table.changeSelection(newRow, newColumn, toggle, extend);
-				}
+				moveToCell(newRow, newColumn);
 			}
     	};
-    	class RightAction extends AbstractAction {
+    	class RightAction extends ArrowAction {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int newRow = row;
 				int newColumn = column + 1;
 				if (newColumn > 8) newColumn = 0;
-				if (table.editCellAt(newRow, newColumn)) {
-					boolean toggle = false;
-				    boolean extend = false;
-				    table.changeSelection(newRow, newColumn, toggle, extend);
-				}
+				moveToCell(newRow, newColumn);
 			}
     	};
 
