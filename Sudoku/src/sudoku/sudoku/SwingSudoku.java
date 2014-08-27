@@ -26,9 +26,11 @@ package sudoku.sudoku;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
+import java.awt.GridLayout;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -37,6 +39,7 @@ import javax.swing.ListSelectionModel;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -74,7 +77,8 @@ public class SwingSudoku extends Sudoku
 	private AbstractTableModel tableModel;
 
 	private Map<Point, Integer> illegalEntries = new HashMap<>();
-	
+	private JFileChooser fileChooser = new JFileChooser();
+	private File lastDirectory = new File(".");
 	
 	@SuppressWarnings("serial")
 	class SudokuTableModel extends AbstractTableModel
@@ -260,11 +264,21 @@ public class SwingSudoku extends Sudoku
 	    
 		frame.getContentPane().add(table, BorderLayout.CENTER);
 		
+		JPanel bottomPanel = new JPanel();
+		frame.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
+		
 		JPanel buttons = new JPanel();
-		frame.getContentPane().add(buttons, BorderLayout.SOUTH);
+		buttons.setLayout(new GridLayout(2, 3));
+		bottomPanel.add(buttons);
 		
 		createButtons(buttons);
+
+		JPanel status = new JPanel();
+		bottomPanel.add(status);
 		
+		solved = new JLabel();
+		status.add(solved);
+
 		frame.pack();
 	}
 
@@ -304,8 +318,56 @@ public class SwingSudoku extends Sudoku
 		});
 		buttons.add(quitButton);
 		
-		solved = new JLabel();
-		buttons.add(solved);
+		JButton loadButton = new JButton("Load");
+		loadButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				fileChooser.setCurrentDirectory(lastDirectory);
+				int returnValue = fileChooser.showOpenDialog(null);
+				
+				if (returnValue == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+					Path path = FileSystems.getDefault().getPath(file.getPath());
+					
+					try {
+						importFile(path);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					} catch (IllegalFileFormatException e1) {
+						e1.printStackTrace();
+					} catch (CellContentException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+			
+		});
+		buttons.add(loadButton);
+		
+		JButton saveButton = new JButton("Save");
+		saveButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				fileChooser.setCurrentDirectory(lastDirectory);
+				int returnValue = fileChooser.showSaveDialog(null);
+				
+				if (returnValue == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+					Path path = FileSystems.getDefault().getPath(file.getPath());
+					
+					try {
+						exportFile(path);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+			
+		});
+		buttons.add(saveButton);
+		
 	}
 
 	/**
