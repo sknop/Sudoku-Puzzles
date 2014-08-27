@@ -300,6 +300,10 @@ public class SwingSudoku extends Sudoku
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				// cheeky hack - remove selection so that the cell is not blocked 
+				table.editCellAt(-1, -1);
+				table.getSelectionModel().clearSelection();
+				
 				solveBruteForce();
 				tableModel.fireTableDataChanged();
 				solved.setText("Solved (cheated)!");
