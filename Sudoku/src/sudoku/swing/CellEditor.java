@@ -37,8 +37,10 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
 	JPanel panel;
 	JTextField textField;
 	JLabel label;
+	Options options;
 	
-	public CellEditor() {
+	public CellEditor(Options options) {
+		this.options = options;
 	}
 	
 	@Override
@@ -96,7 +98,9 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
 				panel.setBackground(backgroundColor);
 			}
 			
-			label.setText( formatMarkup( cell.getMarkUp() ));
+			if (options.getHintLevel() > 0) {
+				label.setText( formatMarkup( cell.getMarkUp() ));
+			}
 		}
 		return panel;
 	}

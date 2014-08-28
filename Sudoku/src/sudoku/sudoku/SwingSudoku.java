@@ -29,6 +29,7 @@ import java.awt.EventQueue;
 import java.awt.GridLayout;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -60,6 +61,7 @@ import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalCellPositionException;
 import sudoku.exceptions.IllegalFileFormatException;
 import sudoku.swing.CellEditor;
+import sudoku.swing.Options;
 import sudoku.unit.Unit;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
@@ -73,6 +75,8 @@ public class SwingSudoku extends Sudoku
 	private JFrame frame;
 	private JTable table;
 	private JLabel solved;
+	
+	private Options options = new Options();
 	
 	private AbstractTableModel tableModel;
 
@@ -244,8 +248,8 @@ public class SwingSudoku extends Sudoku
 	    table.setRowSelectionAllowed(false);
 	    table.setColumnSelectionAllowed(false);
 
-	    table.setDefaultEditor(CellWrapper.class, new CellEditor());
-	    table.setDefaultRenderer(CellWrapper.class, new CellEditor());
+	    table.setDefaultEditor(CellWrapper.class, new CellEditor(options));
+	    table.setDefaultRenderer(CellWrapper.class, new CellEditor(options));
 	    table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 	    		
 		final int height = 50;
@@ -273,11 +277,32 @@ public class SwingSudoku extends Sudoku
 		
 		createButtons(buttons);
 
-		JPanel status = new JPanel();
-		bottomPanel.add(status);
+		JPanel reports = new JPanel();
+		reports.setLayout(new GridLayout(2,2,1,1));
+		bottomPanel.add(reports);
+
+		JLabel optionsLabel = new JLabel("Hints :");
+		reports.add(optionsLabel);
 		
-		solved = new JLabel();
-		status.add(solved);
+		JComboBox<String> hintOptions = new JComboBox<>();
+		hintOptions.addItem("None");
+		hintOptions.addItem("Markup");
+		hintOptions.addItem("Hints 1");
+		reports.add(hintOptions);
+		
+		hintOptions.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				options.setHintLevel(hintOptions.getSelectedIndex());
+				tableModel.fireTableDataChanged();
+			}
+		});
+		
+		JLabel solvedLabel = new JLabel("Status :");
+		reports.add(solvedLabel);
+				
+		solved = new JLabel("Unsolved");
+		reports.add(solved);
 
 		frame.pack();
 	}
@@ -306,7 +331,7 @@ public class SwingSudoku extends Sudoku
 				
 				solveBruteForce();
 				tableModel.fireTableDataChanged();
-				solved.setText("Solved (cheated)!");
+				solved.setText("Cheated");
 			}
 		});
 		buttons.add(solveButton);
