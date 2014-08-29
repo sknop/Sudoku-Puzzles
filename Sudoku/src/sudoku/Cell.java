@@ -116,19 +116,18 @@ public class Cell implements Iterable<Integer>
 	}
 	
 	private BitSet removeUniques(BitSet markUp, int level) {
-		System.out.println("RemoveUniques " + level);
 		for (Unit u : belongsTo) {
 			for (Cell c : u.getCells()) {
 				if (c != this) {
 					BitSet itsMarkUp = c.getHints(level - 1);
 					if (itsMarkUp.cardinality() == 1) {
 						int uniqueValue = itsMarkUp.nextSetBit(0);
-						System.out.println("Unique : " + uniqueValue + " @ " + c);
 						markUp.clear(uniqueValue);
 					}
 				}
 			}
 		}
+		
 		return markUp;
 	}
 	
