@@ -25,6 +25,7 @@ package sudoku.sudoku;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
 
@@ -78,7 +79,7 @@ public class SwingSudoku extends Sudoku
 	
 	private Options options = new Options();
 	
-	private AbstractTableModel tableModel;
+	private SudokuTableModel tableModel;
 
 	private Map<Point, Integer> illegalEntries = new HashMap<>();
 	private JFileChooser fileChooser = new JFileChooser();
@@ -167,10 +168,26 @@ public class SwingSudoku extends Sudoku
 	        	}
 	        }
 	        
-	        if (isSolved()) {
+	        setStatus();
+	    }
+
+		void setStatus() {
+			if (isSolved()) {
 	        	solved.setText("Solved!");
 	        }
-	    }
+	        else {
+	        	int solutions = isUnique();
+	        	if (solutions == 1) {
+	        		solved.setText("Unsolved");
+	        	}
+	        	else if (solutions == 0) {
+	        		solved.setText("No solutions");
+	        	}
+	        	else {
+	        		solved.setText("Not unique");
+	        	}
+	        }
+		}
 	}
 	
 	/**
@@ -278,7 +295,11 @@ public class SwingSudoku extends Sudoku
 		createButtons(buttons);
 
 		JPanel reports = new JPanel();
-		reports.setLayout(new GridLayout(2,2,1,1));
+		reports.setLayout(new GridLayout(2,2,0,0));
+		Dimension reportSize = new Dimension(180,60);
+		reports.setMaximumSize(reportSize);
+		reports.setMinimumSize(reportSize);
+		reports.setPreferredSize(reportSize);
 		bottomPanel.add(reports);
 
 		JLabel optionsLabel = new JLabel("Hints :");
@@ -300,10 +321,12 @@ public class SwingSudoku extends Sudoku
 		
 		JLabel solvedLabel = new JLabel("Status :");
 		reports.add(solvedLabel);
-				
-		solved = new JLabel("Unsolved");
+
+		solved = new JLabel();
 		reports.add(solved);
 
+		tableModel.setStatus();
+		
 		frame.pack();
 	}
 
