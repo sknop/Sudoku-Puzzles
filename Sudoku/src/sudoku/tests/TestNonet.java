@@ -44,7 +44,7 @@ public class TestNonet
 		
 		int x = 1;
 		for (int y = 1; y <= 9; y++) {
-			Cell cell = new Cell(x,y);
+			Cell cell = new Cell(9, x,y);
 			try {
 				nonet.addCell(cell);
 			}
@@ -55,7 +55,7 @@ public class TestNonet
 		}
 		
 		try {
-			Cell cell = new Cell(1,10);
+			Cell cell = new Cell(9, 1,10);
 			nonet.addCell(cell);
 			fail("Did not throw exception for additional cell");
 		}
@@ -71,7 +71,7 @@ public class TestNonet
 		List<Cell> cells = new ArrayList<>();
 		int x = 3;
 		for (int y = 1; y <= 9; y++) {
-			Cell cell = new Cell(x,y);
+			Cell cell = new Cell(9, x,y);
 			cells.add(cell);
 			nonet.addCell(cell);
 		}
@@ -89,7 +89,7 @@ public class TestNonet
 		List<Cell> cells = new ArrayList<>();
 		int x = 3;
 		for (int y = 1; y <= 9; y++) {
-			Cell cell = new Cell(x,y);
+			Cell cell = new Cell(9, x,y);
 			cells.add(cell);
 			nonet.addCell(cell);
 		}

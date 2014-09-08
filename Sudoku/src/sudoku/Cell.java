@@ -39,6 +39,7 @@ public class Cell implements Iterable<Integer>
 	private Point location;
 	private List<Unit> belongsTo = new ArrayList<>();
 	private boolean readOnly = false;
+	private int limit;
 	
 	public boolean isReadOnly() {
 		return readOnly;
@@ -48,12 +49,13 @@ public class Cell implements Iterable<Integer>
 		return (value == 0);
 	}
 	
-	public Cell(Point location) {
+	public Cell(int limit, Point location) {
 		this.location = location;
+		this.limit = limit;
 	}
 
-	public Cell(int x, int y) {
-		this.location = new Point(x,y);
+	public Cell(int limit, int x, int y) {
+		this(limit, new Point(x,y));
 	}
 
 	public void setInitValue(int value) throws CellContentException {
@@ -74,6 +76,9 @@ public class Cell implements Iterable<Integer>
 	public void setValue(int value) throws CellContentException {
 		if (readOnly) {
 			throw new CellContentException(this.toString() + " is read only");
+		}
+		else if (value > limit) {
+			throw new CellContentException("Value " + value + " larger than " + limit);
 		}
 		else {
 			for (Unit u : belongsTo) {
@@ -100,7 +105,7 @@ public class Cell implements Iterable<Integer>
 			for (Unit u : belongsTo) {
 				markUp.or(u.getNumbers());
 			}
-			markUp.flip(1, 10);
+			markUp.flip(1, limit + 1);
 		}
 		
 		return markUp;

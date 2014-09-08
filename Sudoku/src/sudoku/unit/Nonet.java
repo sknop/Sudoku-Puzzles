@@ -51,7 +51,7 @@ public class Nonet extends AbstractUnit
 		List<Cell> cells = new ArrayList<>();
 		int x = 1;
 		for (int y = 1; y <= 9; y++) {
-			Cell cell = new Cell(x,y);
+			Cell cell = new Cell(9, x,y);
 			cells.add(cell);
 			nonet.addCell(cell);
 			nonet2.addCell(cell);

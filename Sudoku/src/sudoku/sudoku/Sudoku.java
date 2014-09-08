@@ -65,7 +65,7 @@ public class Sudoku extends Puzzle
 			for (int x = 1; x <= 9; x++) {
 				for (int y = 1; y <= 9; y++) {
 					Point p = new Point(x,y);
-					Cell cell = new Cell(p);
+					Cell cell = new Cell(9, p);
 					cells.put(p, cell);
 				}
 			}

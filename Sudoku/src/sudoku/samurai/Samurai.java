@@ -99,7 +99,7 @@ public class Samurai extends Puzzle
 				@Override
 				public void apply(int x, int y) {
 					Point p = new Point(x,y);
-					Cell cell = new Cell(p);
+					Cell cell = new Cell(9, p);
 					cells.put(p, cell);
 				}
 				
