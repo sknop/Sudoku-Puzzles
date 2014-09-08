@@ -27,8 +27,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.BitSet;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -177,7 +175,7 @@ public abstract class Puzzle
 		tries = 0;
 		boolean result = solveRecursive(emptyCells);
 		
-		System.out.println("Needed " + tries + " to solve.");
+		// System.out.println("Needed " + tries + " to solve.");
 		return result;
 	}
 
