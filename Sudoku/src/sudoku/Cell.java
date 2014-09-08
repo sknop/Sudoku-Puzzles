@@ -110,20 +110,22 @@ public class Cell implements Iterable<Integer>
 		BitSet markUp = getMarkUp();
 		
 		if (level > 0) {
-			BitSet result = removeUniques(markUp, level);
-			if (result.cardinality() < markUp.cardinality()) {
-				markUp = result;
-			}
+			markUp = removeUniques(markUp);
+		}
+		if (level > 1) {
+			markUp = removePairs(markUp);
 		}
 		return markUp;
 	}
 	
-	private BitSet removeUniques(BitSet markUp, int level) {
+	// Uniques are simple: their markup only contains one value
+	// This value cannot show up in any other Cell in the Unit - job done
+	public BitSet removeUniques(BitSet markUp) {
 		BitSet copyMarkUp = (BitSet) markUp.clone();
 		for (Unit u : belongsTo) {
 			for (Cell c : u.getCells()) {
 				if (c != this) {
-					BitSet itsMarkUp = c.getHints(level - 1);
+					BitSet itsMarkUp = c.getMarkUp();
 					if (itsMarkUp.cardinality() == 1) {
 						int uniqueValue = itsMarkUp.nextSetBit(0);
 						copyMarkUp.clear(uniqueValue);
@@ -134,7 +136,28 @@ public class Cell implements Iterable<Integer>
 		
 		return copyMarkUp;
 	}
-	
+
+	// So what exactly is a pair?
+	// 	cardinality of 2
+	//	an identical pair has to exist in the same Unit
+	//	this screams for a set of test cases ... which is surprisingly hard to set up
+	public BitSet removePairs(BitSet markUp) {
+		BitSet copyMarkUp = (BitSet) markUp.clone();
+		for (Unit u : belongsTo) {
+			for (Cell c : u.getCells()) {
+				if (c != this) {
+					BitSet itsMarkUp = c.getMarkUp();
+					if (itsMarkUp.cardinality() == 1) {
+						int uniqueValue = itsMarkUp.nextSetBit(0);
+						copyMarkUp.clear(uniqueValue);
+					}
+				}
+			}
+		}
+		
+		return copyMarkUp;
+	}
+
 	public void addToUnit(Unit unit) throws AddCellException {
 		belongsTo.add(unit);
 	}

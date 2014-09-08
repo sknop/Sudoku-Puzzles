@@ -24,11 +24,13 @@
 package sudoku.unit;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
 
 import sudoku.Cell;
 import sudoku.exceptions.AddCellException;
+import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.TooManyCellsException;;
 
 public abstract class AbstractUnit implements Unit
@@ -36,11 +38,14 @@ public abstract class AbstractUnit implements Unit
 	protected List<Cell> cells;
 	protected int maxCells;
 	protected String position;
+	protected BitSet numbers;
 	
 	protected AbstractUnit(int size, String position) {
 		this.maxCells = size;
 		this.cells = new ArrayList<>(size);
 		this.position = position;
+		
+		this.numbers = new BitSet(size);
 	}
 	
 	@Override
@@ -60,5 +65,27 @@ public abstract class AbstractUnit implements Unit
 	@Override
 	public String toString() {
 		return String.format("(%s) %s", position, cells.toString());
+	}
+
+	@Override
+	public void update(int oldValue, int newValue) throws CellContentException {
+		if ( oldValue != 0 ) {
+			// need to remove the old value
+			numbers.clear(oldValue);
+		}
+		
+		if ( newValue != 0) {
+			if ( numbers.get(newValue) ) {
+				throw new CellContentException("Value " + newValue + " already exists in " + this);
+			}
+			else {
+				numbers.set(newValue);
+			}
+		}
+	}
+
+	@Override
+	public BitSet getNumbers() {
+		return (BitSet) numbers.clone();
 	}
 }

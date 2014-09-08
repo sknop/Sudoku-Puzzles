@@ -28,32 +28,11 @@ import java.util.BitSet;
 import java.util.List;
 
 import sudoku.Cell;
-import sudoku.exceptions.CellContentException;
 
 public class Nonet extends AbstractUnit
 {
-	BitSet numbers = new BitSet(9);
-		
 	public Nonet(String position) {
 		super(9, position); // a Nonet has exactly 9 cells
-	
-	}
-
-	@Override
-	public void update(int oldValue, int newValue) throws CellContentException {
-		if ( oldValue != 0 ) {
-			// need to remove the old value
-			numbers.clear(oldValue);
-		}
-		
-		if ( newValue != 0) {
-			if ( numbers.get(newValue) ) {
-				throw new CellContentException("Value " + newValue + " already exists in " + this);
-			}
-			else {
-				numbers.set(newValue);
-			}
-		}
 	}
 
 	@Override 
@@ -66,8 +45,8 @@ public class Nonet extends AbstractUnit
 	// #############################################################
 	
 	public static void main(String[] args) throws Exception {
-		Nonet nonet = new Nonet("1st row");
-		Nonet nonet2 = new Nonet("2nd row");
+		AbstractUnit nonet = new Nonet("1st row");
+		AbstractUnit nonet2 = new Nonet("2nd row");
 		
 		List<Cell> cells = new ArrayList<>();
 		int x = 1;
@@ -84,10 +63,5 @@ public class Nonet extends AbstractUnit
 		}
 		System.out.println(nonet);
 		System.out.println(nonet2);
-	}
-
-	@Override
-	public BitSet getNumbers() {
-		return (BitSet) numbers.clone();
 	}
 }
