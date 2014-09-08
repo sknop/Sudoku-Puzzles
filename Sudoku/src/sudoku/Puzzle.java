@@ -132,13 +132,7 @@ public abstract class Puzzle
 	 * @return true if this Sudoku is solved
 	 */
 	public boolean isSolved() {
-		for (Cell cell : cells.values()) {
-			if (cell.empty()) {
-				return false;
-			}
-		}
-		
-		return true;
+		return cells.values().stream().allMatch(c -> ! c.empty());
 	}
 
 	public void setValue(int x, int y, int value)
