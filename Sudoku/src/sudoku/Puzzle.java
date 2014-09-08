@@ -26,6 +26,8 @@ package sudoku;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.BitSet;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -45,6 +47,8 @@ public abstract class Puzzle
 	protected static final String Section = " %s %s %s |";
 
 	protected int maxValue;
+	protected int tries = 0;
+	
 	protected final Map<Point, Cell> cells = new HashMap<>();
 
 	public Puzzle(int maxValue) {
@@ -168,9 +172,13 @@ public abstract class Puzzle
 	 * Solves the Sudoku, trying out every combination
 	 */
 	public boolean solveBruteForce() {
-		Deque<Cell> emptyCells = getEmpties();
-				
-		return solveRecursive(emptyCells);
+		LinkedList<Cell> emptyCells = getEmpties();
+		
+		tries = 0;
+		boolean result = solveRecursive(emptyCells);
+		
+		System.out.println("Needed " + tries + " to solve.");
+		return result;
 	}
 
 	private LinkedList<Cell> getEmpties() {
@@ -183,18 +191,22 @@ public abstract class Puzzle
 
 	public abstract void createRandomPuzzle() ;
 	
-	protected boolean solveRecursive(Deque<Cell> empties) {
+	protected boolean solveRecursive(LinkedList<Cell> empties) {
 		// recursive bottom
 		if (empties.size() == 0) 
 			return true;
 	
-		Deque<Cell> tail = empties; //not a copy
+		tries++;
+		LinkedList<Cell> tail = empties; //not a copy
 		
 		Cell head = tail.remove();
 		
 		for (int i : head) {
 			try {
 				head.setValue(i);
+				
+				// several orders of magnitude faster to sort Cells by number of remaining entries
+				Collections.sort(tail, (Cell c1, Cell c2) -> c1.getMarkUp().cardinality() - c2.getMarkUp().cardinality());
 				
 				if (solveRecursive(tail)) {
 					return true;
@@ -214,14 +226,14 @@ public abstract class Puzzle
 	}
 
 	public int isUnique() {
-		Deque<Cell> emptyCells = getEmpties();
+		LinkedList<Cell> emptyCells = getEmpties();
 		
 		int solutions = uniqueRecursive(emptyCells, 0);
 		
 		return solutions;
 	}
 	
-	private int uniqueRecursive(Deque<Cell> empties, int solutions) {
+	private int uniqueRecursive(LinkedList<Cell> empties, int solutions) {
 		// recursive bottom
 		if (empties.size() == 0) {
 			return solutions + 1;			
@@ -229,7 +241,7 @@ public abstract class Puzzle
 	
 		int result = solutions;
 		
-		Deque<Cell> tail = empties; //not a copy
+		LinkedList<Cell> tail = empties; //not a copy
 		
 		Cell head = tail.remove();
 		
@@ -237,6 +249,9 @@ public abstract class Puzzle
 			try {
 				head.setValue(i);
 				
+				// several orders of magnitude faster to sort Cells by number of remaining entries
+				Collections.sort(tail, (Cell c1, Cell c2) -> c1.getMarkUp().cardinality() - c2.getMarkUp().cardinality());
+
 				result = uniqueRecursive(tail, result);
 				if (result > 1) {
 					head.reset(); // need to reset, or the puzzle is solved

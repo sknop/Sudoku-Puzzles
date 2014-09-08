@@ -54,7 +54,7 @@ public class Samurai extends Puzzle
 	private final List<Nonet> boxes = new ArrayList<>();
 	
 	public final int PUZZLE_WIDTH = 21;
-	public final int removeLimit = 250;
+	public final int removeLimit = 300;
 	
 	public Samurai() {
 		super(9);
@@ -470,7 +470,7 @@ public class Samurai extends Puzzle
 				}			
 			}
 	
-			Deque<Cell> smallSolve = new LinkedList<>();
+			LinkedList<Cell> smallSolve = new LinkedList<>();
 			for (int i : solveThese[b]) {
 				Nonet box = boxes.get(i - 1); // indexed from 0, but written from 1 for easy debugging
 				smallSolve.addAll( box.getCells() );
