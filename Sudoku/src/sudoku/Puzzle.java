@@ -39,8 +39,6 @@ import sudoku.exceptions.ValueOutsideRangeException;
 
 public abstract class Puzzle
 {
-	// protected static final String BigBorder = "  +-----------------------+";
-	// protected static final String LittleBorder = "  |-------+-------+-------|";
 	protected static final String Front = " |";
 	protected static final String Section = " %s %s %s |";
 
