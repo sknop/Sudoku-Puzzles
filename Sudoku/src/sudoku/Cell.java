@@ -110,25 +110,29 @@ public class Cell implements Iterable<Integer>
 		BitSet markUp = getMarkUp();
 		
 		if (level > 0) {
-			markUp = removeUniques(markUp, level);
+			BitSet result = removeUniques(markUp, level);
+			if (result.cardinality() < markUp.cardinality()) {
+				markUp = result;
+			}
 		}
 		return markUp;
 	}
 	
 	private BitSet removeUniques(BitSet markUp, int level) {
+		BitSet copyMarkUp = (BitSet) markUp.clone();
 		for (Unit u : belongsTo) {
 			for (Cell c : u.getCells()) {
 				if (c != this) {
 					BitSet itsMarkUp = c.getHints(level - 1);
 					if (itsMarkUp.cardinality() == 1) {
 						int uniqueValue = itsMarkUp.nextSetBit(0);
-						markUp.clear(uniqueValue);
+						copyMarkUp.clear(uniqueValue);
 					}
 				}
 			}
 		}
 		
-		return markUp;
+		return copyMarkUp;
 	}
 	
 	public void addToUnit(Unit unit) throws AddCellException {
