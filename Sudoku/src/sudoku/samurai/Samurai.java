@@ -53,7 +53,7 @@ public class Samurai extends Puzzle
 	private final List<Nonet> boxes = new ArrayList<>();
 	
 	public final int PUZZLE_WIDTH = 21;
-	public final int removeLimit = 300;
+	public final int removeLimit = 280;
 	
 	public Samurai() {
 		super(9);
