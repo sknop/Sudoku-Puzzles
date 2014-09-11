@@ -145,7 +145,6 @@ public class Cell implements Iterable<Integer>
 	// So what exactly is a pair?
 	// 	cardinality of 2
 	//	an identical pair has to exist in the same Unit
-	//	this screams for a set of test cases ... which is surprisingly hard to set up
 	public BitSet removePairs(BitSet markUp) {
 		BitSet copyMarkUp = (BitSet) markUp.clone();
 		for (Unit u : belongsTo) {
