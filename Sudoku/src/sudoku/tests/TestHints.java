@@ -22,17 +22,17 @@ public class TestHints
 	final List<Trio> columns = new ArrayList<>();
 	final Map<Point, Cell> cells = new HashMap<>();
 
+	final int maxSize = 3;
+	
 	class Trio extends AbstractUnit 
 	{
 		protected Trio(String position) {
-			super(3, position);
+			super(maxSize, position);
 		}		
 	}
 
 	@Before
 	public void setUp() throws Exception {
-		int maxSize = 3;
-		
 		for (int x = 1; x <= maxSize; x++) {
 			for (int y = 1; y <= maxSize; y++) {
 				Point p = new Point(x,y);
