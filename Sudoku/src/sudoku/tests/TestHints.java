@@ -106,4 +106,20 @@ public class TestHints
 		assertTrue(hints.get(1));
 	}
 
+	@Test
+	public void testHintsPairs() throws CellContentException {
+		BitSet hints;
+		
+		Cell topMiddle = cells.get(new Point(2,2));
+		topMiddle.setValue(1);
+		
+		Cell bottomRight = cells.get(new Point(3,3));
+		hints = bottomRight.removePairs(bottomRight.getMarkUp());
+		assertEquals(1, hints.cardinality());
+		assertTrue(hints.get(1));
+		assertFalse(hints.get(2));
+		assertFalse(hints.get(3));
+		
+	}
+
 }

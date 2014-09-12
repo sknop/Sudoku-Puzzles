@@ -148,12 +148,26 @@ public class Cell implements Iterable<Integer>
 	public BitSet removePairs(BitSet markUp) {
 		BitSet copyMarkUp = (BitSet) markUp.clone();
 		for (Unit u : belongsTo) {
-			for (Cell c : u.getCells()) {
-				if (c != this) {
-					BitSet itsMarkUp = c.getMarkUp();
-					if (itsMarkUp.cardinality() == 1) {
-						int uniqueValue = itsMarkUp.nextSetBit(0);
-						copyMarkUp.clear(uniqueValue);
+			Cell secondFound = null;
+			
+			for (Cell c1 : u.getCells()) {
+				if (c1 != this && c1 != secondFound) {
+					BitSet m1 = c1.getMarkUp();
+					
+					if (m1.cardinality() == 2) {
+						for (Cell c2 : u.getCells()) {
+							if (c2 != this && c2 != c1) {
+								BitSet m2 = c2.getMarkUp();
+								
+								if (m1.equals(m2)) {
+									secondFound = c2;
+									for (int i = m2.nextSetBit(0); i >= 0; i = m2.nextSetBit(i+1)) {
+										copyMarkUp.clear(i);
+									}
+								}
+							}
+						}
+						
 					}
 				}
 			}
