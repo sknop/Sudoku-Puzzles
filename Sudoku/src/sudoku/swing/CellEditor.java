@@ -68,10 +68,7 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
 		label.setHorizontalAlignment(0);
 		panel.add(label, BorderLayout.NORTH);
 
-		if (wrapper == null) {
-			System.out.println("Not supposed to happen, wrapper == null?");
-		}
-		else {
+		if (wrapper != null) {
 			Cell cell = wrapper.getCell();
 	
 	    	if (cell.getValue() > 0) {
@@ -99,7 +96,7 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
 			}
 			
 			if (options.getHintLevel() > 0) {
-				label.setText( formatMarkup( cell.getMarkUp() ));
+				label.setText( formatMarkup( cell.getHints(options.getHintLevel()-1)));
 			}
 		}
 		return panel;
@@ -107,8 +104,12 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
 
 	private String formatMarkup(BitSet set) {
 		StringBuilder b = new StringBuilder();
-		for (int i = 1; i <= 9; i++) {
-			b.append( set.get(i) ? i : " ");
+		if (set.cardinality() > 0) {
+			b.append("<html>");
+			for (int i = 1; i <= 9; i++) {
+				b.append( set.get(i) ? i : " ");
+			}
+			b.append("</html>");
 		}
 		return b.toString();
 	}

@@ -309,6 +309,7 @@ public class SwingSudoku extends Sudoku
 		hintOptions.addItem("None");
 		hintOptions.addItem("Markup");
 		hintOptions.addItem("Hints 1");
+		hintOptions.addItem("Hints 2");
 		reports.add(hintOptions);
 		
 		hintOptions.addActionListener(new ActionListener() {
