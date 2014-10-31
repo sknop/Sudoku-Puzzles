@@ -1,6 +1,12 @@
 package sudoku.sudoku;
 
+import java.awt.Toolkit;
+
 import javax.swing.table.AbstractTableModel;
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
 
 import sudoku.Cell;
 import sudoku.CellWrapper;
@@ -10,7 +16,7 @@ import sudoku.exceptions.IllegalCellPositionException;
 import sudoku.unit.Unit;
 
 @SuppressWarnings("serial")
-class SudokuTableModel extends AbstractTableModel
+public class SudokuTableModel extends AbstractTableModel
 {
 	/**
 	 * 
@@ -18,6 +24,37 @@ class SudokuTableModel extends AbstractTableModel
 	private final SwingSudoku swingSudoku;
 	private final int rows;
 	private final int cols;
+	private final UndoManager undoManager = new UndoManager();
+	private boolean isUndoAction = false;
+	
+	class SudokuUndo extends AbstractUndoableEdit {
+		private String value;
+		private String previousValue;
+		private int row;
+		private int column;
+		
+		public SudokuUndo(String value, String previousValue, int row, int column) {
+			this.value = value;
+			this.previousValue = previousValue;
+			this.row = row;
+			this.column = column;
+		}
+		
+		public String getPresentationName() {
+		    return "Sudoku '" + value + "' at (" + row + "," + column + ")";
+		}
+		
+		public void redo() throws CannotRedoException {
+		    super.redo();
+		    setValueAt(value, row,column);
+		  }
+
+		  // Undo by setting the button state to the opposite value.
+		  public void undo() throws CannotUndoException {
+		    super.undo();
+		    setValueAt(previousValue, row, column);
+		  }
+	}
 	
 	public SudokuTableModel(SwingSudoku swingSudoku, int rows, int cols) {
 		this.swingSudoku = swingSudoku;
@@ -33,6 +70,26 @@ class SudokuTableModel extends AbstractTableModel
 	@Override
 	public int getColumnCount() {
 		return cols;
+	}
+	
+	public void undo() {
+		isUndoAction = true;
+		try {
+			undoManager.undo();
+		}
+		catch(CannotUndoException e) {
+			Toolkit.getDefaultToolkit().beep();
+		}
+	}
+	
+	public void redo() {
+		isUndoAction = true;
+		try {
+			undoManager.redo();
+		}
+		catch(CannotRedoException e) {
+			Toolkit.getDefaultToolkit().beep();
+		}
 	}
 	
 	@Override
@@ -78,6 +135,19 @@ class SudokuTableModel extends AbstractTableModel
         	intValue = Integer.parseInt(stringValue);
         }
 
+        Cell cell = this.swingSudoku.getCells().get(p);
+        String previousValue = Integer.toString(cell.getValue());
+        
+        if (isUndoAction) {
+        	isUndoAction = false;
+        	
+        	
+        }
+        else {
+        	SudokuUndo undo = new SudokuUndo(stringValue, previousValue, row, col);
+        	undoManager.addEdit(undo);
+        }
+        
         try {
 			if (this.swingSudoku.illegalEntries.containsKey(p)) {
 				this.swingSudoku.illegalEntries.remove(p);
@@ -96,7 +166,6 @@ class SudokuTableModel extends AbstractTableModel
         
         fireTableCellUpdated(row, col);
         
-        Cell cell = this.swingSudoku.getCells().get(p);
         for (Unit u : cell.getUnits()) {
         	for (Cell c : u.getCells()) {
         		Point point = c.getLocation();
