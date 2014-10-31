@@ -66,7 +66,7 @@ public class Sudoku extends Puzzle
 				for (int y = 1; y <= 9; y++) {
 					Point p = new Point(x,y);
 					Cell cell = new Cell(9, p);
-					cells.put(p, cell);
+					getCells().put(p, cell);
 				}
 			}
 			
@@ -75,7 +75,7 @@ public class Sudoku extends Puzzle
 				rows.add(row);
 				for (int y = 1; y <= 9; y++) {
 					Point p = new Point(x,y);
-					Cell cell = cells.get(p);
+					Cell cell = getCells().get(p);
 					row.addCell(cell);					
 				}
 			}
@@ -85,7 +85,7 @@ public class Sudoku extends Puzzle
 				columns.add(column);
 				for (int x = 1; x <= 9; x++) {
 					Point p = new Point(x,y);
-					Cell cell = cells.get(p);
+					Cell cell = getCells().get(p);
 					column.addCell(cell);					
 				}
 			}
@@ -100,7 +100,7 @@ public class Sudoku extends Puzzle
 						for (int y2 = 1; y2 < 4; y2++) {
 							int y = y1 * 3 + y2;
 							Point p = new Point(x,y);
-							Cell cell = cells.get(p);
+							Cell cell = getCells().get(p);
 							box.addCell(cell);
 						}
 					}
@@ -118,7 +118,7 @@ public class Sudoku extends Puzzle
 				Point p = new Point(row + 1,col + 1);
 				int value = values[row][col];
 				if (value > 0)
-					cells.get(p).setInitValue(value);
+					getCells().get(p).setInitValue(value);
 			}
 		}
 	}
@@ -319,7 +319,7 @@ public class Sudoku extends Puzzle
 		
 		// first, we get all Cells and shuffle them
 		
-		List<Cell> allCells = cells.values().stream().collect(Collectors.toList());
+		List<Cell> allCells = getCells().values().stream().collect(Collectors.toList());
 		Collections.shuffle(allCells);
 		
 		for (Cell c : allCells) {

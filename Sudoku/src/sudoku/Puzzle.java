@@ -45,7 +45,7 @@ public abstract class Puzzle
 	protected int maxValue;
 	protected int tries = 0;
 	
-	protected final Map<Point, Cell> cells = new HashMap<>();
+	private final Map<Point, Cell> cells = new HashMap<>();
 
 	public Puzzle(int maxValue) {
 		this.maxValue = maxValue;
@@ -56,7 +56,7 @@ public abstract class Puzzle
 	}
 
 	public int getValue(final Point p) {
-		return cells.get(p).getValue();
+		return getCells().get(p).getValue();
 	}
 
 	public BitSet getHints(int x, int y, int level) {
@@ -64,7 +64,7 @@ public abstract class Puzzle
 	}
 
 	public BitSet getHints(Point point, int level) {
-		return cells.get(point).getHints(level);
+		return getCells().get(point).getHints(level);
 	}
 
 	public boolean isReadOnly(int x, int y) {
@@ -72,7 +72,7 @@ public abstract class Puzzle
 	}
 	
 	public boolean isReadOnly(Point p) {
-		return cells.get(p).isReadOnly();
+		return getCells().get(p).isReadOnly();
 	}
 
 	private void times(StringBuilder b, String what, int times) {
@@ -132,7 +132,7 @@ public abstract class Puzzle
 	 * @return true if this Sudoku is solved
 	 */
 	public boolean isSolved() {
-		return cells.values().stream().allMatch(c -> ! c.empty());
+		return getCells().values().stream().allMatch(c -> ! c.empty());
 	}
 
 	public void setValue(int x, int y, int value)
@@ -146,14 +146,14 @@ public abstract class Puzzle
 			String error = String.format("Value %d not in range (1-%d)", value, maxValue);
 			throw new ValueOutsideRangeException(error);
 		}
-		if ( cells.containsKey(p))
-			cells.get(p).setValue(value);
+		if ( getCells().containsKey(p))
+			getCells().get(p).setValue(value);
 		else
 			throw new IllegalCellPositionException("No cell at " + p);
 	}
 
 	protected void reset() {
-		for (Cell c : cells.values()) {
+		for (Cell c : getCells().values()) {
 			c.reset();
 		}
 	}
@@ -172,7 +172,7 @@ public abstract class Puzzle
 	}
 
 	private LinkedList<Cell> getEmpties() {
-		return cells.values()
+		return getCells().values()
 				.stream()
 				.filter( c -> c.empty() )
 				.sorted( (a,b) -> a.getLocation().compareTo(b.getLocation()) )
@@ -259,5 +259,9 @@ public abstract class Puzzle
 		empties.addFirst(head); // add back to the front of the queue
 		
 		return result;
+	}
+
+	public Map<Point, Cell> getCells() {
+		return cells;
 	}
 }

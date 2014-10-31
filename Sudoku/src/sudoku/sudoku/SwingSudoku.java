@@ -50,20 +50,16 @@ import java.util.Map;
 
 import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
-import sudoku.Cell;
 import sudoku.CellWrapper;
 import sudoku.Point;
 import sudoku.exceptions.CellContentException;
-import sudoku.exceptions.IllegalCellPositionException;
 import sudoku.exceptions.IllegalFileFormatException;
 import sudoku.swing.CellEditor;
 import sudoku.swing.Options;
-import sudoku.unit.Unit;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
@@ -73,122 +69,17 @@ import net.sourceforge.argparse4j.inf.Namespace;
 public class SwingSudoku extends Sudoku
 {
 
-	private JFrame frame;
-	private JTable table;
-	private JLabel solved;
+	JFrame frame;
+	JTable table;
+	JLabel solved;
 	
-	private Options options = new Options();
+	Options options = new Options();
 	
-	private SudokuTableModel tableModel;
+	SudokuTableModel tableModel;
 
-	private Map<Point, Integer> illegalEntries = new HashMap<>();
-	private JFileChooser fileChooser = new JFileChooser();
-	private File lastDirectory = new File(".");
-	
-	@SuppressWarnings("serial")
-	class SudokuTableModel extends AbstractTableModel
-	{
-		@Override
-		public int getRowCount() {
-			return 9;
-		}
-
-		@Override
-		public int getColumnCount() {
-			return 9;
-		}
-		
-		@Override
-		public CellWrapper getValueAt(int rowIndex, int columnIndex) {
-			Point p = new Point(rowIndex + 1, columnIndex + 1);
-			Cell cell = cells.get(p);
-			
-			if (cell.getValue() == 0) {
-				int illegal = 0;
-				
-				if (illegalEntries.containsKey(p)) {
-					illegal = illegalEntries.get(p);
-				}
-				return new CellWrapper(cell, illegal);
-			}
-			else {
-				return new CellWrapper(cell, 0);
-			}
-		}
-		
-		@Override
-		public boolean isCellEditable(int rowIndex, int columnIndex) {
-			if (isSolved()) 
-				return false;
-			
-	        Point p = new Point(rowIndex + 1, columnIndex + 1);
-			boolean isReadOnly = isReadOnly(p);
-			return !isReadOnly;
-		}
-		
-		@Override
-		public Class<?> getColumnClass(int columnIndex) {
-			return CellWrapper.class;
-		}
-		
-		@Override
-		public void setValueAt(Object value, int row, int col) {
-	        Point p = new Point(row + 1, col + 1);
-	        String stringValue = (String) value;
-	        int intValue = 0;
-	        
-	        if (!stringValue.isEmpty()) {
-	        	intValue = Integer.parseInt(stringValue);
-	        }
-
-	        try {
-				if (illegalEntries.containsKey(p)) {
-					illegalEntries.remove(p);
-				}
-				setValue(p, intValue);
-			} catch (IllegalCellPositionException e) {
-				System.err.println("Should never happen " + e);
-			} catch (CellContentException e) {
-				illegalEntries.put(p, intValue);
-				try {
-					setValue(p, 0);
-				} catch (IllegalCellPositionException | CellContentException e1) {
-					System.err.println("Should never happen " + e);
-				}
-			}
-	        
-	        fireTableCellUpdated(row, col);
-	        
-	        Cell cell = cells.get(p);
-	        for (Unit u : cell.getUnits()) {
-	        	for (Cell c : u.getCells()) {
-	        		Point point = c.getLocation();
-	        		// Sudoku is 1 based, JTable is 0 based, so need to remove 1
-	        		fireTableCellUpdated(point.getX() - 1, point.getY() - 1);
-	        	}
-	        }
-	        
-	        setStatus();
-	    }
-
-		void setStatus() {
-			if (isSolved()) {
-	        	solved.setText("Solved!");
-	        }
-	        else {
-	        	int solutions = isUnique();
-	        	if (solutions == 1) {
-	        		solved.setText("Unsolved");
-	        	}
-	        	else if (solutions == 0) {
-	        		solved.setText("No solutions");
-	        	}
-	        	else {
-	        		solved.setText("Not unique");
-	        	}
-	        }
-		}
-	}
+	Map<Point, Integer> illegalEntries = new HashMap<>();
+	JFileChooser fileChooser = new JFileChooser();
+	File lastDirectory = new File(".");
 	
 	/**
 	 * Create the application.
@@ -226,7 +117,7 @@ public class SwingSudoku extends Sudoku
 		frame.setBounds(100, 100, 450, 450);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		tableModel = new SudokuTableModel();
+		tableModel = new SudokuTableModel(this, 9,9);
 		
 		table = new JTable(tableModel) {
 			@Override
