@@ -118,7 +118,6 @@ public class SwingSudoku extends Sudoku
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		tableModel = new SudokuTableModel(this, 9,9);
-		
 		table = new JTable(tableModel) {
 			@Override
     		public Component prepareRenderer(
@@ -208,6 +207,8 @@ public class SwingSudoku extends Sudoku
 			public void actionPerformed(ActionEvent e) {
 				options.setHintLevel(hintOptions.getSelectedIndex());
 				tableModel.fireTableDataChanged();
+				if (table.isEditing())
+				    table.getCellEditor().stopCellEditing();
 			}
 		});
 		

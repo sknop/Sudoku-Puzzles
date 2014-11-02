@@ -41,7 +41,7 @@ public class SudokuTableModel extends AbstractTableModel
 		}
 		
 		public String getPresentationName() {
-		    return "Sudoku '" + value + "' at (" + row + "," + column + ")";
+		    return "Sudoku '" + value + "'['" + previousValue + "'] at (" + row + "," + column + ")";
 		}
 		
 		public void redo() throws CannotRedoException {
@@ -130,9 +130,14 @@ public class SudokuTableModel extends AbstractTableModel
         Point p = new Point(row + 1, col + 1);
         String stringValue = (String) value;
         int intValue = 0;
+        // boolean moveFocus = false;
         
         if (!stringValue.isEmpty()) {
         	intValue = Integer.parseInt(stringValue);
+        }
+        else {
+        	// for easier comparing to existing cell value below
+        	stringValue = "0";
         }
 
         Cell cell = this.swingSudoku.getCells().get(p);
@@ -140,12 +145,15 @@ public class SudokuTableModel extends AbstractTableModel
         
         if (isUndoAction) {
         	isUndoAction = false;
-        	
-        	
+        	// moveFocus = true;
         }
-        else {
+        else if (!stringValue.equals(previousValue)){
         	SudokuUndo undo = new SudokuUndo(stringValue, previousValue, row, col);
         	undoManager.addEdit(undo);
+        }
+        else if (stringValue.equals("0")) {
+        	// when gaining focus on an empty cell, Swing tries to reset the value. Ignore it
+        	return;
         }
         
         try {
@@ -173,6 +181,11 @@ public class SudokuTableModel extends AbstractTableModel
         		fireTableCellUpdated(point.getX() - 1, point.getY() - 1);
         	}
         }
+        
+//        if (moveFocus) {
+//        	swingSudoku.table.changeSelection(row, col, false, false);
+//        	System.out.println("Moved focus");
+//        }
         
         setStatus();
     }
