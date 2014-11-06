@@ -44,16 +44,21 @@ public class SudokuTableModel extends AbstractTableModel
 		    return "Sudoku '" + value + "'['" + previousValue + "'] at (" + row + "," + column + ")";
 		}
 		
+		@Override
+		public String toString() {
+			return getPresentationName();
+		}
+		
 		public void redo() throws CannotRedoException {
 		    super.redo();
 		    setValueAt(value, row,column);
 		  }
 
-		  // Undo by setting the button state to the opposite value.
-		  public void undo() throws CannotUndoException {
-		    super.undo();
+		// Undo by setting the button state to the opposite value.
+		public void undo() throws CannotUndoException {
+			super.undo();
 		    setValueAt(previousValue, row, column);
-		  }
+		}
 	}
 	
 	public SudokuTableModel(SwingSudoku swingSudoku, int rows, int cols) {
@@ -140,8 +145,10 @@ public class SudokuTableModel extends AbstractTableModel
         	stringValue = "0";
         }
 
-        Cell cell = this.swingSudoku.getCells().get(p);
-        String previousValue = Integer.toString(cell.getValue());
+        CellWrapper wrapper = getValueAt(row, col);
+        String previousValue = Integer.toString(wrapper.getVisibleValue());
+        
+//        System.out.println("setValueAt : " + value + " previous " + previousValue);
         
         if (isUndoAction) {
         	isUndoAction = false;
@@ -150,6 +157,7 @@ public class SudokuTableModel extends AbstractTableModel
         else if (!stringValue.equals(previousValue)){
         	SudokuUndo undo = new SudokuUndo(stringValue, previousValue, row, col);
         	undoManager.addEdit(undo);
+//        	System.out.println("Added " + undo);
         }
         else if (stringValue.equals("0")) {
         	// when gaining focus on an empty cell, Swing tries to reset the value. Ignore it
@@ -174,6 +182,7 @@ public class SudokuTableModel extends AbstractTableModel
         
         fireTableCellUpdated(row, col);
         
+        Cell cell = wrapper.getCell();
         for (Unit u : cell.getUnits()) {
         	for (Cell c : u.getCells()) {
         		Point point = c.getLocation();
