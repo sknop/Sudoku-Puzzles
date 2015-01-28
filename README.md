@@ -44,7 +44,7 @@ Rudimentary Swing interface
 Samurai
 =======
 
-Framework created, cannot read or write yet (or play for that matter).
+Full command-line interface with import and export. Next step is a Swing GUI.
 
 Requirements
 ============
