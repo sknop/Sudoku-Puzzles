@@ -51,12 +51,18 @@ public class SudokuTableModel extends AbstractTableModel
 		
 		public void redo() throws CannotRedoException {
 		    super.redo();
+//			if (swingSudoku.table.isEditing()) {
+//				swingSudoku.table.getCellEditor().stopCellEditing();
+//			}
 		    setValueAt(value, row,column);
 		  }
 
 		// Undo by setting the button state to the opposite value.
 		public void undo() throws CannotUndoException {
 			super.undo();
+//			if (swingSudoku.table.isEditing()) {
+//				swingSudoku.table.getCellEditor().stopCellEditing();
+//			}
 		    setValueAt(previousValue, row, column);
 		}
 	}
