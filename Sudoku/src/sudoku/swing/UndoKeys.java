@@ -10,12 +10,12 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
-import sudoku.sudoku.SudokuTableModel;
+import sudoku.UndoTableModel;
 
 public class UndoKeys
 {
 	@SuppressWarnings("serial")
-	public static void addUndoKeys(JComponent comp, SudokuTableModel tableModel) {
+	public static void addUndoKeys(JComponent comp, final UndoTableModel tableModel) {
 		InputMap inputMap = comp.getInputMap();
 		ActionMap actionMap = comp.getActionMap();
 		

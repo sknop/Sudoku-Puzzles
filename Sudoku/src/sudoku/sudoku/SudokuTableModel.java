@@ -3,20 +3,18 @@ package sudoku.sudoku;
 import java.awt.Toolkit;
 
 import javax.swing.table.AbstractTableModel;
-import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoManager;
+import javax.swing.undo.*;
 
 import sudoku.Cell;
 import sudoku.CellWrapper;
 import sudoku.Point;
+import sudoku.UndoTableModel;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalCellPositionException;
 import sudoku.unit.Unit;
 
 @SuppressWarnings("serial")
-public class SudokuTableModel extends AbstractTableModel
+public class SudokuTableModel extends AbstractTableModel implements UndoTableModel
 {
 	/**
 	 * 
@@ -82,7 +80,8 @@ public class SudokuTableModel extends AbstractTableModel
 	public int getColumnCount() {
 		return cols;
 	}
-	
+
+    @Override
 	public void undo() {
 		isUndoAction = true;
 		try {
@@ -92,7 +91,8 @@ public class SudokuTableModel extends AbstractTableModel
 			Toolkit.getDefaultToolkit().beep();
 		}
 	}
-	
+
+    @Override
 	public void redo() {
 		isUndoAction = true;
 		try {
