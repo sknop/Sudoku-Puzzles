@@ -28,14 +28,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -47,7 +40,6 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -115,7 +107,7 @@ public class SwingSudoku extends Sudoku
 		frame = new JFrame();
 		frame.setLayout(new BorderLayout());
 		frame.setBounds(100, 100, 450, 450);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		
 		tableModel = new SudokuTableModel(this, 9,9);
 		table = new JTable(tableModel) {
@@ -195,7 +187,7 @@ public class SwingSudoku extends Sudoku
 		JLabel optionsLabel = new JLabel("Hints :");
 		reports.add(optionsLabel);
 		
-		JComboBox<String> hintOptions = new JComboBox<>();
+		final JComboBox<String> hintOptions = new JComboBox<>();
 		hintOptions.addItem("None");
 		hintOptions.addItem("Markup");
 		hintOptions.addItem("Hints 1");
@@ -279,11 +271,7 @@ public class SwingSudoku extends Sudoku
 					
 					try {
 						importFile(path);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					} catch (IllegalFileFormatException e1) {
-						e1.printStackTrace();
-					} catch (CellContentException e1) {
+					} catch (IOException |IllegalFileFormatException |CellContentException e1) {
 						e1.printStackTrace();
 					}
 				}
@@ -320,7 +308,7 @@ public class SwingSudoku extends Sudoku
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
