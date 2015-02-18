@@ -31,8 +31,6 @@ import java.awt.GridLayout;
 import javax.swing.*;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -195,16 +193,13 @@ public class SwingSudoku extends Sudoku
 		hintOptions.addItem("Hints 2");
 		reports.add(hintOptions);
 		
-		hintOptions.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				options.setHintLevel(hintOptions.getSelectedIndex());
-				tableModel.fireTableDataChanged();
-				if (table.isEditing())
-				    table.getCellEditor().stopCellEditing();
-			}
-		});
-		
+        hintOptions.addActionListener( e -> {
+            options.setHintLevel(hintOptions.getSelectedIndex());
+            tableModel.fireTableDataChanged();
+            if (table.isEditing())
+                table.getCellEditor().stopCellEditing();
+        });
+
 		JLabel solvedLabel = new JLabel("Status :");
 		reports.add(solvedLabel);
 
@@ -220,88 +215,66 @@ public class SwingSudoku extends Sudoku
 
 	private void createButtons(JPanel buttons) {
 		JButton createButton = new JButton("Create");
-		createButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				illegalEntries.clear();
-				createRandomPuzzle();
-				tableModel.fireTableDataChanged();
-			}
+		createButton.addActionListener( e -> {
+            illegalEntries.clear();
+            createRandomPuzzle();
+            tableModel.fireTableDataChanged();
 		});
 		buttons.add(createButton);
 
 		JButton solveButton = new JButton("Solve");
-		solveButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// cheeky hack - remove selection so that the cell is not blocked 
-				table.editCellAt(-1, -1);
-				table.getSelectionModel().clearSelection();
-				
-				solveBruteForce();
-				tableModel.fireTableDataChanged();
-				solved.setText("Cheated");
-			}
+		solveButton.addActionListener( e -> {
+            // cheeky hack - remove selection so that the cell is not blocked
+            table.editCellAt(-1, -1);
+            table.getSelectionModel().clearSelection();
+
+            solveBruteForce();
+            tableModel.fireTableDataChanged();
+            solved.setText("Cheated");
 		});
 		buttons.add(solveButton);
 		
 		JButton quitButton = new JButton("Quit");
-		quitButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				frame.dispose();
-				System.exit(0);
-			}
+		quitButton.addActionListener( e -> {
+            frame.dispose();
+            System.exit(0);
 		});
 		buttons.add(quitButton);
 		
 		JButton loadButton = new JButton("Load");
-		loadButton.addActionListener(new ActionListener() {
+		loadButton.addActionListener( e -> {
+            fileChooser.setCurrentDirectory(lastDirectory);
+            int returnValue = fileChooser.showOpenDialog(null);
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				fileChooser.setCurrentDirectory(lastDirectory);
-				int returnValue = fileChooser.showOpenDialog(null);
-				
-				if (returnValue == JFileChooser.APPROVE_OPTION) {
-					File file = fileChooser.getSelectedFile();
-					Path path = FileSystems.getDefault().getPath(file.getPath());
-					
-					try {
-						importFile(path);
-					} catch (IOException |IllegalFileFormatException |CellContentException e1) {
-						e1.printStackTrace();
-					}
-				}
-			}
-			
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                Path path = FileSystems.getDefault().getPath(file.getPath());
+
+                try {
+                    importFile(path);
+                } catch (IOException |IllegalFileFormatException |CellContentException e1) {
+                    e1.printStackTrace();
+                }
+            }
 		});
 		buttons.add(loadButton);
 		
 		JButton saveButton = new JButton("Save");
-		saveButton.addActionListener(new ActionListener() {
+		saveButton.addActionListener( e -> {
+            fileChooser.setCurrentDirectory(lastDirectory);
+            int returnValue = fileChooser.showSaveDialog(null);
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				fileChooser.setCurrentDirectory(lastDirectory);
-				int returnValue = fileChooser.showSaveDialog(null);
-				
-				if (returnValue == JFileChooser.APPROVE_OPTION) {
-					File file = fileChooser.getSelectedFile();
-					Path path = FileSystems.getDefault().getPath(file.getPath());
-					
-					try {
-						exportFile(path);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-				}
-			}
-			
-		});
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                Path path = FileSystems.getDefault().getPath(file.getPath());
+
+                try {
+                    exportFile(path);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
 		buttons.add(saveButton);
 		
 	}
@@ -310,15 +283,13 @@ public class SwingSudoku extends Sudoku
 	 * Launch the application.
 	 */
 	public static void main(final String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					SwingSudoku window = new SwingSudoku(args);
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
+		EventQueue.invokeLater( () -> {
+            try {
+                SwingSudoku window = new SwingSudoku(args);
+                window.frame.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 		});
 	}
 }
