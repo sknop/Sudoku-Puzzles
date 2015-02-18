@@ -85,7 +85,7 @@ public class SwingSudoku extends Sudoku
 				   IOException, 
 				   IllegalFileFormatException, 
 				   CellContentException {
-		ArgumentParser parser = ArgumentParsers.newArgumentParser("CLI Sudoku",true);
+		ArgumentParser parser = ArgumentParsers.newArgumentParser("Sudoku",true);
 		parser.addArgument("-i", "--input");
 		
 		Namespace options = parser.parseArgs(args);
@@ -152,14 +152,15 @@ public class SwingSudoku extends Sudoku
 	    table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 	    		
 		final int height = 50;
-		
+		final int width = 50;
+
 		TableColumnModel cm = table.getColumnModel();
 	    table.setRowHeight(height);
 	    for (int c = 0; c < cm.getColumnCount(); c++) {
 	    	TableColumn tc = cm.getColumn(c);
-	    	tc.setPreferredWidth(height);
-	    	tc.setMinWidth(height);
-	    	tc.setMaxWidth(height);
+	    	tc.setPreferredWidth(width);
+	    	tc.setMinWidth(width);
+	    	tc.setMaxWidth(width);
 	    }
 	    
 	    ListSelectionModel cellSelectionModel = table.getSelectionModel();
