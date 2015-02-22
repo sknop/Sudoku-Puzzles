@@ -28,19 +28,9 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
-
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -48,22 +38,18 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
-import sudoku.Cell;
 import sudoku.CellWrapper;
 import sudoku.Point;
 import sudoku.exceptions.CellContentException;
-import sudoku.exceptions.IllegalCellPositionException;
 import sudoku.exceptions.IllegalFileFormatException;
 import sudoku.swing.CellEditor;
 import sudoku.swing.Options;
-import sudoku.unit.Unit;
+import sudoku.swing.UndoKeys;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
@@ -73,122 +59,17 @@ import net.sourceforge.argparse4j.inf.Namespace;
 public class SwingSudoku extends Sudoku
 {
 
-	private JFrame frame;
-	private JTable table;
-	private JLabel solved;
+	JFrame frame;
+	JTable table;
+	JLabel solved;
 	
-	private Options options = new Options();
+	Options options = new Options();
 	
-	private SudokuTableModel tableModel;
+	SudokuTableModel tableModel;
 
-	private Map<Point, Integer> illegalEntries = new HashMap<>();
-	private JFileChooser fileChooser = new JFileChooser();
-	private File lastDirectory = new File(".");
-	
-	@SuppressWarnings("serial")
-	class SudokuTableModel extends AbstractTableModel
-	{
-		@Override
-		public int getRowCount() {
-			return 9;
-		}
-
-		@Override
-		public int getColumnCount() {
-			return 9;
-		}
-		
-		@Override
-		public CellWrapper getValueAt(int rowIndex, int columnIndex) {
-			Point p = new Point(rowIndex + 1, columnIndex + 1);
-			Cell cell = cells.get(p);
-			
-			if (cell.getValue() == 0) {
-				int illegal = 0;
-				
-				if (illegalEntries.containsKey(p)) {
-					illegal = illegalEntries.get(p);
-				}
-				return new CellWrapper(cell, illegal);
-			}
-			else {
-				return new CellWrapper(cell, 0);
-			}
-		}
-		
-		@Override
-		public boolean isCellEditable(int rowIndex, int columnIndex) {
-			if (isSolved()) 
-				return false;
-			
-	        Point p = new Point(rowIndex + 1, columnIndex + 1);
-			boolean isReadOnly = isReadOnly(p);
-			return !isReadOnly;
-		}
-		
-		@Override
-		public Class<?> getColumnClass(int columnIndex) {
-			return CellWrapper.class;
-		}
-		
-		@Override
-		public void setValueAt(Object value, int row, int col) {
-	        Point p = new Point(row + 1, col + 1);
-	        String stringValue = (String) value;
-	        int intValue = 0;
-	        
-	        if (!stringValue.isEmpty()) {
-	        	intValue = Integer.parseInt(stringValue);
-	        }
-
-	        try {
-				if (illegalEntries.containsKey(p)) {
-					illegalEntries.remove(p);
-				}
-				setValue(p, intValue);
-			} catch (IllegalCellPositionException e) {
-				System.err.println("Should never happen " + e);
-			} catch (CellContentException e) {
-				illegalEntries.put(p, intValue);
-				try {
-					setValue(p, 0);
-				} catch (IllegalCellPositionException | CellContentException e1) {
-					System.err.println("Should never happen " + e);
-				}
-			}
-	        
-	        fireTableCellUpdated(row, col);
-	        
-	        Cell cell = cells.get(p);
-	        for (Unit u : cell.getUnits()) {
-	        	for (Cell c : u.getCells()) {
-	        		Point point = c.getLocation();
-	        		// Sudoku is 1 based, JTable is 0 based, so need to remove 1
-	        		fireTableCellUpdated(point.getX() - 1, point.getY() - 1);
-	        	}
-	        }
-	        
-	        setStatus();
-	    }
-
-		void setStatus() {
-			if (isSolved()) {
-	        	solved.setText("Solved!");
-	        }
-	        else {
-	        	int solutions = isUnique();
-	        	if (solutions == 1) {
-	        		solved.setText("Unsolved");
-	        	}
-	        	else if (solutions == 0) {
-	        		solved.setText("No solutions");
-	        	}
-	        	else {
-	        		solved.setText("Not unique");
-	        	}
-	        }
-		}
-	}
+	Map<Point, Integer> illegalEntries = new HashMap<>();
+	JFileChooser fileChooser = new JFileChooser();
+	File lastDirectory = new File(".");
 	
 	/**
 	 * Create the application.
@@ -202,7 +83,7 @@ public class SwingSudoku extends Sudoku
 				   IOException, 
 				   IllegalFileFormatException, 
 				   CellContentException {
-		ArgumentParser parser = ArgumentParsers.newArgumentParser("CLI Sudoku",true);
+		ArgumentParser parser = ArgumentParsers.newArgumentParser("Sudoku",true);
 		parser.addArgument("-i", "--input");
 		
 		Namespace options = parser.parseArgs(args);
@@ -224,10 +105,9 @@ public class SwingSudoku extends Sudoku
 		frame = new JFrame();
 		frame.setLayout(new BorderLayout());
 		frame.setBounds(100, 100, 450, 450);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		
-		tableModel = new SudokuTableModel();
-		
+		tableModel = new SudokuTableModel(this, 9,9);
 		table = new JTable(tableModel) {
 			@Override
     		public Component prepareRenderer(
@@ -270,14 +150,15 @@ public class SwingSudoku extends Sudoku
 	    table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 	    		
 		final int height = 50;
-		
+		final int width = 50;
+
 		TableColumnModel cm = table.getColumnModel();
 	    table.setRowHeight(height);
 	    for (int c = 0; c < cm.getColumnCount(); c++) {
 	    	TableColumn tc = cm.getColumn(c);
-	    	tc.setPreferredWidth(height);
-	    	tc.setMinWidth(height);
-	    	tc.setMaxWidth(height);
+	    	tc.setPreferredWidth(width);
+	    	tc.setMinWidth(width);
+	    	tc.setMaxWidth(width);
 	    }
 	    
 	    ListSelectionModel cellSelectionModel = table.getSelectionModel();
@@ -305,21 +186,20 @@ public class SwingSudoku extends Sudoku
 		JLabel optionsLabel = new JLabel("Hints :");
 		reports.add(optionsLabel);
 		
-		JComboBox<String> hintOptions = new JComboBox<>();
+		final JComboBox<String> hintOptions = new JComboBox<>();
 		hintOptions.addItem("None");
 		hintOptions.addItem("Markup");
 		hintOptions.addItem("Hints 1");
 		hintOptions.addItem("Hints 2");
 		reports.add(hintOptions);
 		
-		hintOptions.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				options.setHintLevel(hintOptions.getSelectedIndex());
-				tableModel.fireTableDataChanged();
-			}
-		});
-		
+        hintOptions.addActionListener( e -> {
+            options.setHintLevel(hintOptions.getSelectedIndex());
+            tableModel.fireTableDataChanged();
+            if (table.isEditing())
+                table.getCellEditor().stopCellEditing();
+        });
+
 		JLabel solvedLabel = new JLabel("Status :");
 		reports.add(solvedLabel);
 
@@ -328,97 +208,73 @@ public class SwingSudoku extends Sudoku
 
 		tableModel.setStatus();
 		
+		UndoKeys.addUndoKeys(frame.getRootPane(), tableModel);
+		
 		frame.pack();
 	}
 
 	private void createButtons(JPanel buttons) {
 		JButton createButton = new JButton("Create");
-		createButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				illegalEntries.clear();
-				createRandomPuzzle();
-				tableModel.fireTableDataChanged();
-			}
+		createButton.addActionListener( e -> {
+            illegalEntries.clear();
+            createRandomPuzzle();
+            tableModel.fireTableDataChanged();
 		});
 		buttons.add(createButton);
 
 		JButton solveButton = new JButton("Solve");
-		solveButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// cheeky hack - remove selection so that the cell is not blocked 
-				table.editCellAt(-1, -1);
-				table.getSelectionModel().clearSelection();
-				
-				solveBruteForce();
-				tableModel.fireTableDataChanged();
-				solved.setText("Cheated");
-			}
+		solveButton.addActionListener( e -> {
+            // cheeky hack - remove selection so that the cell is not blocked
+            table.editCellAt(-1, -1);
+            table.getSelectionModel().clearSelection();
+
+            solveBruteForce();
+            tableModel.fireTableDataChanged();
+            solved.setText("Cheated");
 		});
 		buttons.add(solveButton);
 		
 		JButton quitButton = new JButton("Quit");
-		quitButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				frame.dispose();
-				System.exit(0);
-			}
+		quitButton.addActionListener( e -> {
+            frame.dispose();
+            System.exit(0);
 		});
 		buttons.add(quitButton);
 		
 		JButton loadButton = new JButton("Load");
-		loadButton.addActionListener(new ActionListener() {
+		loadButton.addActionListener( e -> {
+            fileChooser.setCurrentDirectory(lastDirectory);
+            int returnValue = fileChooser.showOpenDialog(null);
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				fileChooser.setCurrentDirectory(lastDirectory);
-				int returnValue = fileChooser.showOpenDialog(null);
-				
-				if (returnValue == JFileChooser.APPROVE_OPTION) {
-					File file = fileChooser.getSelectedFile();
-					Path path = FileSystems.getDefault().getPath(file.getPath());
-					
-					try {
-						importFile(path);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					} catch (IllegalFileFormatException e1) {
-						e1.printStackTrace();
-					} catch (CellContentException e1) {
-						e1.printStackTrace();
-					}
-				}
-			}
-			
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                Path path = FileSystems.getDefault().getPath(file.getPath());
+
+                try {
+                    importFile(path);
+                } catch (IOException |IllegalFileFormatException |CellContentException e1) {
+                    e1.printStackTrace();
+                }
+            }
 		});
 		buttons.add(loadButton);
 		
 		JButton saveButton = new JButton("Save");
-		saveButton.addActionListener(new ActionListener() {
+		saveButton.addActionListener( e -> {
+            fileChooser.setCurrentDirectory(lastDirectory);
+            int returnValue = fileChooser.showSaveDialog(null);
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				fileChooser.setCurrentDirectory(lastDirectory);
-				int returnValue = fileChooser.showSaveDialog(null);
-				
-				if (returnValue == JFileChooser.APPROVE_OPTION) {
-					File file = fileChooser.getSelectedFile();
-					Path path = FileSystems.getDefault().getPath(file.getPath());
-					
-					try {
-						exportFile(path);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-				}
-			}
-			
-		});
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                Path path = FileSystems.getDefault().getPath(file.getPath());
+
+                try {
+                    exportFile(path);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
 		buttons.add(saveButton);
 		
 	}
@@ -426,16 +282,14 @@ public class SwingSudoku extends Sudoku
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					SwingSudoku window = new SwingSudoku(args);
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
+	public static void main(final String[] args) {
+		EventQueue.invokeLater( () -> {
+            try {
+                SwingSudoku window = new SwingSudoku(args);
+                window.frame.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 		});
 	}
 }

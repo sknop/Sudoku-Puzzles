@@ -13,6 +13,15 @@ public class CellWrapper {
 		return cell;
 	}
 	
+	public int getVisibleValue() {
+		if (illegalValue > 0) {
+			return illegalValue;
+		}
+		else {
+			return cell.getValue();
+		}
+	}
+	
 	public int getIllegalValue() {
 		return illegalValue;
 	}

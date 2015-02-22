@@ -26,6 +26,7 @@ import javax.swing.text.PlainDocument;
 
 import sudoku.Cell;
 import sudoku.CellWrapper;
+import sudoku.sudoku.SudokuTableModel;
 
 @SuppressWarnings("serial")
 public class CellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer
@@ -186,7 +187,9 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
     	am.put("Arrow.left", new LeftAction());
     	am.put("Arrow.right", new RightAction());
     	
-		return panel;
+    	UndoKeys.addUndoKeys(textField, (SudokuTableModel) table.getModel());
+
+    	return panel;
 	}
 	
 }

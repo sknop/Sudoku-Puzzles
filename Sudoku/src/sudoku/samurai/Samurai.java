@@ -100,7 +100,7 @@ public class Samurai extends Puzzle
 				public void apply(int x, int y) {
 					Point p = new Point(x,y);
 					Cell cell = new Cell(9, p);
-					cells.put(p, cell);
+					getCells().put(p, cell);
 				}
 				
 			});
@@ -137,7 +137,7 @@ public class Samurai extends Puzzle
 			rows.add(row);
 			for (int y = 1; y <= 9; y++) {
 				Point p = new Point(x + startX,y + startY);
-				Cell cell = cells.get(p);
+				Cell cell = getCells().get(p);
 				row.addCell(cell);					
 			}
 		}
@@ -147,7 +147,7 @@ public class Samurai extends Puzzle
 			columns.add(column);
 			for (int x = 1; x <= 9; x++) {
 				Point p = new Point(x + startX,y + startY);
-				Cell cell = cells.get(p);
+				Cell cell = getCells().get(p);
 				column.addCell(cell);					
 			}
 		}
@@ -170,7 +170,7 @@ public class Samurai extends Puzzle
 						int y = y1 * 3 + y2;
 						
 						Point p = new Point(x + startX,y + startY);
-						Cell cell = cells.get(p);
+						Cell cell = getCells().get(p);
 						box.addCell(cell);
 					}
 				}
@@ -298,7 +298,7 @@ public class Samurai extends Puzzle
 	}
 	
 	private void addCells(StringBuilder builder) {
-		ArrayList<Cell> sortedCells = cells.values()
+		ArrayList<Cell> sortedCells = getCells().values()
 			.stream()
 			.sorted( (a,b) -> a.getLocation().compareTo(b.getLocation()) )
 			.collect( Collectors.toCollection(ArrayList::new) );
@@ -317,7 +317,7 @@ public class Samurai extends Puzzle
 				int value = values[x-1][y-1];
 				if (value > 0) {
 					Point p = new Point(x,y);
-					cells.get(p).setInitValue(value);
+					getCells().get(p).setInitValue(value);
 				}
 			}
 			
@@ -477,7 +477,7 @@ public class Samurai extends Puzzle
 			solveRecursive(smallSolve);
 		}
 
-		List<Cell> allCells = cells.values().stream().collect(Collectors.toList());
+		List<Cell> allCells = getCells().values().stream().collect(Collectors.toList());
 		Collections.shuffle(allCells);
 		
 		int counter = 0;
