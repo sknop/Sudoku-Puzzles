@@ -28,13 +28,13 @@ public class SamuraiTableModel extends AbstractTableModel implements UndoTableMo
     private final UndoManager undoManager = new UndoManager();
     private boolean isUndoAction = false;
 
-    class SudokuUndo extends AbstractUndoableEdit {
+    class SamuraiUndo extends AbstractUndoableEdit {
         private String value;
         private String previousValue;
         private int row;
         private int column;
 
-        public SudokuUndo(String value, String previousValue, int row, int column) {
+        public SamuraiUndo(String value, String previousValue, int row, int column) {
             this.value = value;
             this.previousValue = previousValue;
             this.row = row;
@@ -42,7 +42,7 @@ public class SamuraiTableModel extends AbstractTableModel implements UndoTableMo
         }
 
         public String getPresentationName() {
-            return "Sudoku '" + value + "'['" + previousValue + "'] at (" + row + "," + column + ")";
+            return "Samurai '" + value + "'['" + previousValue + "'] at (" + row + "," + column + ")";
         }
 
         @Override
@@ -164,7 +164,7 @@ public class SamuraiTableModel extends AbstractTableModel implements UndoTableMo
             // moveFocus = true;
         }
         else if (!stringValue.equals(previousValue)){
-            SudokuUndo undo = new SudokuUndo(stringValue, previousValue, row, col);
+            SamuraiUndo undo = new SamuraiUndo(stringValue, previousValue, row, col);
             undoManager.addEdit(undo);
 //        	System.out.println("Added " + undo);
         }

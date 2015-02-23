@@ -26,7 +26,7 @@ import javax.swing.text.PlainDocument;
 
 import sudoku.Cell;
 import sudoku.CellWrapper;
-import sudoku.sudoku.SudokuTableModel;
+import sudoku.UndoTableModel;
 
 @SuppressWarnings("serial")
 public class CellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer
@@ -66,7 +66,7 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
 		label = new JLabel();
 		label.setFont(smallFont);
 		label.setBackground(Color.WHITE);
-		label.setHorizontalAlignment(0);
+		label.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(label, BorderLayout.NORTH);
 
 		if (wrapper != null) {
@@ -120,9 +120,7 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
 			boolean isSelected, boolean hasFocus, int row, int column) {
 		CellWrapper wrapper = (CellWrapper) value;
 		
-		JPanel panel = updateData(wrapper, hasFocus);
-		
-		return panel;
+		return updateData(wrapper, hasFocus);
 	}
 
 	@Override
@@ -149,37 +147,33 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
 			public void actionPerformed(ActionEvent e) {
 				int newRow = row - 1;
 				if (newRow < 0) newRow = 8;
-				int newColumn = column;
-				moveToCell(newRow, newColumn);
+				moveToCell(newRow, column);
 			}
-    	};
+    	}
     	class DownAction extends ArrowAction {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int newRow = row + 1;
 				if (newRow > 8) newRow = 0;
-				int newColumn = column;
-				moveToCell(newRow, newColumn);
+				moveToCell(newRow, column);
 			}
-    	};
+    	}
     	class LeftAction extends ArrowAction {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int newRow = row;
 				int newColumn = column - 1;
 				if (newColumn < 0) newColumn = 8;
-				moveToCell(newRow, newColumn);
+				moveToCell(row, newColumn);
 			}
-    	};
+    	}
     	class RightAction extends ArrowAction {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int newRow = row;
 				int newColumn = column + 1;
 				if (newColumn > 8) newColumn = 0;
-				moveToCell(newRow, newColumn);
+				moveToCell(row, newColumn);
 			}
-    	};
+    	}
 
     	ActionMap am = textField.getActionMap();
     	am.put("Arrow.up", new UpAction());
@@ -187,7 +181,7 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
     	am.put("Arrow.left", new LeftAction());
     	am.put("Arrow.right", new RightAction());
     	
-    	UndoKeys.addUndoKeys(textField, (SudokuTableModel) table.getModel());
+    	UndoKeys.addUndoKeys(textField, (UndoTableModel) table.getModel());
 
     	return panel;
 	}
