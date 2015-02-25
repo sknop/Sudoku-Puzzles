@@ -46,4 +46,26 @@ public class SamuraiCellEditor extends CellEditor {
 
         return null;
     }
+
+    @Override
+    UpAction getUpAction(JTable table, int row, int column) {
+        return new UpAction(table, row, column);
+    }
+
+    @Override
+    DownAction getDownAction(JTable table, int row, int column) {
+        return new DownAction(table, row, column);
+    }
+
+    @Override
+    LeftAction getLeftAction(JTable table, int row, int column) {
+        return new LeftAction(table, row, column);
+    }
+
+    @Override
+    RightAction getRightAction(JTable table, int row, int column) {
+        return new RightAction(table, row, column);
+    }
+
 }
+

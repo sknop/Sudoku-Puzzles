@@ -123,6 +123,70 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
 		return updateData(wrapper, hasFocus);
 	}
 
+    static abstract class ArrowAction extends AbstractAction {
+        JTable table;
+        int row;
+        int column;
+
+        public ArrowAction(JTable table, int row, int column) {
+            this.table = table;
+            this.row = row;
+            this.column = column;
+        }
+        void moveToCell(int row, int column) {
+            table.editCellAt(row, column);
+            table.changeSelection(row, column, false, false);
+        }
+    }
+
+    static class UpAction extends ArrowAction {
+
+        public UpAction(JTable table, int row, int column) {
+            super(table, row, column);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int newRow = row - 1;
+            if (newRow < 0) newRow = 8;
+            moveToCell(newRow, column);
+        }
+    }
+    static class DownAction extends ArrowAction {
+        public DownAction(JTable table, int row, int column) {
+            super(table, row, column);
+        }
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int newRow = row + 1;
+            if (newRow > 8) newRow = 0;
+            moveToCell(newRow, column);
+        }
+    }
+    static class LeftAction extends ArrowAction {
+        public LeftAction(JTable table, int row, int column) {
+            super(table, row, column);
+        }
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int newColumn = column - 1;
+            if (newColumn < 0) newColumn = 8;
+            moveToCell(row, newColumn);
+        }
+    }
+    static class RightAction extends ArrowAction {
+        public RightAction(JTable table, int row, int column) {
+            super(table, row, column);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int newColumn = column + 1;
+            if (newColumn > 8) newColumn = 0;
+            moveToCell(row, newColumn);
+        }
+    }
+
     UpAction getUpAction(JTable table, int row, int column) {
         return new UpAction(table, row, column);
     }
@@ -162,69 +226,6 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
 	
 }
 
-abstract class ArrowAction extends AbstractAction {
-    JTable table;
-    int row;
-    int column;
-
-    public ArrowAction(JTable table, int row, int column) {
-        this.table = table;
-        this.row = row;
-        this.column = column;
-    }
-    void moveToCell(int row, int column) {
-        table.editCellAt(row, column);
-        table.changeSelection(row, column, false, false);
-    }
-}
-
-class UpAction extends ArrowAction {
-
-    public UpAction(JTable table, int row, int column) {
-        super(table, row, column);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        int newRow = row - 1;
-        if (newRow < 0) newRow = 8;
-        moveToCell(newRow, column);
-    }
-}
-class DownAction extends ArrowAction {
-    public DownAction(JTable table, int row, int column) {
-        super(table, row, column);
-    }
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        int newRow = row + 1;
-        if (newRow > 8) newRow = 0;
-        moveToCell(newRow, column);
-    }
-}
-class LeftAction extends ArrowAction {
-    public LeftAction(JTable table, int row, int column) {
-        super(table, row, column);
-    }
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        int newColumn = column - 1;
-        if (newColumn < 0) newColumn = 8;
-        moveToCell(row, newColumn);
-    }
-}
-class RightAction extends ArrowAction {
-    public RightAction(JTable table, int row, int column) {
-        super(table, row, column);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        int newColumn = column + 1;
-        if (newColumn > 8) newColumn = 0;
-        moveToCell(row, newColumn);
-    }
-}
 
 @SuppressWarnings("serial")
 class FieldLimit extends PlainDocument {
