@@ -38,6 +38,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -47,8 +48,8 @@ import sudoku.CellWrapper;
 import sudoku.Point;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
-import sudoku.swing.CellEditor;
 import sudoku.swing.Options;
+import sudoku.swing.SamuraiCellEditor;
 import sudoku.swing.UndoKeys;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
@@ -58,6 +59,7 @@ import net.sourceforge.argparse4j.inf.Namespace;
 
 public class SwingSamurai extends Samurai
 {
+    public final int SIZE = 40;
 
     JFrame frame;
     JTable table;
@@ -83,7 +85,7 @@ public class SwingSamurai extends Samurai
             IOException,
             IllegalFileFormatException,
             CellContentException {
-        ArgumentParser parser = ArgumentParsers.newArgumentParser("CLI Sudoku",true);
+        ArgumentParser parser = ArgumentParsers.newArgumentParser("Samurai",true);
         parser.addArgument("-i", "--input");
 
         Namespace options = parser.parseArgs(args);
@@ -107,7 +109,7 @@ public class SwingSamurai extends Samurai
         frame.setBounds(100, 100, 450, 450);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        tableModel = new SamuraiTableModel(this, 9,9);
+        tableModel = new SamuraiTableModel(this, 21,21);
         table = new JTable(tableModel) {
             @Override
             public Component prepareRenderer(
@@ -123,9 +125,6 @@ public class SwingSamurai extends Samurai
 
                 jc.setBorder(new MatteBorder(top, left, bottom, right, Color.BLACK) );
 
-
-                //  Use bold font on selected row
-
                 return c;
             }
 
@@ -139,18 +138,50 @@ public class SwingSamurai extends Samurai
                     this.transferFocus();
                 }
             }
+
+            class SquarePanel extends JPanel {
+                public SquarePanel() {
+                    setBorder(new LineBorder(Color.GRAY));
+                    setBackground(Color.DARK_GRAY);
+                }
+
+                @Override
+                public Dimension getMinimumSize() {
+                    return getPreferredSize();
+                }
+
+                @Override
+                public Dimension getMaximumSize() {
+                    return getPreferredSize();
+                }
+
+                @Override
+                public Dimension getPreferredSize() {
+                    return new Dimension(SIZE,SIZE);
+                }
+            }
+
+            @Override
+            public TableCellRenderer getCellRenderer(int row, int column) {
+                if ( SamuraiTableModel.isVisible(row, column) ) {
+                    return super.getCellRenderer(row, column);
+                }
+                else {
+                    return (t,  v,  i,  h,  r,  c) ->  new SquarePanel();
+                }
+            }
         };
 
         table.setCellSelectionEnabled(true);
         table.setRowSelectionAllowed(false);
         table.setColumnSelectionAllowed(false);
 
-        table.setDefaultEditor(CellWrapper.class, new CellEditor(options));
-        table.setDefaultRenderer(CellWrapper.class, new CellEditor(options));
+        table.setDefaultEditor(CellWrapper.class, new SamuraiCellEditor(options));
+        table.setDefaultRenderer(CellWrapper.class, new SamuraiCellEditor(options));
         table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 
-        final int height = 50;
-        final int width = 50;
+        final int height = SIZE;
+        final int width = SIZE;
 
         TableColumnModel cm = table.getColumnModel();
         table.setRowHeight(height);

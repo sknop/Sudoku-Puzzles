@@ -175,6 +175,7 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
 			}
     	}
 
+
     	ActionMap am = textField.getActionMap();
     	am.put("Arrow.up", new UpAction());
     	am.put("Arrow.down", new DownAction());
