@@ -39,12 +39,12 @@ Commands are now:
     (u) proves that a puzzle has a unique solution
 
 
-Rudimentary Swing interface
+Fully functional Swing interface (sudoku.sudoku.SwingSudoku) with generator, load and save and undo/redo capabilities.
 
 Samurai
 =======
 
-Full command-line interface with import and export. Next step is a Swing GUI.
+Full command-line interface with import and export. Fully functional Swing interface (sudoku.samurai.SwingSamurai).
 
 Requirements
 ============
