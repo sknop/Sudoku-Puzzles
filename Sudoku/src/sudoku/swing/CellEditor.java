@@ -133,9 +133,9 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
             this.row = row;
             this.column = column;
         }
-        void moveToCell(int row, int column) {
-            table.editCellAt(row, column);
-            table.changeSelection(row, column, false, false);
+        void moveToCell(int newRow, int newColumn) {
+            table.editCellAt(newRow, newColumn);
+            table.changeSelection(newRow, newColumn, false, false);
         }
     }
 
@@ -187,16 +187,16 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
         }
     }
 
-    UpAction getUpAction(JTable table, int row, int column) {
+    ArrowAction getUpAction(JTable table, int row, int column) {
         return new UpAction(table, row, column);
     }
-    DownAction getDownAction(JTable table, int row, int column) {
+    ArrowAction getDownAction(JTable table, int row, int column) {
         return new DownAction(table, row, column);
     }
-    LeftAction getLeftAction(JTable table, int row, int column) {
+    ArrowAction getLeftAction(JTable table, int row, int column) {
         return new LeftAction(table, row, column);
     }
-    RightAction getRightAction(JTable table, int row, int column) {
+    ArrowAction getRightAction(JTable table, int row, int column) {
         return new RightAction(table, row, column);
     }
 

@@ -30,6 +30,7 @@ import sudoku.samurai.SamuraiTableModel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 
 public class SamuraiCellEditor extends CellEditor {
     public SamuraiCellEditor(Options options) {
@@ -47,23 +48,86 @@ public class SamuraiCellEditor extends CellEditor {
         return null;
     }
 
+    class UpAction extends ArrowAction {
+
+        public UpAction(JTable table, int row, int column) {
+            super(table, row, column);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int newRow = row - 1;
+            if (newRow < 0) newRow = 20;
+
+            if (!SamuraiTableModel.isVisible(newRow, column)) {
+                newRow -= 3;
+            }
+            moveToCell(newRow, column);
+        }
+    }
+    class DownAction extends ArrowAction {
+        public DownAction(JTable table, int row, int column) {
+            super(table, row, column);
+        }
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int newRow = row + 1;
+            if (newRow > 20) newRow = 0;
+
+            if (!SamuraiTableModel.isVisible(newRow, column)) {
+                newRow += 3;
+            }
+            moveToCell(newRow, column);
+        }
+    }
+    class LeftAction extends ArrowAction {
+        public LeftAction(JTable table, int row, int column) {
+            super(table, row, column);
+        }
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int newColumn = column - 1;
+            if (newColumn < 0) newColumn = 20;
+
+            if (!SamuraiTableModel.isVisible(row, newColumn)) {
+                newColumn -= 3;
+            }
+            moveToCell(row, newColumn);
+        }
+    }
+    class RightAction extends ArrowAction {
+        public RightAction(JTable table, int row, int column) {
+            super(table, row, column);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int newColumn = column + 1;
+            if (newColumn > 20) newColumn = 0;
+
+            if (!SamuraiTableModel.isVisible(row, newColumn)) {
+                newColumn += 3;
+            }
+            moveToCell(row, newColumn);
+        }
+    }
     @Override
-    UpAction getUpAction(JTable table, int row, int column) {
+    ArrowAction getUpAction(JTable table, int row, int column) {
         return new UpAction(table, row, column);
     }
 
     @Override
-    DownAction getDownAction(JTable table, int row, int column) {
+    ArrowAction getDownAction(JTable table, int row, int column) {
         return new DownAction(table, row, column);
     }
 
     @Override
-    LeftAction getLeftAction(JTable table, int row, int column) {
+    ArrowAction getLeftAction(JTable table, int row, int column) {
         return new LeftAction(table, row, column);
     }
 
     @Override
-    RightAction getRightAction(JTable table, int row, int column) {
+    ArrowAction getRightAction(JTable table, int row, int column) {
         return new RightAction(table, row, column);
     }
 
