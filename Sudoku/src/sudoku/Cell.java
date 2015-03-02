@@ -187,10 +187,23 @@ public class Cell implements Iterable<Integer>
 	public Point getLocation() {
 		return location;
 	}
-	
+
+    public String getValueAsString() {
+        char c = '0';
+
+        if (value < 10) {
+            c = (char) ('0' + value);
+        }
+        else {
+            c = (char) ('A' + value - 10);
+        }
+
+        return String.valueOf(c);
+    }
+
 	@Override
 	public String toString() {
-		return location.toString() + " : " + value;
+		return location.toString() + " : " + getValueAsString();
 	}
 
 	@Override

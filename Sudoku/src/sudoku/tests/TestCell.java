@@ -63,4 +63,19 @@ public class TestCell
 		cell.setValue(0);
 	}
 
+    @Test
+    public void testRange() {
+        Cell cell = new Cell(16, 1,1);
+        assertTrue("Cell is not empty", cell.empty());
+
+        try {
+            cell.setValue(16);
+        }
+        catch(Exception e) {
+            fail("Not supposed to throw an exception yet");
+        }
+
+        assertTrue("Cell value not expected", cell.getValue() == 16);
+    }
+
 }
