@@ -29,9 +29,11 @@ package sudoku.swing;
 import sudoku.samurai.SamuraiTableModel;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
+@SuppressWarnings("serial")
 public class SamuraiCellEditor extends CellEditor {
     public SamuraiCellEditor(Options options) {
         super(options);
