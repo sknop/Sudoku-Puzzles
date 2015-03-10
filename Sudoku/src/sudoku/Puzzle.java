@@ -43,6 +43,11 @@ public abstract class Puzzle
 	protected static final String Section = " %s %s %s |";
 
 	protected int maxValue;
+	
+	public int getMaxValue() {
+		return maxValue;
+	}
+
 	protected int tries = 0;
 	
 	private final Map<Point, Cell> cells = new HashMap<>();
@@ -84,7 +89,7 @@ public abstract class Puzzle
 	protected String getBigBorder(int size) {
 		StringBuilder b = new StringBuilder();
 		b.append("  +");
-		times(b, "-",  size * 7 + 2);
+		times(b, "-",  (2 * size + 1 ) * size + size - 1);
 		b.append("+");
 		
 		return b.toString();
