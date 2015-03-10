@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.InputMismatchException;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Supplier;
@@ -13,6 +14,7 @@ import sudoku.exceptions.IllegalCellPositionException;
 import sudoku.exceptions.IllegalFileFormatException;
 import sudoku.samurai.Samurai;
 import sudoku.sudoku.Sudoku;
+import sudoku.supersudoku.SuperSudoku;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
@@ -27,10 +29,12 @@ public class CLI implements Runnable
 	private static Map<String, Supplier<Puzzle>> puzzles = new HashMap<>();
 	private static final String SUDOKU = "Sudoku";
 	private static final String SAMURAI = "Samurai";
+	private static final String SUPER = "Super";
 	
 	static {
 		puzzles.put(SUDOKU, Sudoku::new);
 		puzzles.put(SAMURAI, Samurai::new);
+		puzzles.put(SUPER, SuperSudoku::new);
 	}
 	
 	public CLI(Namespace options) 
@@ -99,20 +103,27 @@ public class CLI implements Runnable
 		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 
-		System.out.print("row : ");
-		int x = scanner.nextInt();
-		System.out.print("col : ");
-		int y = scanner.nextInt();
+		int limit = puzzle.getMaxValue() + 1;
 		
 		try {
-			Point p = Point.createChecked(x, y, puzzle.getLow(), puzzle.getHigh());
-			
-			System.out.print("val : ");
-			int value = scanner.nextInt();
-			
-			puzzle.setValue(p, value);
-		} catch (IllegalCellPositionException | CellContentException e) {
-			System.out.println(e);
+			System.out.print("row : ");
+			int x = scanner.nextInt(limit);
+			System.out.print("col : ");
+			int y = scanner.nextInt(limit);
+
+			try {
+				Point p = Point.createChecked(x, y, puzzle.getLow(), puzzle.getHigh());
+				
+				System.out.print("val : ");
+				int value = scanner.nextInt(limit);
+				
+				puzzle.setValue(p, value);
+			} catch (IllegalCellPositionException | CellContentException e) {
+				System.out.println(e);
+			}
+
+		} catch (InputMismatchException e) {
+			System.out.println("Illegal input : " + e);
 		}
 		
 	}
@@ -231,8 +242,8 @@ public class CLI implements Runnable
 			.help("Input file, if not set, create empty puzzle");
 		parser.addArgument("-p", "--puzzle")
 			.required(true)
-			.help("Puzzle, can be Sudoku or Samurai")
-			.choices(SUDOKU, SAMURAI);
+			.help("Puzzle, can be " + String.join(",", puzzles.keySet()))
+			.choices(puzzles.keySet());
 		
 		try {
 			Namespace options = parser.parseArgs(args);
