@@ -1,9 +1,19 @@
 package sudoku.supersudoku;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 import sudoku.Cell;
 import sudoku.Point;
@@ -99,29 +109,101 @@ public class SuperSudoku extends Puzzle
 		}		
 	}
 
+	public void importArray(int[][] values) throws CellContentException {
+		for (int row = 0; row < 16; row++) {
+			for (int col = 0; col < 16; col++) {
+				Point p = new Point(row + 1,col + 1);
+				int value = values[row][col];
+				if (value > 0)
+					getCells().get(p).setInitValue(value);
+			}
+		}
+	}
+
+	/**
+	 * Imports a Sudoku puzzle from a file.
+	 * The expected format is
+	 * 
+	 * CSV in 16 rows
+	 * Empty Cells are signalled by a 0
+	 * For example
+	 * 
+	 *  1,0,3,0,0,6,7,8,9,A,B,C,D,E,F,G
+	 *  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	 *  
+	 * @param path : Path
+	 * @throws IOException
+	 * @author Sven Erik Knop
+	 * @throws IOException, IllegalFileFormatException, CellContentException 
+	 */
 	@Override
-	public void importFile(Path path) throws IOException,
-			IllegalFileFormatException, CellContentException {
-		// TODO Auto-generated method stub
+	public void importFile (Path path) 
+			throws IOException, IllegalFileFormatException, CellContentException {
+		int[][] values = new int[16][16];
+
+		try( BufferedReader br = Files.newBufferedReader(path) ) {			
+			String line;
+			int row = 0;
+			
+			while ( (line = br.readLine()) != null) {
+				String[] lineValues = line.split(",");
+				if (lineValues.length != 16) {
+					throw new IllegalFileFormatException("Illegal entry in file " + path + " : " + line);
+				}
+				
+				for (int col = 0; col < 16; col++) {
+					values[row][col] = Integer.parseInt(lineValues[col]);
+				}
+				
+				row++;
+			}
+		}
 		
+		reset();
+		
+		importArray(values);
 	}
 
 	@Override
 	public void exportFile(Path path) throws IOException {
-		// TODO Auto-generated method stub
+		OpenOption[] options = {StandardOpenOption.CREATE, StandardOpenOption.WRITE};
 		
+		try (BufferedWriter writer = Files.newBufferedWriter(path, options )) {
+			
+			for (int row = 1; row <= 16; row++) {
+				writer.append(Integer.toString(getValue(row,1)));
+				for (int col = 2; col <= 16; col++) {
+					writer.append(",");
+					writer.append(Integer.toString(getValue(row,col)));
+				}
+				writer.append("\n");
+			}
+		}
 	}
 
 	@Override
 	public void showMarkUp() {
-		// TODO Auto-generated method stub
-		
+		showHints(0);
 	}
 
 	@Override
 	public void showHints(int level) {
-		// TODO Auto-generated method stub
-		
+		for (int x = 1; x <= 16; x++) {
+			for (int y = 1; y <= 16; y++) {
+				Point p = new Point(x,y);
+				
+				if (!isReadOnly(p)) {
+					BitSet markUp = getHints(p, level);
+					if (level == 0) {
+						System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
+					}
+					else {
+						System.out.println(String.format("(%s, %s) : %s [%s]", x, y, markUp, getHints(p, 0)));						
+					}
+				}
+			}
+		}
+		System.out.println();
 	}
 
 	@Override
@@ -189,8 +271,101 @@ public class SuperSudoku extends Puzzle
 
 	@Override
 	public void createRandomPuzzle() {
-		// TODO Auto-generated method stub
+		reset(); // first, clear out any existing entries
 		
+		// independent boxes : I can set any number in any of these boxes without constraint
+		
+		Random random = new Random();
+		
+		int[][] independentBoxes = {
+				{ 1, 6, 11, 16 },
+				{ 1, 6, 12, 15 },
+				{ 1, 7, 10, 16 },
+				{ 1, 7, 12, 14 },
+				{ 1, 8, 10, 15 },
+				{ 1, 8, 11, 14 },
+
+				{ 2, 5, 11, 16 },
+				{ 2, 5, 12, 15 },
+				{ 2, 7,  9, 16 },
+				{ 2, 7, 12, 13 },
+				{ 2, 8,  9, 14 },
+				{ 2, 8, 11, 13 },
+				
+				{ 3, 5, 10, 16 },
+				{ 3, 5, 12, 14 },
+				{ 3, 6,  9, 16 },
+				{ 3, 6, 12, 13 },
+				{ 3, 8,  9, 14 },
+				{ 3, 8, 10, 13 },
+
+				{ 4, 5, 10, 15 },
+				{ 4, 5, 11, 14 },
+				{ 4, 6,  9, 15 },
+				{ 4, 6, 11, 13 },
+				{ 4, 7,  9, 14 },
+				{ 4, 7, 10, 13 },
+		};
+		
+		int[] boxSeeds = independentBoxes[ random.nextInt(independentBoxes.length)];
+		
+		for (int i : boxSeeds) {
+			System.out.println(i);
+		}
+		
+		for (int i : boxSeeds) {
+			Sexdectet box = boxes.get(i - 1);
+			List<Cell> cells = box.getCells();
+			
+			List<Integer> seed = Arrays.asList( 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16 );
+			Collections.shuffle(seed);
+
+			for (int c = 0; c < 16; c++) {
+				try {
+					Cell cell = cells.get(c);
+					cell.setValue(seed.get(c));
+				} catch (CellContentException e) {
+					System.err.println("Shouldn't happen " + e);
+				} 
+			}			
+		}
+		
+		// fill in the missing entries
+		
+		solveBruteForce();
+		
+		System.out.println(toCLIString());
+		
+		// now try to remove entries until the solution is not unique anymore
+		
+		// first, we get all Cells and shuffle them
+		
+		List<Cell> allCells = getCells().values().stream().collect(Collectors.toList());
+		Collections.shuffle(allCells);
+		
+		int counter = 0;
+		
+		for (Cell c : allCells) {
+			int value = c.getValue();
+			c.reset();
+
+			// for now, need to solve performance problems
+			
+			if (counter++ > 200) break;
+			
+			if (isUnique() > 1) {
+				try {
+					// does not produce unique puzzle, reset this value
+					c.setValue(value);
+				} catch (CellContentException e) {
+					System.err.println("Should not happen " + e);
+				}
+			}
+		}
+		
+		for (Cell c : allCells) {
+			c.makeReadOnly();
+		}
 	}
 
 	public static void main(String[] args) {
