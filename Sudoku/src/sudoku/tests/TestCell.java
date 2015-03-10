@@ -76,6 +76,7 @@ public class TestCell
         }
 
         assertTrue("Cell value not expected", cell.getValue() == 16);
+        assertEquals("Incorrect String conversion", "(1,1) : G", cell.toString());
     }
 
 }
