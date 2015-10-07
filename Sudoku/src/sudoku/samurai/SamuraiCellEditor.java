@@ -24,9 +24,11 @@
  *  ******************************************************************************
  */
 
-package sudoku.swing;
+package sudoku.samurai;
 
 import sudoku.samurai.SamuraiTableModel;
+import sudoku.swing.CellEditor;
+import sudoku.swing.Options;
 
 import javax.swing.*;
 
@@ -113,25 +115,29 @@ public class SamuraiCellEditor extends CellEditor {
             moveToCell(row, newColumn);
         }
     }
+    
     @Override
+	public
     ArrowAction getUpAction(JTable table, int row, int column) {
         return new UpAction(table, row, column);
     }
 
     @Override
+	public
     ArrowAction getDownAction(JTable table, int row, int column) {
         return new DownAction(table, row, column);
     }
 
     @Override
+	public
     ArrowAction getLeftAction(JTable table, int row, int column) {
         return new LeftAction(table, row, column);
     }
 
     @Override
+	public
     ArrowAction getRightAction(JTable table, int row, int column) {
         return new RightAction(table, row, column);
     }
-
 }
 

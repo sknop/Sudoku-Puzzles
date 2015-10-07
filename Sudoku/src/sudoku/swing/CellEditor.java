@@ -123,17 +123,17 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
 		return updateData(wrapper, hasFocus);
 	}
 
-    static abstract class ArrowAction extends AbstractAction {
+    public static abstract class ArrowAction extends AbstractAction {
         JTable table;
-        int row;
-        int column;
+        protected int row;
+        protected int column;
 
         public ArrowAction(JTable table, int row, int column) {
             this.table = table;
             this.row = row;
             this.column = column;
         }
-        void moveToCell(int newRow, int newColumn) {
+        protected void moveToCell(int newRow, int newColumn) {
             table.editCellAt(newRow, newColumn);
             table.changeSelection(newRow, newColumn, false, false);
         }
@@ -187,16 +187,16 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
         }
     }
 
-    ArrowAction getUpAction(JTable table, int row, int column) {
+    public ArrowAction getUpAction(JTable table, int row, int column) {
         return new UpAction(table, row, column);
     }
-    ArrowAction getDownAction(JTable table, int row, int column) {
+    public ArrowAction getDownAction(JTable table, int row, int column) {
         return new DownAction(table, row, column);
     }
-    ArrowAction getLeftAction(JTable table, int row, int column) {
+    public ArrowAction getLeftAction(JTable table, int row, int column) {
         return new LeftAction(table, row, column);
     }
-    ArrowAction getRightAction(JTable table, int row, int column) {
+    public ArrowAction getRightAction(JTable table, int row, int column) {
         return new RightAction(table, row, column);
     }
 

@@ -49,7 +49,7 @@ import sudoku.Point;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
 import sudoku.swing.Options;
-import sudoku.swing.SamuraiCellEditor;
+import sudoku.samurai.SamuraiCellEditor;
 import sudoku.swing.UndoKeys;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
