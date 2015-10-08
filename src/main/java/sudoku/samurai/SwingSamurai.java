@@ -55,6 +55,7 @@ import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
+import net.sourceforge.argparse4j.internal.HelpScreenException;
 
 
 public class SwingSamurai extends Samurai
@@ -86,17 +87,23 @@ public class SwingSamurai extends Samurai
             IllegalFileFormatException,
             CellContentException {
         ArgumentParser parser = ArgumentParsers.newArgumentParser("Samurai",true);
-        parser.addArgument("-i", "--input");
+        parser.addArgument("-i", "--input").
+			help("Input file, if not set, create empty puzzle");
 
-        Namespace options = parser.parseArgs(args);
-
-        String fileName = options.get("input");
-        if (fileName != null) {
-            Path path = FileSystems.getDefault().getPath(fileName);
-            this.importFile(path);
+        try {
+	        Namespace options = parser.parseArgs(args);
+	
+	        String fileName = options.get("input");
+	        if (fileName != null) {
+	            Path path = FileSystems.getDefault().getPath(fileName);
+	            this.importFile(path);
+	        }
+	
+	        initialize();
         }
-
-        initialize();
+        catch(HelpScreenException e) {
+        	System.exit(0);
+        }
     }
 
     /**
