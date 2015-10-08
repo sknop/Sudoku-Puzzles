@@ -61,8 +61,6 @@ public class MarkUp implements Iterable<Integer>
 	public Iterator<Integer> iterator() {
 		return new Iterator<Integer>() {
 
-			int index = 1;
-			
 			@Override
 			public boolean hasNext() {
 				// TODO Auto-generated method stub

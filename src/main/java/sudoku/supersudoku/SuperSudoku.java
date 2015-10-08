@@ -21,7 +21,6 @@ import sudoku.Puzzle;
 import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
-import sudoku.unit.Nonet;
 import sudoku.unit.Sexdectet;
 
 public class SuperSudoku extends Puzzle

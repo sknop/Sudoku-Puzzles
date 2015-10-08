@@ -54,6 +54,7 @@ import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
+import net.sourceforge.argparse4j.internal.HelpScreenException;
 
 
 public class SwingSudoku extends Sudoku
@@ -83,10 +84,12 @@ public class SwingSudoku extends Sudoku
 				   IOException, 
 				   IllegalFileFormatException, 
 				   CellContentException {
-		ArgumentParser parser = ArgumentParsers.newArgumentParser("Sudoku",true);
-		parser.addArgument("-i", "--input");
+		ArgumentParser parser = ArgumentParsers.newArgumentParser("Sudoku").defaultHelp(true);
+		parser.addArgument("-i", "--input").
+				help("Input file, if not set, create empty puzzle");
 		
-		Namespace options = parser.parseArgs(args);
+		try {
+			Namespace options = parser.parseArgs(args);
 
 		String fileName = options.get("input");
 		if (fileName != null) {
@@ -95,6 +98,10 @@ public class SwingSudoku extends Sudoku
 		}
 		
 		initialize();
+		}
+		catch(HelpScreenException e) {
+			System.exit(0);
+		}
 	}
 
 	/**
