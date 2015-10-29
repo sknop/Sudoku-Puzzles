@@ -29,7 +29,7 @@ import java.util.List;
 
 import sudoku.Cell;
 
-public class Nonet extends AbstractUnit
+public class Nonet extends AbstractConstraint
 {
 	public Nonet(String position) {
 		super(9, position); // a Nonet has exactly 9 cells
@@ -42,26 +42,4 @@ public class Nonet extends AbstractUnit
 		return "Nonet " + super.toString() + " : " + numbers + " : " + complement;
 	}
 
-	// #############################################################
-	
-	public static void main(String[] args) throws Exception {
-		AbstractUnit nonet = new Nonet("1st row");
-		AbstractUnit nonet2 = new Nonet("2nd row");
-		
-		List<Cell> cells = new ArrayList<>();
-		int x = 1;
-		for (int y = 1; y <= 9; y++) {
-			Cell cell = new Cell(9, x,y);
-			cells.add(cell);
-			nonet.addCell(cell);
-			nonet2.addCell(cell);
-		}
-		System.out.println(nonet);
-		
-		for (int i = 0; i < 9; i++) {
-			cells.get(i).setValue(i + 1);
-		}
-		System.out.println(nonet);
-		System.out.println(nonet2);
-	}
 }
