@@ -21,7 +21,7 @@
  * Contributors:
  *     2014 - Sven Erik Knop - initial API and implementation
  *******************************************************************************/
-package sudoku.tests;
+package sudoku.samurai;
 
 import static org.junit.Assert.*;
 
@@ -40,9 +40,8 @@ import org.junit.Test;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalCellPositionException;
 import sudoku.exceptions.IllegalFileFormatException;
-import sudoku.samurai.Samurai;
 
-public class TestSamurai
+public class SamuraiTest
 {
 	Samurai samurai;
 	Path path;

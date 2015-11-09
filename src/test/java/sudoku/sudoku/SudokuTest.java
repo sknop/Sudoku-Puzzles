@@ -21,7 +21,7 @@
  * Contributors:
  *     2014 - Sven Erik Knop - initial API and implementation
  *******************************************************************************/
-package sudoku.tests;
+package sudoku.sudoku;
 
 import static org.junit.Assert.*;
 
@@ -34,9 +34,8 @@ import sudoku.Point;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalCellPositionException;
 import sudoku.exceptions.ValueOutsideRangeException;
-import sudoku.sudoku.Sudoku;
 
-public class TestSudoku
+public class SudokuTest
 {
 	Sudoku sudoku;
 	

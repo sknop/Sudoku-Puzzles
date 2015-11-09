@@ -21,7 +21,7 @@
  * Contributors:
  *     2014 - Sven Erik Knop - initial API and implementation
  *******************************************************************************/
-package sudoku.tests;
+package sudoku.unit;
 
 import static org.junit.Assert.*;
 
@@ -32,15 +32,15 @@ import org.junit.Test;
 
 import sudoku.Cell;
 import sudoku.exceptions.AddCellException;
-import sudoku.unit.AbstractUnit;
+import sudoku.unit.AbstractConstraint;
 import sudoku.unit.Nonet;
 
-public class TestNonet
+public class NonetTest
 {
 
 	@Test
 	public void testBasics() {
-		AbstractUnit nonet = new Nonet("2nd row");
+		AbstractConstraint nonet = new Nonet("2nd row");
 		
 		int x = 1;
 		for (int y = 1; y <= 9; y++) {
@@ -66,7 +66,7 @@ public class TestNonet
 
 	@Test
 	public void testCellUpdate() throws Exception {
-		AbstractUnit nonet = new Nonet("1st row");
+		AbstractConstraint nonet = new Nonet("1st row");
 		
 		List<Cell> cells = new ArrayList<>();
 		int x = 3;
@@ -84,7 +84,7 @@ public class TestNonet
 
 	@Test
 	public void testCellClear() throws Exception {
-		AbstractUnit nonet = new Nonet("1st row");
+		AbstractConstraint nonet = new Nonet("1st row");
 		
 		List<Cell> cells = new ArrayList<>();
 		int x = 3;

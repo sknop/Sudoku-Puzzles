@@ -14,7 +14,7 @@ import org.junit.Test;
 import sudoku.Cell;
 import sudoku.Point;
 import sudoku.exceptions.CellContentException;
-import sudoku.unit.AbstractUnit;
+import sudoku.unit.AbstractConstraint;
 
 public class TestHints
 {
@@ -24,7 +24,7 @@ public class TestHints
 
 	final int maxSize = 3;
 	
-	class Trio extends AbstractUnit 
+	class Trio extends AbstractConstraint
 	{
 		protected Trio(String position) {
 			super(maxSize, position);

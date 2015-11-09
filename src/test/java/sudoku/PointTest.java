@@ -24,7 +24,7 @@
 /**
  * 
  */
-package sudoku.tests;
+package sudoku;
 
 import static org.junit.Assert.*;
 
@@ -36,7 +36,7 @@ import sudoku.Point;
  * @author Sven Erik Knop
  *
  */
-public class TestPoint
+public class PointTest
 {
 
 	/**

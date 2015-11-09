@@ -21,16 +21,15 @@
  * Contributors:
  *     2014 - Sven Erik Knop - initial API and implementation
  *******************************************************************************/
-package sudoku.tests;
+package sudoku;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import sudoku.Cell;
 import sudoku.exceptions.CellContentException;
 
-public class TestCell
+public class CellTest
 {
 
 	@Test
