@@ -40,7 +40,7 @@ import sudoku.Point;
 import sudoku.UndoTableModel;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalCellPositionException;
-import sudoku.unit.Unit;
+import sudoku.unit.Constraint;
 
 @SuppressWarnings("serial")
 public class SamuraiTableModel extends AbstractTableModel implements UndoTableModel
@@ -241,7 +241,7 @@ public class SamuraiTableModel extends AbstractTableModel implements UndoTableMo
         fireTableCellUpdated(row, col);
 
         Cell cell = wrapper.getCell();
-        for (Unit u : cell.getUnits()) {
+        for (Constraint u : cell.getConstraints()) {
             for (Cell c : u.getCells()) {
                 Point point = c.getLocation();
                 // Sudoku is 1 based, JTable is 0 based, so need to remove 1

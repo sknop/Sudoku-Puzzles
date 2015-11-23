@@ -23,19 +23,18 @@
  *******************************************************************************/
 package sudoku.unit;
 
+import java.util.List;
 import java.util.BitSet;
 
-public class Nonet extends Unit
+import sudoku.Cell;
+import sudoku.exceptions.AddCellException;
+import sudoku.exceptions.CellContentException;
+
+public interface Constraint
 {
-	public Nonet(String position) {
-		super(9, position); // a Nonet has exactly 9 cells
-	}
+	List<Cell> getCells();
 
-	@Override 
-	public String toString() {
-		BitSet complement = (BitSet) numbers.clone();
-		complement.flip(1, 10);
-		return "Nonet " + super.toString() + " : " + numbers + " : " + complement;
-	}
-
+	void update(int oldValue, int newValue) throws CellContentException;
+	
+	BitSet getNumbers();
 }

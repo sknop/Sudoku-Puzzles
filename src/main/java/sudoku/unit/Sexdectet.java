@@ -8,7 +8,7 @@ import sudoku.Cell;
 import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
 
-public class Sexdectet extends AbstractUnit
+public class Sexdectet extends Unit
 {
 
 	public Sexdectet(String position) {
@@ -25,8 +25,8 @@ public class Sexdectet extends AbstractUnit
 
 
 	public static void main(String[] args) throws AddCellException, CellContentException {
-		AbstractUnit sexdectet = new Sexdectet("1st row");
-		AbstractUnit sextectet2 = new Sexdectet("2nd row");
+		AbstractConstraint sexdectet = new Sexdectet("1st row");
+		AbstractConstraint sextectet2 = new Sexdectet("2nd row");
 		
 		List<Cell> cells = new ArrayList<>();
 		int x = 1;

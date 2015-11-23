@@ -31,16 +31,16 @@ import java.util.List;
 import sudoku.Cell;
 import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
-import sudoku.exceptions.TooManyCellsException;;
+import sudoku.exceptions.TooManyCellsException;
 
-public abstract class AbstractUnit implements Unit
+public abstract class AbstractConstraint implements Constraint
 {
 	protected List<Cell> cells;
 	protected int maxCells;
 	protected String position;
 	protected BitSet numbers;
 	
-	protected AbstractUnit(int size, String position) {
+	protected AbstractConstraint(int size, String position) {
 		this.maxCells = size;
 		this.cells = new ArrayList<>(size);
 		this.position = position;
@@ -48,13 +48,12 @@ public abstract class AbstractUnit implements Unit
 		this.numbers = new BitSet(size);
 	}
 	
-	@Override
 	public void addCell(Cell cell) throws AddCellException {
 		if ( cells.size() == maxCells ) {
 			throw new TooManyCellsException("Exceeded " + maxCells + " entries");
 		}
 		cells.add(cell);
-		cell.addToUnit(this);
+		cell.addConstraint(this);
 	}
 
 	@Override

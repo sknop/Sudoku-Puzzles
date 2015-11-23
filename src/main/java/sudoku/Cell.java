@@ -31,13 +31,13 @@ import java.util.List;
 
 import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
-import sudoku.unit.Unit;
+import sudoku.unit.Constraint;
 
 public class Cell implements Iterable<Integer>
 {
 	private int value = 0;
 	private Point location;
-	private List<Unit> belongsTo = new ArrayList<>();
+	private List<Constraint> belongsTo = new ArrayList<>();
 	private boolean readOnly = false;
 	private int limit;
 	
@@ -63,7 +63,7 @@ public class Cell implements Iterable<Integer>
 		readOnly = true;
 	}
 	
-	public List<Unit> getUnits() {
+	public List<Constraint> getConstraints() {
 		return Collections.unmodifiableList(belongsTo);
 	}
 	
@@ -81,7 +81,7 @@ public class Cell implements Iterable<Integer>
 			throw new CellContentException("Value " + value + " larger than " + limit);
 		}
 		else {
-			for (Unit u : belongsTo) {
+			for (Constraint u : belongsTo) {
 				u.update(this.value, value);
 			}
 			
@@ -102,7 +102,7 @@ public class Cell implements Iterable<Integer>
 		BitSet markUp = new BitSet();
 		
 		if (value == 0) {			
-			for (Unit u : belongsTo) {
+			for (Constraint u : belongsTo) {
 				markUp.or(u.getNumbers());
 			}
 			markUp.flip(1, limit + 1);
@@ -124,10 +124,10 @@ public class Cell implements Iterable<Integer>
 	}
 	
 	// Uniques are simple: their markup only contains one value
-	// This value cannot show up in any other Cell in the Unit - job done
+	// This value cannot show up in any other Cell in the Constraint - job done
 	public BitSet removeUniques(BitSet markUp) {
 		BitSet copyMarkUp = (BitSet) markUp.clone();
-		for (Unit u : belongsTo) {
+		for (Constraint u : belongsTo) {
 			for (Cell c : u.getCells()) {
 				if (c != this) {
 					BitSet itsMarkUp = c.getMarkUp();
@@ -144,10 +144,10 @@ public class Cell implements Iterable<Integer>
 
 	// So what exactly is a pair?
 	// 	cardinality of 2
-	//	an identical pair has to exist in the same Unit
+	//	an identical pair has to exist in the same Constraint
 	public BitSet removePairs(BitSet markUp) {
 		BitSet copyMarkUp = (BitSet) markUp.clone();
-		for (Unit u : belongsTo) {
+		for (Constraint u : belongsTo) {
 			Cell secondFound = null;
 			
 			for (Cell c1 : u.getCells()) {
@@ -176,8 +176,8 @@ public class Cell implements Iterable<Integer>
 		return copyMarkUp;
 	}
 
-	public void addToUnit(Unit unit) throws AddCellException {
-		belongsTo.add(unit);
+	public void addConstraint(Constraint constraint) throws AddCellException {
+		belongsTo.add(constraint);
 	}
 	
 	public int getValue() {
@@ -189,7 +189,7 @@ public class Cell implements Iterable<Integer>
 	}
 
     public String getValueAsString() {
-        char c = '0';
+        char c;
 
         if (value < 10) {
             c = (char) ('0' + value);

@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2015 Sven Erik Knop.
  * Licensed under the EUPL V.1.1
  *
@@ -18,24 +18,43 @@
  *
  * For more details, see http://joinup.ec.europa.eu/software/page/eupl.
  *
- * Contributors:
- *     2015 - Sven Erik Knop - initial API and implementation
- *******************************************************************************/
+ *  Contributors:
+ *      2015 - Sven Erik Knop - initial API and implementation
+ *
+ */
 
 package sudoku.unit;
 
-import java.util.BitSet;
+import sudoku.Cell;
+import sudoku.exceptions.AddCellException;
+import sudoku.exceptions.CellContentException;
 
-public class Unit extends AbstractConstraint
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
+
+public abstract class Relation implements Constraint
 {
-    public Unit(int size, String position) {
-        super(size, position);
+    protected Cell source;
+    protected Cell target;
+    protected int maxValue;
+
+    public Relation(Cell source, Cell target, int maxValue) {
+        this.source = source;
+        this.target = target;
+        this.maxValue = maxValue;
     }
 
+    /**
+     * We only report the target cell
+     *
+     * @return List containing the target cell
+     */
     @Override
-    public String toString() {
-        BitSet complement = (BitSet) numbers.clone();
-        complement.flip(1, maxCells);
-        return "Unit (" + maxCells + ") "+ super.toString() + " : " + numbers + " : " + complement;
+    public List<Cell> getCells() {
+        ArrayList<Cell> array = new ArrayList<>();
+        array.add(target);
+
+        return array;
     }
 }
