@@ -72,7 +72,13 @@ public class Cell implements Iterable<Integer>
 			readOnly = true;
 		}
 	}
-	
+
+	public void makeWritable() {
+        if (value != 0) {
+            readOnly = false;
+        }
+    }
+
 	public void setValue(int value) throws CellContentException {
 		if (readOnly) {
 			throw new CellContentException(this.toString() + " is read only");

@@ -44,6 +44,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import sudoku.Cell;
 import sudoku.CellWrapper;
 import sudoku.Point;
 import sudoku.exceptions.CellContentException;
@@ -314,6 +315,30 @@ public class SwingSamurai extends Samurai
             }
         });
         buttons.add(saveButton);
+
+        JToggleButton readWriteButton = new JToggleButton("Write");
+        readWriteButton.addActionListener( e -> {
+            // cheeky hack - remove selection so that the cell is not blocked
+            table.editCellAt(-1, -1);
+            table.getSelectionModel().clearSelection();
+
+            if (readWriteButton.getText().equals("Write")) {
+                readWriteButton.setText("R/O");
+                for (Cell c : getCells().values()) {
+                    c.makeReadOnly();
+                }
+            }
+            else {
+                readWriteButton.setText("Write");
+                for (Cell c : getCells().values()) {
+                    c.makeWritable();
+                }
+
+            }
+
+            tableModel.fireTableDataChanged();
+        });
+        buttons.add(readWriteButton);
 
     }
 
