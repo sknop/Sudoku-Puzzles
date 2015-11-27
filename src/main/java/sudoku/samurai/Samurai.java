@@ -61,13 +61,12 @@ public class Samurai extends Puzzle
 	}
 	
 	private interface CellAccess {
-		public void apply(int x, int y) throws CellContentException;
+		void apply(int x, int y) throws CellContentException;
 	}
-	
+
 	/**
 	 * Iterates through all the cells and applies the CellAccess functor
 	 * Will exclude the empty regions.
-	 * @param access
 	 * @throws CellContentException
 	 */
 	private void eachCell(CellAccess access) throws CellContentException {
@@ -89,21 +88,16 @@ public class Samurai extends Puzzle
 		}
 	}
 	
-	private final void initialize() {
+	private void initialize() {
 		// create Cells first
 		// leave gaps where there are no cells
 
 		try {
-			eachCell(new CellAccess() {
-
-				@Override
-				public void apply(int x, int y) {
-					Point p = new Point(x,y);
-					Cell cell = new Cell(9, p);
-					getCells().put(p, cell);
-				}
-				
-			});
+			eachCell((x, y) -> {
+                Point p = new Point(x,y);
+                Cell cell = new Cell(9, p);
+                getCells().put(p, cell);
+            });
 		} catch (CellContentException e) {
 			System.out.println("Should not happen " + e);
 		}
@@ -310,18 +304,13 @@ public class Samurai extends Puzzle
 	}
 	
 	public void importArray(int[][] values) throws CellContentException {
-		eachCell(new CellAccess() {
-
-			@Override
-			public void apply(int x, int y) throws CellContentException {
-				int value = values[x-1][y-1];
-				if (value > 0) {
-					Point p = new Point(x,y);
-					getCells().get(p).setInitValue(value);
-				}
-			}
-			
-		});
+		eachCell((x, y) -> {
+            int value = values[x-1][y-1];
+            if (value > 0) {
+                Point p = new Point(x,y);
+                getCells().get(p).setInitValue(value);
+            }
+        });
 	}
 	
 
@@ -338,7 +327,6 @@ public class Samurai extends Puzzle
 	 *  
 	 * @param path : Path
 	 * @throws IOException
-	 * @author Sven Erik Knop
 	 * @throws IOException, IllegalFileFormatException, CellContentException 
 	 */
 	@Override
@@ -376,14 +364,7 @@ public class Samurai extends Puzzle
 		int[][] values = new int[PUZZLE_WIDTH][PUZZLE_WIDTH];
 		
 		try {
-			eachCell( new CellAccess() {
-
-				@Override
-				public void apply(int x, int y) throws CellContentException {
-					values[x-1][y-1] = getValue(x,y);
-				}
-				
-			});
+			eachCell((x, y) -> values[x-1][y-1] = getValue(x,y));
 		} catch (CellContentException e) {
 			System.out.println("Should not happen: " + e);
 		}
@@ -524,25 +505,20 @@ public class Samurai extends Puzzle
 	@Override
 	public void showHints(int level) {
 		try {
-			eachCell( new CellAccess() {
+			eachCell((x, y) -> {
+                Point p = new Point(x,y);
 
-				@Override
-				public void apply(int x, int y) throws CellContentException {
-					Point p = new Point(x,y);
-					
-					if (!isReadOnly(p)) {
-						BitSet markUp = getHints(p, level);
-								
-						if (level == 0) {
-							System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
-						}
-						else {
-							System.out.println(String.format("(%s, %s) : %s [%s]", x, y, markUp, getHints(p, 0)));						
-						}
-					}					
-				}
-				
-			});
+                if (!isReadOnly(p)) {
+                    BitSet markUp = getHints(p, level);
+
+                    if (level == 0) {
+                        System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
+                    }
+                    else {
+                        System.out.println(String.format("(%s, %s) : %s [%s]", x, y, markUp, getHints(p, 0)));
+                    }
+                }
+            });
 		} catch (CellContentException e) {
 			System.out.println("Shouldn't happen " + e);
 		}
