@@ -37,6 +37,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.swing.border.MatteBorder;
 import javax.swing.table.TableCellRenderer;
@@ -287,22 +288,23 @@ public class SwingSudoku extends Sudoku
 
 		JToggleButton readWriteButton = new JToggleButton("Write");
         readWriteButton.addActionListener( e -> {
+			Consumer<Cell> command = null;
+
             // cheeky hack - remove selection so that the cell is not blocked
             table.editCellAt(-1, -1);
             table.getSelectionModel().clearSelection();
 
             if (readWriteButton.getText().equals("Write")) {
                 readWriteButton.setText("R/O");
-                for (Cell c : getCells().values()) {
-                    c.makeReadOnly();
-                }
+                command = Cell::makeReadOnly;
             }
             else {
                 readWriteButton.setText("Write");
-                for (Cell c : getCells().values()) {
-                    c.makeWritable();
-                }
+                command = Cell::makeWritable;
+            }
 
+            for (Cell c : getCells().values()) {
+                command.accept(c);
             }
 
             tableModel.fireTableDataChanged();
