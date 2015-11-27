@@ -67,6 +67,7 @@ public class Samurai extends Puzzle
 	/**
 	 * Iterates through all the cells and applies the CellAccess functor
 	 * Will exclude the empty regions.
+	 * @param access : CellAccess
 	 * @throws CellContentException
 	 */
 	private void eachCell(CellAccess access) throws CellContentException {
