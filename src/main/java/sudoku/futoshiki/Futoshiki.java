@@ -35,9 +35,12 @@ import sudoku.exceptions.IllegalFileFormatException;
 import sudoku.unit.*;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -285,7 +288,51 @@ public class Futoshiki extends Puzzle
 
     @Override
     public void exportFile(Path path) throws IOException {
+        OpenOption[] options = {StandardOpenOption.CREATE, StandardOpenOption.WRITE};
 
+        try (BufferedWriter writer = Files.newBufferedWriter(path, options )) {
+            writer.append("size=");
+            writer.append(Integer.toString(maxValue));
+            writer.append("\n");
+
+            for (int row = 1; row < maxValue; row++) {
+                writeOneLine(writer, row);
+
+                writeOneRelationLine(writer, row);
+            }
+            // and the final row
+            writeOneLine(writer, maxValue);
+        }
+    }
+
+    private void writeOneRelationLine(BufferedWriter writer, int row) throws IOException {
+        writer.append(getRelation(row, 1, Direction.Vertical, "-"));
+        writer.append(",-");
+        for (int col = 2; col < maxValue; col++) {
+            writer.append(",");
+            writer.append(getRelation(row, col, Direction.Vertical, "-"));
+            writer.append(",-");
+        }
+        writer.append(",");
+        writer.append(getRelation(row, maxValue, Direction.Vertical, "-"));
+        writer.append("\n");
+    }
+
+    private void writeOneLine(BufferedWriter writer, int row) throws IOException {
+        writer.append(Integer.toString(getValue(row, 1)));
+        writer.append(",");
+        writer.append(getRelation(row, 1, Direction.Horizontal, "-"));
+
+        for (int col = 2; col < maxValue; col++) {
+            writer.append(",");
+            writer.append(Integer.toString(getValue(row,col)));
+            writer.append(",");
+            writer.append(getRelation(row, col, Direction.Horizontal, "-"));
+        }
+        // and the last value in the row
+        writer.append(",");
+        writer.append(Integer.toString(getValue(row,maxValue)));
+        writer.append("\n");
     }
 
     @Override
@@ -344,7 +391,7 @@ public class Futoshiki extends Puzzle
             b.append(" ");
             b.append(getValueAsString(row, col));
             b.append(" ");
-            b.append(getRelation(row, col, Direction.Horizontal));
+            b.append(getRelation(row, col, Direction.Horizontal, " "));
         }
         b.append(" ");
         b.append(getValueAsString(row, maxValue));
@@ -355,11 +402,11 @@ public class Futoshiki extends Puzzle
         b.append("   |");
         for (int col = 1; col < maxValue; col++) {
             b.append(" ");
-            b.append(getRelation(row, col, Direction.Vertical));
+            b.append(getRelation(row, col, Direction.Vertical, " "));
             b.append("  ");
         }
         b.append(" ");
-        b.append(getRelation(row, maxValue, Direction.Vertical));
+        b.append(getRelation(row, maxValue, Direction.Vertical, " "));
         b.append(" |\n");
     }
 
@@ -368,7 +415,7 @@ public class Futoshiki extends Puzzle
         Vertical
     }
 
-    private String getRelation(int row, int col, Direction direction) {
+    private String getRelation(int row, int col, Direction direction, String emptyString) {
         Point from = new Point(row, col);
 
         Point to;
@@ -382,7 +429,7 @@ public class Futoshiki extends Puzzle
         Tuple tuple = new Tuple(from, to);
         Relation relation = relations.get(tuple);
 
-        String result = " ";
+        String result = emptyString;
         if (relation != null) {
             if (relation.getClass() == GreaterThan.class) {
                 if (direction == Direction.Horizontal) {
@@ -403,12 +450,12 @@ public class Futoshiki extends Puzzle
 
     @Override
     public int getLow() {
-        return 0;
+        return 1;
     }
 
     @Override
     public int getHigh() {
-        return 0;
+        return maxValue;
     }
 
     @Override
