@@ -192,7 +192,7 @@ public class CLI implements Runnable
 
     private void bruteForce() {
         if (!puzzle.solveBruteForce()) {
-            System.out.println("This Sudoku does not have a solution");
+            System.out.println("This puzzle does not have a solution");
         }
     }
 
