@@ -31,9 +31,7 @@ import sudoku.Puzzle;
 import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
-import sudoku.unit.Nonet;
-import sudoku.unit.Relation;
-import sudoku.unit.Unit;
+import sudoku.unit.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -55,6 +53,9 @@ public class Futoshiki extends Puzzle
 
     public Futoshiki(int maxValue) {
         super(maxValue);
+        if (maxValue < 2) {
+            throw new RuntimeException("MaxValue must be larger than 1");
+        }
         initialize(maxValue);
     }
 
@@ -104,7 +105,7 @@ public class Futoshiki extends Puzzle
 
             Matcher m = r.matcher(line);
             if (m.find()) {
-                String sizeString = m.group(0);
+                String sizeString = m.group(1);
                 size = Integer.parseInt(sizeString);
             }
             else {
@@ -119,8 +120,87 @@ public class Futoshiki extends Puzzle
         return size;
     }
 
-    private void importArray(int size, int[][] values) {
+    private void importArray(int size, int[][] values) throws CellContentException {
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col++) {
+                Point p = new Point(row + 1,col + 1);
+                int value = values[row][col];
+                if (value > 0)
+                    getCells().get(p).setInitValue(value);
+            }
+        }
+    }
 
+    private void importHorizonalRelations(int size, char[][] hor_rel) throws IllegalFileFormatException {
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size - 1; col++) {
+                char val = hor_rel[row][col];
+                if (val != '-') { // minus means not set
+                    Point from = new Point(row + 1, col + 1); // Points are counted from 1, not 0
+                    Point to = new Point(row + 1, col + 2);
+
+                    Cell source = getCells().get(from);
+                    Cell target = getCells().get(to);
+
+                    Relation forward;
+                    Relation back;
+
+                    if (val == '>') {
+                        forward = new GreaterThan(source, target, size);
+                        back = new LessThan(target, source, size);
+                    }
+                    else if (val == '<') {
+                        forward = new GreaterThan(target, source, size);
+                        back = new LessThan(source, target, size);
+                    }
+                    else {
+                        throw new IllegalFileFormatException("Illegal relation '" + val + "' in row " + row + " col " + col);
+                    }
+
+                    source.addConstraint(forward);
+                    target.addConstraint(back);
+
+                    relations.add(forward);
+                    relations.add(back);
+                }
+            }
+        }
+    }
+
+    private void importVerticalRelations(int size, char[][] ver_rel) throws IllegalFileFormatException {
+        for (int row = 0; row < size - 1; row++) {
+            for (int col = 0; col < size; col++) {
+                char val = ver_rel[row][col];
+                if (val != '-') { // minus means not set
+                    Point from = new Point(row + 1, col + 1);
+                    Point to = new Point(row + 2, col + 1);
+
+                    Cell source = getCells().get(from);
+                    Cell target = getCells().get(to);
+
+                    Relation forward;
+                    Relation back;
+
+                    if (val == 'v') {
+                        forward = new GreaterThan(source, target, size);
+                        back = new LessThan(target, source, size);
+                    }
+                    else if (val == '^') {
+                        forward = new GreaterThan(target, source, size);
+                        back = new LessThan(source, target, size);
+                    }
+                    else {
+                        throw new IllegalFileFormatException("Illegal relation '" + val + "' in row " + row + " col " + col);
+                    }
+
+                    source.addConstraint(forward);
+                    target.addConstraint(back);
+
+                    relations.add(forward);
+                    relations.add(back);
+                }
+            }
+        }
     }
 
     /**
@@ -132,19 +212,19 @@ public class Futoshiki extends Puzzle
      * Followed by data:
      * CSV in 2*N-1 rows, 2*N-1 columns
      * Empty Cells are signaled by a 0
-     * Relationship is shown by ' ' (for no relationship), '<', '>', '^', 'v'
+     * Relationship is shown by '-' (for no relationship), '<', '>', '^', 'v'
      * For example
      *
      *  size=5
-     *  0,<,0,<,0,<,0,<,5
-     *   , ,^, , , , , ,
-     *  0,<,0,<,0,<,0,<,0
-     *   , ,^, , , , , ,
-     *  0,<,0,<,0,<,0,<,0
-     *   , ,^, , , , , ,
-     *  0,<,0,<,0,<,0,<,0
-     *   , ,^, , , , , ,
-     *  0,<,0,<,0,<,0,<,0
+     *  0,<,0,<,0,<,0,<,5   0
+     *  -,-,^,-,-,-,-,-,-   1
+     *  0,<,0,<,0,<,0,<,0   2
+     *  -,-,^,-,-,-,-,-,-   3
+     *  0,<,0,<,0,<,0,<,0   4
+     *  -,-,^,-,-,-,-,-,-   5
+     *  0,<,0,<,0,<,0,<,0   6
+     *  -,-,^,-,-,-,-,-,-   7
+     *  0,<,0,<,0,<,0,<,0   8
      *
      * @param path : Path
      * @throws IOException, IllegalFileFormatException, CellContentException
@@ -159,26 +239,43 @@ public class Futoshiki extends Puzzle
             int rowSize = size * 2 - 1;
 
             int[][] values = new int[size][size];
-            char[][] relations = new char[size - 1][size - 1];
+            char[][] hor_rel = new char[size][size - 1];
+            char[][] ver_rel = new char[size - 1][size];
 
             int row = 0;
 
             while ( (line = br.readLine()) != null) {
                 String[] lineValues = line.split(",");
                 if (lineValues.length != rowSize) {
-                    throw new IllegalFileFormatException("Illegal entry in file " + path + " : " + line);
+                    throw new IllegalFileFormatException("Illegal entry in file " + path + " : " + line + " row = " + row + " length = " + lineValues.length);
                 }
 
-                for (int col = 0; col < rowSize; col++) {
-                    values[row][col] = Integer.parseInt(lineValues[col]);
+                // need to toggle between cell line and relation line
+                if (row % 2 == 0) {
+                    for (int col = 0; col < rowSize; col++) {
+                        if (col % 2 == 0 ) {
+                            values[row / 2][col / 2] = Integer.parseInt(lineValues[col]);
+                        }
+                        else {
+                            hor_rel[row / 2][(col - 1) / 2] = lineValues[col].charAt(0);
+                        }
+                    }
                 }
-
+                else {
+                    for (int col = 0; col < rowSize; col++) {
+                        if (col % 2 == 0) {
+                            ver_rel[(row - 1) / 2][col / 2] = lineValues[col].charAt(0);
+                        }
+                    }
+                }
                 row++;
             }
 
             reset();
 
             importArray(size, values);
+            importHorizonalRelations(size, hor_rel);
+            importVerticalRelations(size, ver_rel);
         }
     }
 
