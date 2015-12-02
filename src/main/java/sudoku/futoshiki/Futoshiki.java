@@ -28,6 +28,7 @@ package sudoku.futoshiki;
 import sudoku.Cell;
 import sudoku.Point;
 import sudoku.Puzzle;
+import sudoku.Tuple;
 import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
@@ -38,15 +39,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Futoshiki extends Puzzle
 {
+
     private final List<Unit> rows = new ArrayList<>();
     private final List<Unit> columns = new ArrayList<>();
-    private final List<Relation> relations = new ArrayList<>();
+    private final Map<Tuple, Relation> relations = new HashMap<>();
 
     // Default constructor for CLI - size 5 for typical Times Puzzle
     public Futoshiki() { this(5); }
@@ -150,8 +154,8 @@ public class Futoshiki extends Puzzle
                         back = new LessThan(target, source, size);
                     }
                     else if (val == '<') {
-                        forward = new GreaterThan(target, source, size);
-                        back = new LessThan(source, target, size);
+                        forward = new LessThan(source, target, size);
+                        back = new GreaterThan(target, source, size);
                     }
                     else {
                         throw new IllegalFileFormatException("Illegal relation '" + val + "' in row " + row + " col " + col);
@@ -160,8 +164,8 @@ public class Futoshiki extends Puzzle
                     source.addConstraint(forward);
                     target.addConstraint(back);
 
-                    relations.add(forward);
-                    relations.add(back);
+                    relations.put(new Tuple(from, to), forward);
+                    relations.put(new Tuple(to, from), back);
                 }
             }
         }
@@ -186,8 +190,8 @@ public class Futoshiki extends Puzzle
                         back = new LessThan(target, source, size);
                     }
                     else if (val == '^') {
-                        forward = new GreaterThan(target, source, size);
-                        back = new LessThan(source, target, size);
+                        forward = new LessThan(source, target, size);
+                        back = new GreaterThan(target, source, size);
                     }
                     else {
                         throw new IllegalFileFormatException("Illegal relation '" + val + "' in row " + row + " col " + col);
@@ -196,8 +200,8 @@ public class Futoshiki extends Puzzle
                     source.addConstraint(forward);
                     target.addConstraint(back);
 
-                    relations.add(forward);
-                    relations.add(back);
+                    relations.put(new Tuple(from, to), forward);
+                    relations.put(new Tuple(to, from), back);
                 }
             }
         }
@@ -311,10 +315,11 @@ public class Futoshiki extends Puzzle
         // now the cell content interspersed with the relations
         for (int row = 1; row < maxValue; row++) {
             drawContentRow(b, row);
-            drawContentRow(b, row);
+            drawRelationRow(b, row);
         }
         // last row of cell content separately
         drawContentRow(b, maxValue);
+        drawRelationRow(b, maxValue);
 
         // bottom border
         drawBorder(b);
@@ -339,11 +344,61 @@ public class Futoshiki extends Puzzle
             b.append(" ");
             b.append(getValueAsString(row, col));
             b.append(" ");
-            b.append("X");
+            b.append(getRelation(row, col, Direction.Horizontal));
         }
         b.append(" ");
         b.append(getValueAsString(row, maxValue));
         b.append(" |\n");
+    }
+
+    private void drawRelationRow(StringBuilder b, int row) {
+        b.append("   |");
+        for (int col = 1; col < maxValue; col++) {
+            b.append(" ");
+            b.append(getRelation(row, col, Direction.Vertical));
+            b.append("  ");
+        }
+        b.append(" ");
+        b.append(getRelation(row, maxValue, Direction.Vertical));
+        b.append(" |\n");
+    }
+
+    private enum Direction {
+        Horizontal,
+        Vertical
+    }
+
+    private String getRelation(int row, int col, Direction direction) {
+        Point from = new Point(row, col);
+
+        Point to;
+        if (direction == Direction.Horizontal) {
+            to = new Point(row, col + 1);
+        }
+        else {
+            to = new Point(row + 1, col);
+        }
+
+        Tuple tuple = new Tuple(from, to);
+        Relation relation = relations.get(tuple);
+
+        String result = " ";
+        if (relation != null) {
+            if (relation.getClass() == GreaterThan.class) {
+                if (direction == Direction.Horizontal) {
+                    result = ">";
+                } else {
+                    result = "v";
+                }
+            } else if (relation.getClass() == LessThan.class) {
+                if (direction == Direction.Horizontal) {
+                    result = "<";
+                } else {
+                    result = "^";
+                }
+            }
+        }
+        return result;
     }
 
     @Override
