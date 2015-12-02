@@ -182,7 +182,7 @@ public class Cell implements Iterable<Integer>
 		return copyMarkUp;
 	}
 
-	public void addConstraint(Constraint constraint) throws AddCellException {
+	public void addConstraint(Constraint constraint) {
 		belongsTo.add(constraint);
 	}
 	
