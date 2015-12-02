@@ -10,6 +10,7 @@ import java.util.Scanner;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import net.sourceforge.argparse4j.impl.Arguments;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalCellPositionException;
 import sudoku.exceptions.IllegalFileFormatException;
@@ -246,7 +247,6 @@ public class CLI implements Runnable
         }
     }
 
-
     public static void main(String[] args) {
         ArgumentParser parser = ArgumentParsers.newArgumentParser("CLI", true);
         parser.addArgument("-i", "--input")
@@ -257,7 +257,8 @@ public class CLI implements Runnable
                 .choices(puzzles.keySet());
         parser.addArgument("-s", "--size")
                 .help("Optional size of the puzzle")
-                .type(Integer.class);
+                .type(Integer.class)
+                .choices(Arguments.range(2,16));
 
         try {
             Namespace options = parser.parseArgs(args);
