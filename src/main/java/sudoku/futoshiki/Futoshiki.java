@@ -46,7 +46,7 @@ public class Futoshiki extends Puzzle
 {
     private final List<Unit> rows = new ArrayList<>();
     private final List<Unit> columns = new ArrayList<>();
-    private List<Relation> relations = new ArrayList<>();
+    private final List<Relation> relations = new ArrayList<>();
 
     // Default constructor for CLI - size 5 for typical Times Puzzle
     public Futoshiki() { this(5); }
@@ -219,7 +219,7 @@ public class Futoshiki extends Puzzle
      *  0,<,0,<,0,<,0,<,5   0
      *  -,-,^,-,-,-,-,-,-   1
      *  0,<,0,<,0,<,0,<,0   2
-     *  -,-,^,-,-,-,-,-,-   3
+     *  -,-,^,-,-,-,-,-,v   3
      *  0,<,0,<,0,<,0,<,0   4
      *  -,-,^,-,-,-,-,-,-   5
      *  0,<,0,<,0,<,0,<,0   6
@@ -296,7 +296,54 @@ public class Futoshiki extends Puzzle
 
     @Override
     public String toCLIString() {
-        return null;
+        StringBuilder b = new StringBuilder();
+        // row of numbers indicating each cell position
+        b.append("     ");
+        for (int i = 1; i <= maxValue; i++) {
+            b.append(i);
+            b.append("   ");
+        }
+        b.append("\n");
+
+        // top border
+        drawBorder(b);
+
+        // now the cell content interspersed with the relations
+        for (int row = 1; row < maxValue; row++) {
+            drawContentRow(b, row);
+            drawContentRow(b, row);
+        }
+        // last row of cell content separately
+        drawContentRow(b, maxValue);
+
+        // bottom border
+        drawBorder(b);
+
+        return b.toString();
+    }
+
+    private void drawBorder(StringBuilder b) {
+        b.append("   +");
+        for (int i = 0; i < maxValue * 3 + maxValue - 1; i++) {
+            b.append("-");
+        }
+        b.append("+");
+        b.append("\n");
+    }
+
+    private void drawContentRow(StringBuilder b, int row) {
+        b.append(" ");
+        b.append(row);
+        b.append(" |");
+        for (int col = 1; col < maxValue; col++) {
+            b.append(" ");
+            b.append(getValueAsString(row, col));
+            b.append(" ");
+            b.append("X");
+        }
+        b.append(" ");
+        b.append(getValueAsString(row, maxValue));
+        b.append(" |\n");
     }
 
     @Override
