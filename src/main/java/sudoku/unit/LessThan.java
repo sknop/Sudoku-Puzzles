@@ -53,6 +53,7 @@ public class LessThan extends Relation
             set.set(i);
         }
 
+        set.flip(1, maxValue + 1); // we want to show the numbers already set, not the ones available
         return set;
     }
 

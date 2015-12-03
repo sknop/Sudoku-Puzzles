@@ -44,7 +44,7 @@ public class LessThanTest
         BitSet possibles = relation.getNumbers();
 
         assertTrue(totalSet(possibles) == 1);
-        assertTrue(possibles.get(1));
+        assertTrue(possibles.get(2));
     }
 
     @Test
@@ -55,11 +55,8 @@ public class LessThanTest
 
         BitSet possibles = relation.getNumbers();
 
-        assertTrue(totalSet(possibles) == 4);
-        assertTrue(possibles.get(1));
-        assertTrue(possibles.get(2));
-        assertTrue(possibles.get(3));
-        assertTrue(possibles.get(4));
+        assertTrue(totalSet(possibles) == 1);
+        assertTrue(possibles.get(5));
     }
 
     @Test
@@ -72,9 +69,10 @@ public class LessThanTest
 
         BitSet possibles = relation.getNumbers();
 
-        assertTrue(totalSet(possibles) == 2);
-        assertTrue(possibles.get(1));
-        assertTrue(possibles.get(2));
+        assertTrue(totalSet(possibles) == 3);
+        assertTrue(possibles.get(3));
+        assertTrue(possibles.get(4));
+        assertTrue(possibles.get(5));
     }
 
     @Test

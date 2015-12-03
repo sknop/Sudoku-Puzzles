@@ -49,7 +49,7 @@ public class GreaterThanTest
         BitSet possibles = relation.getNumbers();
 
         assertTrue(totalSet(possibles) == 1);
-        assertTrue(possibles.get(2));
+        assertTrue(possibles.get(1));
     }
 
     @Test
@@ -58,13 +58,10 @@ public class GreaterThanTest
         Cell target = new Cell(5,4,3);
         Relation relation = new GreaterThan(source, target, 5);
 
-        BitSet possibles = relation.getNumbers();
+        BitSet taken = relation.getNumbers();
 
-        assertTrue(totalSet(possibles) == 4);
-        assertTrue(possibles.get(2));
-        assertTrue(possibles.get(3));
-        assertTrue(possibles.get(4));
-        assertTrue(possibles.get(5));
+        assertTrue(totalSet(taken) == 1);
+        assertTrue(taken.get(1));
     }
 
     @Test
@@ -77,7 +74,7 @@ public class GreaterThanTest
 
         BitSet possibles = relation.getNumbers();
 
-        assertTrue(totalSet(possibles) == 2);
+        assertTrue(totalSet(possibles) == 3);
     }
 
     @Test
