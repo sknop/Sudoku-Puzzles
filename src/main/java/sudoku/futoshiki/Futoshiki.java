@@ -41,10 +41,7 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -210,6 +207,16 @@ public class Futoshiki extends Puzzle
         }
     }
 
+    @Override
+    protected void reset(int newMaxSize) {
+        super.reset(newMaxSize);
+        rows.clear();
+        columns.clear();
+        relations.clear();
+
+        initialize(newMaxSize);
+    }
+
     /**
      *
      * Imports a Futoshiki puzzle from a file.
@@ -243,6 +250,12 @@ public class Futoshiki extends Puzzle
             line = br.readLine();
 
             int size = getSize(line);
+
+            // the puzzle size might have changed
+            // instead of restricting users to only one size, let's reset the puzzle instead
+
+            reset(size);
+
             int rowSize = size * 2 - 1;
 
             int[][] values = new int[size][size];
@@ -277,8 +290,6 @@ public class Futoshiki extends Puzzle
                 }
                 row++;
             }
-
-            reset();
 
             importArray(size, values);
             importHorizonalRelations(size, hor_rel);
@@ -337,12 +348,27 @@ public class Futoshiki extends Puzzle
 
     @Override
     public void showMarkUp() {
-
+        showHints(0);
     }
 
     @Override
     public void showHints(int level) {
+        for (int x = 1; x <= maxValue; x++) {
+            for (int y = 1; y <= maxValue; y++) {
+                Point p = new Point(x,y);
 
+                if (!isReadOnly(p)) {
+                    BitSet markUp = getHints(p, level);
+                    if (level == 0) {
+                        System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
+                    }
+                    else {
+                        System.out.println(String.format("(%s, %s) : %s [%s]", x, y, markUp, getHints(p, 0)));
+                    }
+                }
+            }
+        }
+        System.out.println();
     }
 
     @Override
