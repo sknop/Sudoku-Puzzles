@@ -58,7 +58,7 @@ public class Sudoku extends Puzzle
 		initialize();
 	}
 	
-	private final void initialize() {
+	private void initialize() {
 		try {
 			// create the Cells first, easier to see this way
 			
@@ -136,7 +136,6 @@ public class Sudoku extends Puzzle
 	 *  
 	 * @param path : Path
 	 * @throws IOException
-	 * @author Sven Erik Knop
 	 * @throws IOException, IllegalFileFormatException, CellContentException 
 	 */
 	@Override
@@ -334,10 +333,8 @@ public class Sudoku extends Puzzle
 				}
 			}
 		}
-		
-		for (Cell c : allCells) {
-			c.makeReadOnly();
-		}
+
+		allCells.forEach(Cell::makeReadOnly);
 	}
 
 	public static void main(String args[]) {
