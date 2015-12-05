@@ -42,11 +42,11 @@ public class Cell implements Iterable<Integer>
 	private int limit;
 	
 	public boolean isReadOnly() {
-		return readOnly;
+        return readOnly;
 	}
 
 	public boolean empty() {
-		return (value == 0);
+        return (value == 0);
 	}
 	
 	public Cell(int limit, Point location) {
@@ -55,7 +55,7 @@ public class Cell implements Iterable<Integer>
 	}
 
 	public Cell(int limit, int x, int y) {
-		this(limit, new Point(x,y));
+        this(limit, new Point(x,y));
 	}
 
 	public void setInitValue(int value) throws CellContentException {
@@ -182,16 +182,20 @@ public class Cell implements Iterable<Integer>
 		return copyMarkUp;
 	}
 
-	public void addConstraint(Constraint constraint) {
-		belongsTo.add(constraint);
+	public boolean addConstraint(Constraint constraint) {
+        return belongsTo.add(constraint);
 	}
-	
+
+    public boolean removeConstraint(Constraint constraint) {
+        return belongsTo.remove(constraint);
+    }
+
 	public int getValue() {
-		return value;
+        return value;
 	}
 	
 	public Point getLocation() {
-		return location;
+        return location;
 	}
 
     public String getValueAsString() {

@@ -484,6 +484,7 @@ public class Futoshiki extends Puzzle
     class CellRemovable implements Removable
     {
         Cell cell;
+        int value = 0;
 
         CellRemovable(Cell cell) {
             this.cell = cell;
@@ -491,12 +492,19 @@ public class Futoshiki extends Puzzle
 
         @Override
         public void remove() {
-
+            value = cell.getValue();
+            cell.reset();
         }
 
         @Override
         public void add() {
-
+            try {
+                cell.setValue(value);
+            } catch (CellContentException e) {
+                e.printStackTrace();
+                System.err.println("Should never happen!");
+                System.exit(1);
+            }
         }
     }
 
@@ -505,6 +513,12 @@ public class Futoshiki extends Puzzle
         Relation forward;
         Relation back;
 
+        Cell source = null;
+        Cell target = null;
+
+        Tuple to;
+        Tuple from;
+
         RelationRemovable(Relation forward, Relation back) {
             this.forward = forward;
             this.back = back;
@@ -512,12 +526,39 @@ public class Futoshiki extends Puzzle
 
         @Override
         public void remove() {
+            source = forward.getSource();
+            target = back.getSource();
 
+            // let's be a bit paranoid and check whether the remove actually works
+            if (!source.removeConstraint(forward)) {
+                System.err.println("Remove forward failed. Should never happen!");
+                System.exit(1);
+            }
+            if (!target.removeConstraint(back)) {
+                System.err.println("Remove back failed. Should never happen!");
+                System.exit(1);
+            }
+
+            from = new Tuple(source.getLocation(), target.getLocation());
+            to = new Tuple(target.getLocation(), source.getLocation());
+
+            if (!relations.remove(from, forward)) {
+                System.err.println("Remove relation 'from' failed. Should never happen!");
+                System.exit(1);
+            }
+            if (!relations.remove(to, back)) {
+                System.err.println("Remove relation 'to' failed. Should never happen!");
+                System.exit(1);
+            }
         }
 
         @Override
         public void add() {
+            source.addConstraint(forward);
+            target.addConstraint(back);
 
+            relations.put(from, forward);
+            relations.put(to, back);
         }
     }
 
@@ -538,28 +579,7 @@ public class Futoshiki extends Puzzle
             for (int col = 1; col < maxValue; col++) {
                 Point p1 = new Point(row, col);
                 Point p2 = new Point(row, col+1);
-                Cell source = getCells().get(p1);
-                Cell target = getCells().get(p2);
-
-                Relation forward;
-                Relation back;
-
-                if (source.getValue() > target.getValue()) {
-                    forward = new GreaterThan(source, target, maxValue);
-                    back = new LessThan(target, source, maxValue);
-                }
-                else {
-                    forward = new LessThan(source, target, maxValue);
-                    back = new GreaterThan(target, source, maxValue);
-                }
-
-                source.addConstraint(forward);
-                target.addConstraint(back);
-
-                removables.add(new RelationRemovable(forward, back));
-
-                relations.put(new Tuple(p1, p2), forward);
-                relations.put(new Tuple(p2, p1), back);
+                createRelations(removables, p1, p2);
             }
         }
 
@@ -568,31 +588,45 @@ public class Futoshiki extends Puzzle
             for (int col = 1; col <= maxValue; col++) {
                 Point p1 = new Point(row, col);
                 Point p2 = new Point(row+1, col);
-                Cell source = getCells().get(p1);
-                Cell target = getCells().get(p2);
-
-                Relation forward;
-                Relation back;
-
-                if (source.getValue() > target.getValue()) {
-                    forward = new GreaterThan(source, target, maxValue);
-                    back = new LessThan(target, source, maxValue);
-                }
-                else {
-                    forward = new LessThan(source, target, maxValue);
-                    back = new GreaterThan(target, source, maxValue);
-                }
-
-                source.addConstraint(forward);
-                target.addConstraint(back);
-
-                relations.put(new Tuple(p1, p2), forward);
-                relations.put(new Tuple(p2,p1), back);
+                createRelations(removables, p1, p2);
             }
         }
 
         // then we will remove stuff.
-        // how?
-        // no idea yet
+
+        Collections.shuffle(removables);
+        for (Removable r : removables) {
+            r.remove();
+            if (isUnique() > 1) {
+                r.add();
+            }
+        }
+
+        getCells().values().forEach(Cell::makeReadOnly);
+    }
+
+    private void createRelations(List<Removable> removables, Point p1, Point p2) {
+        Cell source = getCells().get(p1);
+        Cell target = getCells().get(p2);
+
+        Relation forward;
+        Relation back;
+
+        if (source.getValue() > target.getValue()) {
+            forward = new GreaterThan(source, target, maxValue);
+            back = new LessThan(target, source, maxValue);
+        }
+        else {
+            forward = new LessThan(source, target, maxValue);
+            back = new GreaterThan(target, source, maxValue);
+        }
+
+        source.addConstraint(forward);
+        target.addConstraint(back);
+
+        removables.add(new RelationRemovable(forward, back));
+
+        relations.put(new Tuple(p1, p2), forward);
+        relations.put(new Tuple(p2, p1), back);
     }
 }

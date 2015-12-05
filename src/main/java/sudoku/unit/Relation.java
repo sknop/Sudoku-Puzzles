@@ -57,4 +57,8 @@ public abstract class Relation implements Constraint
 
         return array;
     }
+
+    public Cell getSource() {
+        return source;
+    }
 }
