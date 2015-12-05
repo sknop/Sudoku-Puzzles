@@ -25,10 +25,7 @@
 
 package sudoku.futoshiki;
 
-import sudoku.Cell;
-import sudoku.Point;
-import sudoku.Puzzle;
-import sudoku.Tuple;
+import sudoku.*;
 import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
@@ -44,6 +41,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Futoshiki extends Puzzle
 {
@@ -392,7 +390,6 @@ public class Futoshiki extends Puzzle
         }
         // last row of cell content separately
         drawContentRow(b, maxValue);
-        drawRelationRow(b, maxValue);
 
         // bottom border
         drawBorder(b);
@@ -484,8 +481,118 @@ public class Futoshiki extends Puzzle
         return maxValue;
     }
 
+    class CellRemovable implements Removable
+    {
+        Cell cell;
+
+        CellRemovable(Cell cell) {
+            this.cell = cell;
+        }
+
+        @Override
+        public void remove() {
+
+        }
+
+        @Override
+        public void add() {
+
+        }
+    }
+
+    class RelationRemovable implements Removable
+    {
+        Relation forward;
+        Relation back;
+
+        RelationRemovable(Relation forward, Relation back) {
+            this.forward = forward;
+            this.back = back;
+        }
+
+        @Override
+        public void remove() {
+
+        }
+
+        @Override
+        public void add() {
+
+        }
+    }
+
     @Override
     public void createRandomPuzzle() {
+        reset();
 
+        createLatinSquare();
+
+        List<Removable> removables = getCells().values().
+                stream().
+                map(CellRemovable::new).
+                collect(Collectors.toList());
+
+        // now add relations, might as well keep track of them, we are going to remove some of them again
+        // first horizontal
+        for (int row = 1; row <= maxValue; row++) {
+            for (int col = 1; col < maxValue; col++) {
+                Point p1 = new Point(row, col);
+                Point p2 = new Point(row, col+1);
+                Cell source = getCells().get(p1);
+                Cell target = getCells().get(p2);
+
+                Relation forward;
+                Relation back;
+
+                if (source.getValue() > target.getValue()) {
+                    forward = new GreaterThan(source, target, maxValue);
+                    back = new LessThan(target, source, maxValue);
+                }
+                else {
+                    forward = new LessThan(source, target, maxValue);
+                    back = new GreaterThan(target, source, maxValue);
+                }
+
+                source.addConstraint(forward);
+                target.addConstraint(back);
+
+                removables.add(new RelationRemovable(forward, back));
+
+                relations.put(new Tuple(p1, p2), forward);
+                relations.put(new Tuple(p2, p1), back);
+            }
+        }
+
+        // then vertical
+        for (int row = 1; row < maxValue; row++) {
+            for (int col = 1; col <= maxValue; col++) {
+                Point p1 = new Point(row, col);
+                Point p2 = new Point(row+1, col);
+                Cell source = getCells().get(p1);
+                Cell target = getCells().get(p2);
+
+                Relation forward;
+                Relation back;
+
+                if (source.getValue() > target.getValue()) {
+                    forward = new GreaterThan(source, target, maxValue);
+                    back = new LessThan(target, source, maxValue);
+                }
+                else {
+                    forward = new LessThan(source, target, maxValue);
+                    back = new GreaterThan(target, source, maxValue);
+                }
+
+                source.addConstraint(forward);
+                target.addConstraint(back);
+
+                relations.put(new Tuple(p1, p2), forward);
+                relations.put(new Tuple(p2,p1), back);
+            }
+        }
+
+        // then we will remove stuff.
+        // how?
+        // no idea yet
     }
 }

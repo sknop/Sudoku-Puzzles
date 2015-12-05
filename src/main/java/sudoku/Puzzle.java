@@ -25,11 +25,7 @@ package sudoku;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import sudoku.exceptions.CellContentException;
@@ -158,10 +154,13 @@ public abstract class Puzzle
 	}
 
 	protected void reset() {
-		for (Cell c : getCells().values()) {
-			c.reset();
-		}
+		getCells().values().forEach(Cell::reset);
 	}
+
+	protected void reset(int newMaxValue) {
+        maxValue = newMaxValue;
+        cells.clear();
+    }
 
 	/**
 	 * Solves the Sudoku, trying out every combination
@@ -179,7 +178,7 @@ public abstract class Puzzle
 	private LinkedList<Cell> getEmpties() {
 		return getCells().values()
 				.stream()
-				.filter( c -> c.empty() )
+				.filter(Cell::empty)
 				.sorted( (a,b) -> a.getLocation().compareTo(b.getLocation()) )
 				.collect( Collectors.toCollection(LinkedList::new) );
 	}
@@ -193,8 +192,8 @@ public abstract class Puzzle
 	
 		tries++;
 		LinkedList<Cell> tail = empties; //not a copy
-		
-		Cell head = tail.remove();
+
+		Cell head = empties.remove();
 		
 		for (int i : head) {
 			try {
@@ -235,9 +234,9 @@ public abstract class Puzzle
 		}
 	
 		int result = solutions;
-		
+
 		LinkedList<Cell> tail = empties; //not a copy
-		
+
 		Cell head = tail.remove();
 		
 		for (int i : head) {
@@ -265,6 +264,57 @@ public abstract class Puzzle
 		
 		return result;
 	}
+
+	public void createLatinSquare() {
+
+        // idea
+        // get top row and left column
+        // fill top row with random values
+        // fill column with random values (minus the first entry)
+        // bruteForce the rest
+        List<Integer> seed = new ArrayList<>();
+        for (int i = 1; i <= maxValue; i++)
+            seed.add(i);
+
+        Collections.shuffle(seed);
+
+        Integer corner = seed.get(0);
+
+        for (int c = 0; c < maxValue; c++) {
+            Point p = new Point(c + 1, 1);
+
+            try {
+                Cell cell = cells.get(p);
+                cell.setValue(seed.get(c));
+            } catch (CellContentException e) {
+                System.err.println("Shouldn't happen " + e);
+            }
+        }
+
+        seed.clear();
+        for (int i = 1; i <= maxValue; i++) {
+            if (i != corner) {
+                seed.add(i);
+            }
+        }
+
+        Collections.shuffle(seed);
+
+
+        for (int r = 1; r < maxValue; r++) {
+            Point p = new Point(1, r + 1);
+
+            try {
+                Cell cell = cells.get(p);
+                cell.setValue(seed.get(r - 1));
+            } catch (CellContentException e) {
+                System.err.println("Shouldn't happen " + e);
+            }
+
+        }
+
+        solveBruteForce();
+    }
 
 	public Map<Point, Cell> getCells() {
 		return cells;
