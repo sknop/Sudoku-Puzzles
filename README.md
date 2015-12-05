@@ -46,9 +46,24 @@ Samurai
 
 Full command-line interface with import and export. Fully functional Swing interface (sudoku.samurai.SwingSamurai).
 
+Super
+=====
+
+Super is a 16x16 Sudoku with Cell values of {123456789ABCDEF}
+Full command-line interface with import and export. Creating puzzles takes a long time, beware. No Swing GUI yet.
+
+Futoshiki
+=========
+
+A new kind of puzzle with less-than/greate/than relations between cells.
+Full command-line interface with import and export. Sizes from 2..16 are supported, default is 5.
+Creating puzzles supported, time to create a larger puzzle exponential with size.
+No Swing GUI yet.
+
+
 Requirements
 ============
 
 JDK 1.8 
-argparse4j 0.4.3
+argparse4j 0.6.0
 junit 4.11 (for test cases)
