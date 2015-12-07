@@ -1,16 +1,19 @@
 package sudoku.sudoku;
 
 import java.awt.Toolkit;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import javax.net.ssl.SSLEngineResult;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.undo.*;
 
-import sudoku.Cell;
-import sudoku.CellWrapper;
-import sudoku.Point;
-import sudoku.UndoTableModel;
+import sudoku.*;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalCellPositionException;
+import sudoku.swing.StatusListener;
 import sudoku.unit.Constraint;
 
 @SuppressWarnings("serial")
@@ -19,11 +22,13 @@ public class SudokuTableModel extends AbstractTableModel implements UndoTableMod
 	/**
 	 * 
 	 */
-	private final SwingSudoku swingSudoku;
+	private final Puzzle puzzle;
 	private final int rows;
 	private final int cols;
 	private final UndoManager undoManager = new UndoManager();
 	private boolean isUndoAction = false;
+	private Map<Point, Integer> illegalEntries = new HashMap<>();
+    private List<StatusListener> listeners = new ArrayList<>();
 	
 	class SudokuUndo extends AbstractUndoableEdit {
 		private String value;
@@ -65,8 +70,8 @@ public class SudokuTableModel extends AbstractTableModel implements UndoTableMod
 		}
 	}
 	
-	public SudokuTableModel(SwingSudoku swingSudoku, int rows, int cols) {
-		this.swingSudoku = swingSudoku;
+	public SudokuTableModel(Puzzle puzzle, int rows, int cols) {
+		this.puzzle = puzzle;
 		this.rows = rows;
 		this.cols = cols;
 	}
@@ -106,13 +111,13 @@ public class SudokuTableModel extends AbstractTableModel implements UndoTableMod
 	@Override
 	public CellWrapper getValueAt(int rowIndex, int columnIndex) {
 		Point p = new Point(rowIndex + 1, columnIndex + 1);
-		Cell cell = this.swingSudoku.getCells().get(p);
+		Cell cell = puzzle.getCells().get(p);
 		
 		if (cell.getValue() == 0) {
 			int illegal = 0;
 			
-			if (this.swingSudoku.illegalEntries.containsKey(p)) {
-				illegal = this.swingSudoku.illegalEntries.get(p);
+			if (illegalEntries.containsKey(p)) {
+				illegal = illegalEntries.get(p);
 			}
 			return new CellWrapper(cell, illegal);
 		}
@@ -123,11 +128,11 @@ public class SudokuTableModel extends AbstractTableModel implements UndoTableMod
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		if (this.swingSudoku.isSolved()) 
+		if (puzzle.isSolved())
 			return false;
 		
         Point p = new Point(rowIndex + 1, columnIndex + 1);
-		boolean isReadOnly = this.swingSudoku.isReadOnly(p);
+		boolean isReadOnly = puzzle.isReadOnly(p);
 		return !isReadOnly;
 	}
 	
@@ -141,7 +146,6 @@ public class SudokuTableModel extends AbstractTableModel implements UndoTableMod
         Point p = new Point(row + 1, col + 1);
         String stringValue = (String) value;
         int intValue = 0;
-        // boolean moveFocus = false;
         
         if (!stringValue.isEmpty()) {
         	intValue = Integer.parseInt(stringValue);
@@ -153,17 +157,13 @@ public class SudokuTableModel extends AbstractTableModel implements UndoTableMod
 
         CellWrapper wrapper = getValueAt(row, col);
         String previousValue = Integer.toString(wrapper.getVisibleValue());
-        
-//        System.out.println("setValueAt : " + value + " previous " + previousValue);
-        
+
         if (isUndoAction) {
         	isUndoAction = false;
-        	// moveFocus = true;
         }
         else if (!stringValue.equals(previousValue)){
         	SudokuUndo undo = new SudokuUndo(stringValue, previousValue, row, col);
         	undoManager.addEdit(undo);
-//        	System.out.println("Added " + undo);
         }
         else if (stringValue.equals("0")) {
         	// when gaining focus on an empty cell, Swing tries to reset the value. Ignore it
@@ -171,16 +171,16 @@ public class SudokuTableModel extends AbstractTableModel implements UndoTableMod
         }
         
         try {
-			if (this.swingSudoku.illegalEntries.containsKey(p)) {
-				this.swingSudoku.illegalEntries.remove(p);
+			if (illegalEntries.containsKey(p)) {
+				illegalEntries.remove(p);
 			}
-			this.swingSudoku.setValue(p, intValue);
+			puzzle.setValue(p, intValue);
 		} catch (IllegalCellPositionException e) {
 			System.err.println("Should never happen " + e);
 		} catch (CellContentException e) {
-			this.swingSudoku.illegalEntries.put(p, intValue);
+			illegalEntries.put(p, intValue);
 			try {
-				this.swingSudoku.setValue(p, 0);
+				puzzle.setValue(p, 0);
 			} catch (IllegalCellPositionException | CellContentException e1) {
 				System.err.println("Should never happen " + e);
 			}
@@ -196,30 +196,20 @@ public class SudokuTableModel extends AbstractTableModel implements UndoTableMod
         		fireTableCellUpdated(point.getX() - 1, point.getY() - 1);
         	}
         }
-        
-//        if (moveFocus) {
-//        	swingSudoku.table.changeSelection(row, col, false, false);
-//        	System.out.println("Moved focus");
-//        }
-        
-        setStatus();
+
+        listeners.forEach(StatusListener::statusChanged);
     }
 
-	void setStatus() {
-		if (this.swingSudoku.isSolved()) {
-        	this.swingSudoku.solved.setText("Solved!");
-        }
-        else {
-        	int solutions = this.swingSudoku.isUnique();
-        	if (solutions == 1) {
-        		this.swingSudoku.solved.setText("Unsolved");
-        	}
-        	else if (solutions == 0) {
-        		this.swingSudoku.solved.setText("No solutions");
-        	}
-        	else {
-        		this.swingSudoku.solved.setText("Not unique");
-        	}
-        }
-	}
+    public void addListener(StatusListener listener) {
+        listeners.add(listener);
+    }
+
+    public boolean removeListener(StatusListener listener) {
+        return listeners.remove(listener);
+    }
+
+    public void clearIllegal() {
+        illegalEntries.clear();
+    }
+
 }

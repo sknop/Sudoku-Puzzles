@@ -47,10 +47,12 @@ import javax.swing.table.TableColumnModel;
 import sudoku.Cell;
 import sudoku.CellWrapper;
 import sudoku.Point;
+import sudoku.Puzzle;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
 import sudoku.swing.CellEditor;
 import sudoku.swing.Options;
+import sudoku.swing.StatusListener;
 import sudoku.swing.UndoKeys;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
@@ -59,8 +61,9 @@ import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.internal.HelpScreenException;
 
 
-public class SwingSudoku extends Sudoku
+public class SwingSudoku implements StatusListener
 {
+	Puzzle puzzle;
 
 	JFrame frame;
 	JTable table;
@@ -70,7 +73,6 @@ public class SwingSudoku extends Sudoku
 	
 	SudokuTableModel tableModel;
 
-	Map<Point, Integer> illegalEntries = new HashMap<>();
 	JFileChooser fileChooser = new JFileChooser();
 	File lastDirectory = new File(".");
 	
@@ -86,6 +88,8 @@ public class SwingSudoku extends Sudoku
 				   IOException, 
 				   IllegalFileFormatException, 
 				   CellContentException {
+        puzzle = new Sudoku();
+
 		ArgumentParser parser = ArgumentParsers.newArgumentParser("Sudoku").defaultHelp(true);
 		parser.addArgument("-i", "--input").
 				help("Input file, if not set, create empty puzzle");
@@ -96,7 +100,7 @@ public class SwingSudoku extends Sudoku
 		String fileName = options.get("input");
 		if (fileName != null) {
 			Path path = FileSystems.getDefault().getPath(fileName);
-			this.importFile(path);
+			puzzle.importFile(path);
 		}
 		
 		initialize();
@@ -116,7 +120,9 @@ public class SwingSudoku extends Sudoku
 		frame.setBounds(100, 100, 450, 450);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		
-		tableModel = new SudokuTableModel(this, 9,9);
+		tableModel = new SudokuTableModel(puzzle, 9,9);
+        tableModel.addListener(this);
+
 		table = new JTable(tableModel) {
 			@Override
     		public Component prepareRenderer(
@@ -215,7 +221,7 @@ public class SwingSudoku extends Sudoku
 		solved = new JLabel();
 		reports.add(solved);
 
-		tableModel.setStatus();
+		statusChanged();
 		
 		UndoKeys.addUndoKeys(frame.getRootPane(), tableModel);
 		
@@ -225,8 +231,8 @@ public class SwingSudoku extends Sudoku
 	private void createButtons(JPanel buttons) {
 		JButton createButton = new JButton("Create");
 		createButton.addActionListener( e -> {
-            illegalEntries.clear();
-            createRandomPuzzle();
+            tableModel.clearIllegal();
+            puzzle.createRandomPuzzle();
             tableModel.fireTableDataChanged();
 		});
 		buttons.add(createButton);
@@ -237,7 +243,7 @@ public class SwingSudoku extends Sudoku
             table.editCellAt(-1, -1);
             table.getSelectionModel().clearSelection();
 
-            solveBruteForce();
+            puzzle.solveBruteForce();
             tableModel.fireTableDataChanged();
             solved.setText("Cheated");
 		});
@@ -260,7 +266,7 @@ public class SwingSudoku extends Sudoku
                 Path path = FileSystems.getDefault().getPath(file.getPath());
 
                 try {
-                    importFile(path);
+                    puzzle.importFile(path);
                 } catch (IOException |IllegalFileFormatException |CellContentException e1) {
                     e1.printStackTrace();
                 }
@@ -278,7 +284,7 @@ public class SwingSudoku extends Sudoku
                 Path path = FileSystems.getDefault().getPath(file.getPath());
 
                 try {
-                    exportFile(path);
+                    puzzle.exportFile(path);
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -303,7 +309,7 @@ public class SwingSudoku extends Sudoku
                 command = Cell::makeWritable;
             }
 
-            for (Cell c : getCells().values()) {
+            for (Cell c : puzzle.getCells().values()) {
                 command.accept(c);
             }
 
@@ -325,5 +331,24 @@ public class SwingSudoku extends Sudoku
             }
 		});
 	}
+
+    @Override
+    public void statusChanged() {
+        if (puzzle.isSolved()) {
+            solved.setText("Solved!");
+        }
+        else {
+            int solutions = puzzle.isUnique();
+            if (solutions == 1) {
+                solved.setText("Unsolved");
+            }
+            else if (solutions == 0) {
+                solved.setText("No solutions");
+            }
+            else {
+                solved.setText("Not unique");
+            }
+        }
+    }
 }
 
