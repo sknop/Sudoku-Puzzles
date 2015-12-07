@@ -35,8 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.swing.border.MatteBorder;
@@ -46,7 +44,6 @@ import javax.swing.table.TableColumnModel;
 
 import sudoku.Cell;
 import sudoku.CellWrapper;
-import sudoku.Point;
 import sudoku.Puzzle;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
@@ -234,6 +231,7 @@ public class SwingSudoku implements StatusListener
             tableModel.clearIllegal();
             puzzle.createRandomPuzzle();
             tableModel.fireTableDataChanged();
+            statusChanged();
 		});
 		buttons.add(createButton);
 
@@ -334,19 +332,21 @@ public class SwingSudoku implements StatusListener
 
     @Override
     public void statusChanged() {
-        if (puzzle.isSolved()) {
-            solved.setText("Solved!");
+        if (tableModel.anyIllegalValues()) {
+            solved.setText("Illegal");
         }
         else {
-            int solutions = puzzle.isUnique();
-            if (solutions == 1) {
-                solved.setText("Unsolved");
-            }
-            else if (solutions == 0) {
-                solved.setText("No solutions");
-            }
-            else {
-                solved.setText("Not unique");
+            if (puzzle.isSolved()) {
+                solved.setText("Solved!");
+            } else {
+                int solutions = puzzle.isUnique();
+                if (solutions == 1) {
+                    solved.setText("Unsolved");
+                } else if (solutions == 0) {
+                    solved.setText("No solutions");
+                } else {
+                    solved.setText("Not unique");
+                }
             }
         }
     }

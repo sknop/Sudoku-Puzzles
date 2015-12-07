@@ -212,4 +212,7 @@ public class SudokuTableModel extends AbstractTableModel implements UndoTableMod
         illegalEntries.clear();
     }
 
+    public boolean anyIllegalValues() {
+        return (illegalEntries.size() > 0);
+    }
 }

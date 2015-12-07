@@ -133,7 +133,7 @@ public abstract class Puzzle
 	 * @return true if this Sudoku is solved
 	 */
 	public boolean isSolved() {
-		return getCells().values().stream().allMatch(c -> ! c.empty());
+        return getCells().values().stream().allMatch(c -> ! c.empty());
 	}
 
 	public void setValue(int x, int y, int value)
@@ -147,14 +147,16 @@ public abstract class Puzzle
 			String error = String.format("Value %d not in range (1-%d)", value, maxValue);
 			throw new ValueOutsideRangeException(error);
 		}
-		if ( getCells().containsKey(p))
-			getCells().get(p).setValue(value);
+		if ( getCells().containsKey(p)) {
+            Cell cell = getCells().get(p);
+            cell.setValue(value);
+        }
 		else
 			throw new IllegalCellPositionException("No cell at " + p);
 	}
 
 	protected void reset() {
-		getCells().values().forEach(Cell::reset);
+        getCells().values().forEach(Cell::reset);
 	}
 
 	protected void reset(int newMaxValue) {
