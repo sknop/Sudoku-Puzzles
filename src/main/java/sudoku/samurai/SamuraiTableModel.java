@@ -27,6 +27,10 @@
 package sudoku.samurai;
 
 import java.awt.Toolkit;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.undo.AbstractUndoableEdit;
@@ -34,12 +38,10 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 
-import sudoku.Cell;
-import sudoku.CellWrapper;
-import sudoku.Point;
-import sudoku.UndoTableModel;
+import sudoku.*;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalCellPositionException;
+import sudoku.swing.StatusListener;
 import sudoku.unit.Constraint;
 
 @SuppressWarnings("serial")
@@ -48,11 +50,13 @@ public class SamuraiTableModel extends AbstractTableModel implements UndoTableMo
     /**
      *
      */
-    private final SwingSamurai swingSamurai;
+    private final Puzzle puzzle;
     private final int rows;
     private final int cols;
     private final UndoManager undoManager = new UndoManager();
+    private Map<Point, Integer> illegalEntries = new HashMap<>();
     private boolean isUndoAction = false;
+    private List<StatusListener> listeners = new ArrayList<>();
 
     class SamuraiUndo extends AbstractUndoableEdit {
         private String value;
@@ -94,8 +98,8 @@ public class SamuraiTableModel extends AbstractTableModel implements UndoTableMo
         }
     }
 
-    public SamuraiTableModel(SwingSamurai swingSamurai, int rows, int cols) {
-        this.swingSamurai = swingSamurai;
+    public SamuraiTableModel(Puzzle puzzle, int rows, int cols) {
+        this.puzzle = puzzle;
         this.rows = rows;
         this.cols = cols;
     }
@@ -156,13 +160,13 @@ public class SamuraiTableModel extends AbstractTableModel implements UndoTableMo
     public CellWrapper getValueAt(int rowIndex, int columnIndex) {
         if (isVisible(rowIndex, columnIndex)) {
             Point p = new Point(rowIndex + 1, columnIndex + 1);
-            Cell cell = this.swingSamurai.getCells().get(p);
+            Cell cell = puzzle.getCells().get(p);
 
             if (cell.getValue() == 0) {
                 int illegal = 0;
 
-                if (this.swingSamurai.illegalEntries.containsKey(p)) {
-                    illegal = this.swingSamurai.illegalEntries.get(p);
+                if (illegalEntries.containsKey(p)) {
+                    illegal = illegalEntries.get(p);
                 }
                 return new CellWrapper(cell, illegal);
             } else {
@@ -175,11 +179,11 @@ public class SamuraiTableModel extends AbstractTableModel implements UndoTableMo
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        if (this.swingSamurai.isSolved())
+        if (puzzle.isSolved())
             return false;
 
         Point p = new Point(rowIndex + 1, columnIndex + 1);
-        boolean isReadOnly = this.swingSamurai.isReadOnly(p);
+        boolean isReadOnly = puzzle.isReadOnly(p);
         return !isReadOnly;
     }
 
@@ -193,7 +197,6 @@ public class SamuraiTableModel extends AbstractTableModel implements UndoTableMo
         Point p = new Point(row + 1, col + 1);
         String stringValue = (String) value;
         int intValue = 0;
-        // boolean moveFocus = false;
 
         if (!stringValue.isEmpty()) {
             intValue = Integer.parseInt(stringValue);
@@ -206,8 +209,6 @@ public class SamuraiTableModel extends AbstractTableModel implements UndoTableMo
         CellWrapper wrapper = getValueAt(row, col);
         String previousValue = Integer.toString(wrapper.getVisibleValue());
 
-//        System.out.println("setValueAt : " + value + " previous " + previousValue);
-
         if (isUndoAction) {
             isUndoAction = false;
             // moveFocus = true;
@@ -215,7 +216,6 @@ public class SamuraiTableModel extends AbstractTableModel implements UndoTableMo
         else if (!stringValue.equals(previousValue)){
             SamuraiUndo undo = new SamuraiUndo(stringValue, previousValue, row, col);
             undoManager.addEdit(undo);
-//        	System.out.println("Added " + undo);
         }
         else if (stringValue.equals("0")) {
             // when gaining focus on an empty cell, Swing tries to reset the value. Ignore it
@@ -223,16 +223,16 @@ public class SamuraiTableModel extends AbstractTableModel implements UndoTableMo
         }
 
         try {
-            if (this.swingSamurai.illegalEntries.containsKey(p)) {
-                this.swingSamurai.illegalEntries.remove(p);
+            if (illegalEntries.containsKey(p)) {
+                illegalEntries.remove(p);
             }
-            this.swingSamurai.setValue(p, intValue);
+            puzzle.setValue(p, intValue);
         } catch (IllegalCellPositionException e) {
             System.err.println("Should never happen " + e);
         } catch (CellContentException e) {
-            this.swingSamurai.illegalEntries.put(p, intValue);
+            illegalEntries.put(p, intValue);
             try {
-                this.swingSamurai.setValue(p, 0);
+                puzzle.setValue(p, 0);
             } catch (IllegalCellPositionException | CellContentException e1) {
                 System.err.println("Should never happen " + e);
             }
@@ -249,29 +249,24 @@ public class SamuraiTableModel extends AbstractTableModel implements UndoTableMo
             }
         }
 
-//        if (moveFocus) {
-//        	swingSamurai.table.changeSelection(row, col, false, false);
-//        	System.out.println("Moved focus");
-//        }
-
-        setStatus();
+        listeners.forEach(StatusListener::statusChanged);
     }
 
-    void setStatus() {
-        if (this.swingSamurai.isSolved()) {
-            this.swingSamurai.solved.setText("Solved!");
-        }
-        else {
-            int solutions = this.swingSamurai.isUnique();
-            if (solutions == 1) {
-                this.swingSamurai.solved.setText("Unsolved");
-            }
-            else if (solutions == 0) {
-                this.swingSamurai.solved.setText("No solutions");
-            }
-            else {
-                this.swingSamurai.solved.setText("Not unique");
-            }
-        }
+
+    public void addListener(StatusListener listener) {
+        listeners.add(listener);
     }
+
+    public boolean removeListener(StatusListener listener) {
+        return listeners.remove(listener);
+    }
+
+    public void clearIllegal() {
+        illegalEntries.clear();
+    }
+
+    public boolean anyIllegalValues() {
+        return (illegalEntries.size() > 0);
+    }
+
 }

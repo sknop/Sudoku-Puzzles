@@ -48,10 +48,12 @@ import javax.swing.table.TableColumnModel;
 import sudoku.Cell;
 import sudoku.CellWrapper;
 import sudoku.Point;
+import sudoku.Puzzle;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
 import sudoku.swing.Options;
 import sudoku.samurai.SamuraiCellEditor;
+import sudoku.swing.StatusListener;
 import sudoku.swing.UndoKeys;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
@@ -60,10 +62,11 @@ import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.internal.HelpScreenException;
 
 
-public class SwingSamurai extends Samurai
+public class SwingSamurai implements StatusListener
 {
     public final int SIZE = 40;
 
+    private Puzzle puzzle;
     JFrame frame;
     JTable table;
     JLabel solved;
@@ -88,6 +91,9 @@ public class SwingSamurai extends Samurai
             IOException,
             IllegalFileFormatException,
             CellContentException {
+
+        puzzle = new Samurai();
+
         ArgumentParser parser = ArgumentParsers.newArgumentParser("Samurai",true);
         parser.addArgument("-i", "--input").
 			help("Input file, if not set, create empty puzzle");
@@ -98,7 +104,7 @@ public class SwingSamurai extends Samurai
 	        String fileName = options.get("input");
 	        if (fileName != null) {
 	            Path path = FileSystems.getDefault().getPath(fileName);
-	            this.importFile(path);
+	            puzzle.importFile(path);
 	        }
 	
 	        initialize();
@@ -118,7 +124,9 @@ public class SwingSamurai extends Samurai
         frame.setBounds(100, 100, 450, 450);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        tableModel = new SamuraiTableModel(this, 21,21);
+        tableModel = new SamuraiTableModel(puzzle, 21,21);
+        tableModel.addListener(this);
+
         table = new JTable(tableModel) {
             @Override
             public Component prepareRenderer(
@@ -246,7 +254,7 @@ public class SwingSamurai extends Samurai
         solved = new JLabel();
         reports.add(solved);
 
-        tableModel.setStatus();
+        statusChanged();
 
         UndoKeys.addUndoKeys(frame.getRootPane(), tableModel);
 
@@ -257,7 +265,7 @@ public class SwingSamurai extends Samurai
         JButton createButton = new JButton("Create");
         createButton.addActionListener( e -> {
             illegalEntries.clear();
-            createRandomPuzzle();
+            puzzle.createRandomPuzzle();
             tableModel.fireTableDataChanged();
         });
         buttons.add(createButton);
@@ -268,7 +276,7 @@ public class SwingSamurai extends Samurai
             table.editCellAt(-1, -1);
             table.getSelectionModel().clearSelection();
 
-            solveBruteForce();
+            puzzle.solveBruteForce();
             tableModel.fireTableDataChanged();
             solved.setText("Cheated");
         });
@@ -291,11 +299,12 @@ public class SwingSamurai extends Samurai
                 Path path = FileSystems.getDefault().getPath(file.getPath());
 
                 try {
-                    importFile(path);
+                    puzzle.importFile(path);
                 } catch (IOException |IllegalFileFormatException |CellContentException e1) {
                     e1.printStackTrace();
                 }
             }
+            statusChanged();
         });
         buttons.add(loadButton);
 
@@ -309,7 +318,7 @@ public class SwingSamurai extends Samurai
                 Path path = FileSystems.getDefault().getPath(file.getPath());
 
                 try {
-                    exportFile(path);
+                    puzzle.exportFile(path);
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -334,7 +343,7 @@ public class SwingSamurai extends Samurai
                 command = Cell::makeWritable;
             }
 
-            for (Cell c : getCells().values()) {
+            for (Cell c : puzzle.getCells().values()) {
                 command.accept(c);
             }
 
@@ -356,6 +365,27 @@ public class SwingSamurai extends Samurai
                 e.printStackTrace();
             }
         });
+    }
+
+    @Override
+    public void statusChanged() {
+        if (tableModel.anyIllegalValues()) {
+            solved.setText("Illegal");
+        }
+        else {
+            if (puzzle.isSolved()) {
+                solved.setText("Solved!");
+            } else {
+                int solutions = puzzle.isUnique();
+                if (solutions == 1) {
+                    solved.setText("Unsolved");
+                } else if (solutions == 0) {
+                    solved.setText("No solutions");
+                } else {
+                    solved.setText("Not unique");
+                }
+            }
+        }
     }
 }
 
