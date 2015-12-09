@@ -41,6 +41,7 @@ import javax.swing.border.MatteBorder;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import sudoku.Cell;
 import sudoku.CellWrapper;
@@ -56,21 +57,8 @@ import net.sourceforge.argparse4j.internal.HelpScreenException;
 import sudoku.swing.CellEditor;
 
 
-public class SwingSudoku implements StatusListener
+public class SwingSudoku extends SwingPuzzle
 {
-	Puzzle puzzle;
-
-	JFrame frame;
-	JTable table;
-	JLabel solved;
-	
-	Options options = new Options();
-	
-	PuzzleTableModel tableModel;
-
-	JFileChooser fileChooser = new JFileChooser();
-	File lastDirectory = new File(".");
-	
 	/**
 	 * Create the application.
 	 * @throws ArgumentParserException 
@@ -83,237 +71,77 @@ public class SwingSudoku implements StatusListener
 				   IOException, 
 				   IllegalFileFormatException, 
 				   CellContentException {
-        puzzle = new Sudoku();
+
+        super();
 
 		ArgumentParser parser = ArgumentParsers.newArgumentParser("Sudoku").defaultHelp(true);
 		parser.addArgument("-i", "--input").
 				help("Input file, if not set, create empty puzzle");
-		
-		try {
-			Namespace options = parser.parseArgs(args);
 
-		String fileName = options.get("input");
-		if (fileName != null) {
-			Path path = FileSystems.getDefault().getPath(fileName);
-			puzzle.importFile(path);
-		}
-		
-		initialize();
-		}
-		catch(HelpScreenException e) {
-			System.exit(0);
-		}
-	}
+        try {
+            Namespace options = parser.parseArgs(args);
 
-	/**
-	 * Initialize the contents of the frame.
-	 */
-	@SuppressWarnings("serial")
-	private void initialize() {
-		frame = new JFrame();
-		frame.setLayout(new BorderLayout());
-		frame.setBounds(100, 100, 450, 450);
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		
-		tableModel = new PuzzleTableModel(puzzle, 9,9);
-        tableModel.addListener(this);
+            String fileName = options.get("input");
+            if (fileName != null) {
+                Path path = FileSystems.getDefault().getPath(fileName);
+                puzzle.importFile(path);
+            }
 
-		table = new JTable(tableModel) {
-			@Override
-    		public Component prepareRenderer(
-        			TableCellRenderer renderer, int row, int column)
-        		{
-        			Component c = super.prepareRenderer(renderer, row, column);
-        			JComponent jc = (JComponent)c;
+            initialize();
+        } catch (HelpScreenException e) {
+            System.exit(0);
+        }
+    }
 
-        			int top = 1;
-        			int left = 1;
-        			int bottom = ((row -2) % 3 == 0) ? 1 : 0;
-        			int right = ((column - 2) % 3 == 0) ? 1 : 0;
-        			
-    				jc.setBorder(new MatteBorder(top, left, bottom, right, Color.BLACK) );
+    @Override
+    protected int getCellSize() {
+        return 50;
+    }
+
+    @Override
+    protected Puzzle createPuzzle() {
+        return new Sudoku();
+    }
+
+    @Override
+    protected PuzzleTableModel createTableModel() {
+        return new PuzzleTableModel(puzzle, 9,9);
+    }
+
+    @Override
+    protected JTable createTable(TableModel model) {
+        return new JTable(model) {
+            @Override
+            public Component prepareRenderer(
+                    TableCellRenderer renderer, int row, int column)
+                {
+                    Component c = super.prepareRenderer(renderer, row, column);
+                    JComponent jc = (JComponent)c;
+
+                    int top = 1;
+                    int left = 1;
+                    int bottom = ((row -2) % 3 == 0) ? 1 : 0;
+                    int right = ((column - 2) % 3 == 0) ? 1 : 0;
+
+                    jc.setBorder(new MatteBorder(top, left, bottom, right, Color.BLACK) );
 
 
-        			//  Use bold font on selected row
+                    //  Use bold font on selected row
 
-        			return c;
-        		}
-			
-			@Override
-			public void changeSelection(final int row, final int column, boolean toggle, boolean extend)
-            {
+                    return c;
+                }
+
+            @Override
+            public void changeSelection(final int row, final int column, boolean toggle, boolean extend) {
                 super.changeSelection(row, column, toggle, extend);
                 PuzzleTableModel model = (PuzzleTableModel) getModel();
                 if (model.isCellEditable(row, column)) {
-                	this.editCellAt(row, column);
-                	this.transferFocus();
+                    this.editCellAt(row, column);
+                    this.transferFocus();
                 }
             }
-		};
-		
-	    table.setCellSelectionEnabled(true);
-	    table.setRowSelectionAllowed(false);
-	    table.setColumnSelectionAllowed(false);
-
-	    table.setDefaultEditor(CellWrapper.class, new CellEditor(options));
-	    table.setDefaultRenderer(CellWrapper.class, new CellEditor(options));
-	    table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
-	    		
-		final int height = 50;
-		final int width = 50;
-
-		TableColumnModel cm = table.getColumnModel();
-	    table.setRowHeight(height);
-	    for (int c = 0; c < cm.getColumnCount(); c++) {
-	    	TableColumn tc = cm.getColumn(c);
-	    	tc.setPreferredWidth(width);
-	    	tc.setMinWidth(width);
-	    	tc.setMaxWidth(width);
-	    }
-	    
-	    ListSelectionModel cellSelectionModel = table.getSelectionModel();
-	    cellSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-	    
-		frame.getContentPane().add(table, BorderLayout.CENTER);
-		
-		JPanel bottomPanel = new JPanel();
-		frame.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
-		
-		JPanel buttons = new JPanel();
-		buttons.setLayout(new GridLayout(2, 3));
-		bottomPanel.add(buttons);
-		
-		createButtons(buttons);
-
-		JPanel reports = new JPanel();
-		reports.setLayout(new GridLayout(2,2,0,0));
-		Dimension reportSize = new Dimension(180,60);
-		reports.setMaximumSize(reportSize);
-		reports.setMinimumSize(reportSize);
-		reports.setPreferredSize(reportSize);
-		bottomPanel.add(reports);
-
-		JLabel optionsLabel = new JLabel("Hints :");
-		reports.add(optionsLabel);
-		
-		final JComboBox<String> hintOptions = new JComboBox<>();
-		hintOptions.addItem("None");
-		hintOptions.addItem("Markup");
-		hintOptions.addItem("Hints 1");
-		hintOptions.addItem("Hints 2");
-		reports.add(hintOptions);
-		
-        hintOptions.addActionListener( e -> {
-            options.setHintLevel(hintOptions.getSelectedIndex());
-            tableModel.fireTableDataChanged();
-            if (table.isEditing())
-                table.getCellEditor().stopCellEditing();
-        });
-
-		JLabel solvedLabel = new JLabel("Status :");
-		reports.add(solvedLabel);
-
-		solved = new JLabel();
-		reports.add(solved);
-
-		statusChanged();
-		
-		UndoKeys.addUndoKeys(frame.getRootPane(), tableModel);
-		
-		frame.pack();
-	}
-
-	private void createButtons(JPanel buttons) {
-		JButton createButton = new JButton("Create");
-		createButton.addActionListener( e -> {
-            tableModel.clearIllegal();
-            puzzle.createRandomPuzzle();
-            tableModel.fireTableDataChanged();
-            statusChanged();
-		});
-		buttons.add(createButton);
-
-		JButton solveButton = new JButton("Solve");
-		solveButton.addActionListener( e -> {
-            // cheeky hack - remove selection so that the cell is not blocked
-            table.editCellAt(-1, -1);
-            table.getSelectionModel().clearSelection();
-
-            puzzle.solveBruteForce();
-            tableModel.fireTableDataChanged();
-            solved.setText("Cheated");
-		});
-		buttons.add(solveButton);
-		
-		JButton quitButton = new JButton("Quit");
-		quitButton.addActionListener( e -> {
-            frame.dispose();
-            System.exit(0);
-		});
-		buttons.add(quitButton);
-		
-		JButton loadButton = new JButton("Load");
-		loadButton.addActionListener( e -> {
-            fileChooser.setCurrentDirectory(lastDirectory);
-            int returnValue = fileChooser.showOpenDialog(null);
-
-            if (returnValue == JFileChooser.APPROVE_OPTION) {
-                File file = fileChooser.getSelectedFile();
-                Path path = FileSystems.getDefault().getPath(file.getPath());
-
-                try {
-                    puzzle.importFile(path);
-                } catch (IOException |IllegalFileFormatException |CellContentException e1) {
-                    e1.printStackTrace();
-                }
-            }
-			statusChanged();
-		});
-		buttons.add(loadButton);
-		
-		JButton saveButton = new JButton("Save");
-		saveButton.addActionListener( e -> {
-            fileChooser.setCurrentDirectory(lastDirectory);
-            int returnValue = fileChooser.showSaveDialog(null);
-
-            if (returnValue == JFileChooser.APPROVE_OPTION) {
-                File file = fileChooser.getSelectedFile();
-                Path path = FileSystems.getDefault().getPath(file.getPath());
-
-                try {
-                    puzzle.exportFile(path);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
-		buttons.add(saveButton);
-
-		JToggleButton readWriteButton = new JToggleButton("Write");
-        readWriteButton.addActionListener( e -> {
-			Consumer<Cell> command = null;
-
-            // cheeky hack - remove selection so that the cell is not blocked
-            table.editCellAt(-1, -1);
-            table.getSelectionModel().clearSelection();
-
-            if (readWriteButton.getText().equals("Write")) {
-                readWriteButton.setText("R/O");
-                command = Cell::makeReadOnly;
-            }
-            else {
-                readWriteButton.setText("Write");
-                command = Cell::makeWritable;
-            }
-
-            for (Cell c : puzzle.getCells().values()) {
-                command.accept(c);
-            }
-
-            tableModel.fireTableDataChanged();
-        });
-        buttons.add(readWriteButton);
-	}
+        };
+    }
 
 	/**
 	 * Launch the application.
@@ -329,25 +157,5 @@ public class SwingSudoku implements StatusListener
 		});
 	}
 
-    @Override
-    public void statusChanged() {
-        if (tableModel.anyIllegalValues()) {
-            solved.setText("Illegal");
-        }
-        else {
-            if (puzzle.isSolved()) {
-                solved.setText("Solved!");
-            } else {
-                int solutions = puzzle.isUnique();
-                if (solutions == 1) {
-                    solved.setText("Unsolved");
-                } else if (solutions == 0) {
-                    solved.setText("No solutions");
-                } else {
-                    solved.setText("Not unique");
-                }
-            }
-        }
-    }
 }
 

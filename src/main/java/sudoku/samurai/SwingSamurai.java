@@ -44,6 +44,7 @@ import javax.swing.border.MatteBorder;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import sudoku.Cell;
 import sudoku.CellWrapper;
@@ -51,10 +52,7 @@ import sudoku.Point;
 import sudoku.Puzzle;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
-import sudoku.swing.Options;
-import sudoku.samurai.SamuraiCellEditor;
-import sudoku.swing.StatusListener;
-import sudoku.swing.UndoKeys;
+import sudoku.swing.*;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
@@ -62,23 +60,8 @@ import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.internal.HelpScreenException;
 
 
-public class SwingSamurai implements StatusListener
+public class SwingSamurai extends SwingPuzzle
 {
-    public final int SIZE = 40;
-
-    private Puzzle puzzle;
-    JFrame frame;
-    JTable table;
-    JLabel solved;
-
-    Options options = new Options();
-
-    SamuraiTableModel tableModel;
-
-    Map<Point, Integer> illegalEntries = new HashMap<>();
-    JFileChooser fileChooser = new JFileChooser();
-    File lastDirectory = new File(".");
-
     /**
      * Create the application.
      * @throws ArgumentParserException
@@ -88,11 +71,11 @@ public class SwingSamurai implements StatusListener
      */
     public SwingSamurai(String[] args)
             throws ArgumentParserException,
-            IOException,
-            IllegalFileFormatException,
-            CellContentException {
+                   IOException,
+                   IllegalFileFormatException,
+                   CellContentException {
 
-        puzzle = new Samurai();
+        super();
 
         ArgumentParser parser = ArgumentParsers.newArgumentParser("Samurai",true);
         parser.addArgument("-i", "--input").
@@ -114,20 +97,23 @@ public class SwingSamurai implements StatusListener
         }
     }
 
-    /**
-     * Initialize the contents of the frame.
-     */
-    @SuppressWarnings("serial")
-    private void initialize() {
-        frame = new JFrame();
-        frame.setLayout(new BorderLayout());
-        frame.setBounds(100, 100, 450, 450);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    @Override
+    protected int getCellSize() {
+        return 40;
+    }
 
-        tableModel = new SamuraiTableModel(puzzle, 21,21);
-        tableModel.addListener(this);
+    @Override
+    protected Puzzle createPuzzle() {
+        return new Samurai();
 
-        table = new JTable(tableModel) {
+
+    }
+    protected SamuraiTableModel createTableModel() {
+        return new SamuraiTableModel(puzzle, 21,21);
+    }
+
+    protected JTable createTable(TableModel model) {
+        return new JTable(model) {
             @Override
             public Component prepareRenderer(
                     TableCellRenderer renderer, int row, int column)
@@ -156,7 +142,8 @@ public class SwingSamurai implements StatusListener
                 }
             }
 
-            class SquarePanel extends JPanel {
+            class SquarePanel extends JPanel
+            {
                 public SquarePanel() {
                     setBorder(new LineBorder(Color.GRAY));
                     setBackground(Color.DARK_GRAY);
@@ -174,7 +161,7 @@ public class SwingSamurai implements StatusListener
 
                 @Override
                 public Dimension getPreferredSize() {
-                    return new Dimension(SIZE,SIZE);
+                    return new Dimension(cellSize, cellSize);
                 }
             }
 
@@ -188,170 +175,8 @@ public class SwingSamurai implements StatusListener
                 }
             }
         };
-
-        table.setCellSelectionEnabled(true);
-        table.setRowSelectionAllowed(false);
-        table.setColumnSelectionAllowed(false);
-
-        table.setDefaultEditor(CellWrapper.class, new SamuraiCellEditor(options));
-        table.setDefaultRenderer(CellWrapper.class, new SamuraiCellEditor(options));
-        table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
-
-        final int height = SIZE;
-        final int width = SIZE;
-
-        TableColumnModel cm = table.getColumnModel();
-        table.setRowHeight(height);
-        for (int c = 0; c < cm.getColumnCount(); c++) {
-            TableColumn tc = cm.getColumn(c);
-            tc.setPreferredWidth(width);
-            tc.setMinWidth(width);
-            tc.setMaxWidth(width);
-        }
-
-        ListSelectionModel cellSelectionModel = table.getSelectionModel();
-        cellSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-        frame.getContentPane().add(table, BorderLayout.CENTER);
-
-        JPanel bottomPanel = new JPanel();
-        frame.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
-
-        JPanel buttons = new JPanel();
-        buttons.setLayout(new GridLayout(2, 3));
-        bottomPanel.add(buttons);
-
-        createButtons(buttons);
-
-        JPanel reports = new JPanel();
-        reports.setLayout(new GridLayout(2,2,0,0));
-        Dimension reportSize = new Dimension(180,60);
-        reports.setMaximumSize(reportSize);
-        reports.setMinimumSize(reportSize);
-        reports.setPreferredSize(reportSize);
-        bottomPanel.add(reports);
-
-        JLabel optionsLabel = new JLabel("Hints :");
-        reports.add(optionsLabel);
-
-        final JComboBox<String> hintOptions = new JComboBox<>();
-        hintOptions.addItem("None");
-        hintOptions.addItem("Markup");
-        hintOptions.addItem("Hints 1");
-        hintOptions.addItem("Hints 2");
-        reports.add(hintOptions);
-
-        hintOptions.addActionListener( e -> {
-            options.setHintLevel(hintOptions.getSelectedIndex());
-            tableModel.fireTableDataChanged();
-            if (table.isEditing())
-                table.getCellEditor().stopCellEditing();
-        });
-
-        JLabel solvedLabel = new JLabel("Status :");
-        reports.add(solvedLabel);
-
-        solved = new JLabel();
-        reports.add(solved);
-
-        statusChanged();
-
-        UndoKeys.addUndoKeys(frame.getRootPane(), tableModel);
-
-        frame.pack();
     }
 
-    private void createButtons(JPanel buttons) {
-        JButton createButton = new JButton("Create");
-        createButton.addActionListener( e -> {
-            illegalEntries.clear();
-            puzzle.createRandomPuzzle();
-            tableModel.fireTableDataChanged();
-        });
-        buttons.add(createButton);
-
-        JButton solveButton = new JButton("Solve");
-        solveButton.addActionListener( e -> {
-            // cheeky hack - remove selection so that the cell is not blocked
-            table.editCellAt(-1, -1);
-            table.getSelectionModel().clearSelection();
-
-            puzzle.solveBruteForce();
-            tableModel.fireTableDataChanged();
-            solved.setText("Cheated");
-        });
-        buttons.add(solveButton);
-
-        JButton quitButton = new JButton("Quit");
-        quitButton.addActionListener( e -> {
-            frame.dispose();
-            System.exit(0);
-        });
-        buttons.add(quitButton);
-
-        JButton loadButton = new JButton("Load");
-        loadButton.addActionListener( e -> {
-            fileChooser.setCurrentDirectory(lastDirectory);
-            int returnValue = fileChooser.showOpenDialog(null);
-
-            if (returnValue == JFileChooser.APPROVE_OPTION) {
-                File file = fileChooser.getSelectedFile();
-                Path path = FileSystems.getDefault().getPath(file.getPath());
-
-                try {
-                    puzzle.importFile(path);
-                } catch (IOException |IllegalFileFormatException |CellContentException e1) {
-                    e1.printStackTrace();
-                }
-            }
-            statusChanged();
-        });
-        buttons.add(loadButton);
-
-        JButton saveButton = new JButton("Save");
-        saveButton.addActionListener( e -> {
-            fileChooser.setCurrentDirectory(lastDirectory);
-            int returnValue = fileChooser.showSaveDialog(null);
-
-            if (returnValue == JFileChooser.APPROVE_OPTION) {
-                File file = fileChooser.getSelectedFile();
-                Path path = FileSystems.getDefault().getPath(file.getPath());
-
-                try {
-                    puzzle.exportFile(path);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
-        buttons.add(saveButton);
-
-        JToggleButton readWriteButton = new JToggleButton("Write");
-        readWriteButton.addActionListener( e -> {
-            Consumer<Cell> command = null;
-
-            // cheeky hack - remove selection so that the cell is not blocked
-            table.editCellAt(-1, -1);
-            table.getSelectionModel().clearSelection();
-
-            if (readWriteButton.getText().equals("Write")) {
-                readWriteButton.setText("R/O");
-                command = Cell::makeReadOnly;
-            }
-            else {
-                readWriteButton.setText("Write");
-                command = Cell::makeWritable;
-            }
-
-            for (Cell c : puzzle.getCells().values()) {
-                command.accept(c);
-            }
-
-            tableModel.fireTableDataChanged();
-        });
-        buttons.add(readWriteButton);
-
-    }
 
     /**
      * Launch the application.
@@ -367,25 +192,5 @@ public class SwingSamurai implements StatusListener
         });
     }
 
-    @Override
-    public void statusChanged() {
-        if (tableModel.anyIllegalValues()) {
-            solved.setText("Illegal");
-        }
-        else {
-            if (puzzle.isSolved()) {
-                solved.setText("Solved!");
-            } else {
-                int solutions = puzzle.isUnique();
-                if (solutions == 1) {
-                    solved.setText("Unsolved");
-                } else if (solutions == 0) {
-                    solved.setText("No solutions");
-                } else {
-                    solved.setText("Not unique");
-                }
-            }
-        }
-    }
 }
 
