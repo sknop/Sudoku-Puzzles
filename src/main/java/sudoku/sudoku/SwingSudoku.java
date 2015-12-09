@@ -269,6 +269,7 @@ public class SwingSudoku implements StatusListener
                     e1.printStackTrace();
                 }
             }
+			statusChanged();
 		});
 		buttons.add(loadButton);
 		
