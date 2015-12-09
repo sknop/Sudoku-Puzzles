@@ -23,41 +23,25 @@
  *******************************************************************************/
 package sudoku.samurai;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.GridLayout;
-import javax.swing.*;
-
-import java.awt.BorderLayout;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
-
-import javax.swing.border.LineBorder;
-import javax.swing.border.MatteBorder;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-
-import sudoku.Cell;
-import sudoku.CellWrapper;
-import sudoku.Point;
-import sudoku.Puzzle;
-import sudoku.exceptions.CellContentException;
-import sudoku.exceptions.IllegalFileFormatException;
-import sudoku.swing.*;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.internal.HelpScreenException;
+import sudoku.Puzzle;
+import sudoku.exceptions.CellContentException;
+import sudoku.exceptions.IllegalFileFormatException;
+import sudoku.swing.SwingPuzzle;
+
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.border.MatteBorder;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
+import java.awt.*;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 
 
 public class SwingSamurai extends SwingPuzzle
