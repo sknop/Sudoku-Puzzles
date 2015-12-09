@@ -45,6 +45,11 @@ public abstract class Relation implements Constraint
         this.maxValue = maxValue;
     }
 
+    @Override
+    public void checkUpdate(int newValue) throws CellContentException {
+        update(0, newValue);
+    }
+
     /**
      * We only report the target cell
      *

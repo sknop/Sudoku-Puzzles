@@ -87,6 +87,11 @@ public class Cell implements Iterable<Integer>
 			throw new CellContentException("Value " + value + " larger than " + limit);
 		}
 		else {
+            // first verify that the value can be placed at all, no need to know old value at this stage
+            for (Constraint u : belongsTo) {
+                u.checkUpdate(value);
+            }
+
 			for (Constraint u : belongsTo) {
 				u.update(this.value, value);
 			}

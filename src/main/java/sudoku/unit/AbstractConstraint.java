@@ -67,6 +67,13 @@ public abstract class AbstractConstraint implements Constraint
 	}
 
 	@Override
+    public void checkUpdate(int newValue) throws CellContentException {
+        if (numbers.get(newValue)) {
+            throw new CellContentException("Value " + newValue + " already exists in " + this);
+        }
+    }
+
+	@Override
 	public void update(int oldValue, int newValue) throws CellContentException {
 		if ( oldValue != 0 ) {
 			// need to remove the old value

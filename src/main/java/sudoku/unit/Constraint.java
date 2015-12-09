@@ -34,6 +34,8 @@ public interface Constraint
 {
 	List<Cell> getCells();
 
+	void checkUpdate(int newValue) throws CellContentException;
+
 	void update(int oldValue, int newValue) throws CellContentException;
 	
 	BitSet getNumbers();
