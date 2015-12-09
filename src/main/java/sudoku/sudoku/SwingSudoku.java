@@ -47,15 +47,13 @@ import sudoku.CellWrapper;
 import sudoku.Puzzle;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
-import sudoku.swing.CellEditor;
-import sudoku.swing.Options;
-import sudoku.swing.StatusListener;
-import sudoku.swing.UndoKeys;
+import sudoku.swing.*;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.internal.HelpScreenException;
+import sudoku.swing.CellEditor;
 
 
 public class SwingSudoku implements StatusListener
@@ -68,7 +66,7 @@ public class SwingSudoku implements StatusListener
 	
 	Options options = new Options();
 	
-	SudokuTableModel tableModel;
+	PuzzleTableModel tableModel;
 
 	JFileChooser fileChooser = new JFileChooser();
 	File lastDirectory = new File(".");
@@ -117,7 +115,7 @@ public class SwingSudoku implements StatusListener
 		frame.setBounds(100, 100, 450, 450);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		
-		tableModel = new SudokuTableModel(puzzle, 9,9);
+		tableModel = new PuzzleTableModel(puzzle, 9,9);
         tableModel.addListener(this);
 
 		table = new JTable(tableModel) {
@@ -145,7 +143,7 @@ public class SwingSudoku implements StatusListener
 			public void changeSelection(final int row, final int column, boolean toggle, boolean extend)
             {
                 super.changeSelection(row, column, toggle, extend);
-                SudokuTableModel model = (SudokuTableModel) getModel();
+                PuzzleTableModel model = (PuzzleTableModel) getModel();
                 if (model.isCellEditable(row, column)) {
                 	this.editCellAt(row, column);
                 	this.transferFocus();
