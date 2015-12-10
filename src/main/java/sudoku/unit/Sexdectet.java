@@ -13,7 +13,6 @@ public class Sexdectet extends Unit
 
 	public Sexdectet(String position) {
 		super(16, position);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override 

@@ -118,7 +118,6 @@ public class SamuraiPuzzleCellEditor extends PuzzleCellEditor
             int newColumn = column + 1;
             if (newColumn > 20) newColumn = 0;
 
-            // TODO: does not take middle bars into account
             if (!SamuraiTableModel.isVisible(row, newColumn)) {
                 if (row < 9 || row > 11)
                     newColumn += 3;

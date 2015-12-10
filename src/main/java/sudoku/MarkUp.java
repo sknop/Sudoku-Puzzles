@@ -25,6 +25,8 @@ package sudoku;
 
 import java.util.Iterator;
 
+// TODO This class is not finished yet, still using BitMap
+
 public class MarkUp implements Iterable<Integer>
 {
 	private long bitset = 0;
@@ -63,13 +65,11 @@ public class MarkUp implements Iterable<Integer>
 
 			@Override
 			public boolean hasNext() {
-				// TODO Auto-generated method stub
 				return false;
 			}
 
 			@Override
 			public Integer next() {
-				// TODO Auto-generated method stub
 				return null;
 			}
 			
