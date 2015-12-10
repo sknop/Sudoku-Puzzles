@@ -31,6 +31,8 @@ import net.sourceforge.argparse4j.internal.HelpScreenException;
 import sudoku.Puzzle;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
+import sudoku.swing.Options;
+import sudoku.swing.PuzzleCellEditor;
 import sudoku.swing.SwingPuzzle;
 
 import javax.swing.*;
@@ -92,6 +94,12 @@ public class SwingSamurai extends SwingPuzzle
 
 
     }
+
+    @Override
+    protected PuzzleCellEditor createCellEditor(Options options) {
+        return new SamuraiPuzzleCellEditor(options);
+    }
+
     protected SamuraiTableModel createTableModel() {
         return new SamuraiTableModel(puzzle, 21,21);
     }

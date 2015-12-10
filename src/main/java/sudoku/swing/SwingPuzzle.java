@@ -31,7 +31,6 @@ import sudoku.CellWrapper;
 import sudoku.Puzzle;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
-import sudoku.samurai.SamuraiCellEditor;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
@@ -81,8 +80,8 @@ public abstract class SwingPuzzle implements StatusListener
         table.setRowSelectionAllowed(false);
         table.setColumnSelectionAllowed(false);
 
-        table.setDefaultEditor(CellWrapper.class, new SamuraiCellEditor(options));
-        table.setDefaultRenderer(CellWrapper.class, new SamuraiCellEditor(options));
+        table.setDefaultEditor(CellWrapper.class, createCellEditor(options));
+        table.setDefaultRenderer(CellWrapper.class, createCellEditor(options));
         table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 
         final int height = cellSize;
@@ -249,6 +248,8 @@ public abstract class SwingPuzzle implements StatusListener
     protected abstract int getCellSize();
 
     protected abstract Puzzle createPuzzle();
+
+    protected abstract PuzzleCellEditor createCellEditor(Options options);
 
     @Override
     public void statusChanged() {

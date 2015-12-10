@@ -29,7 +29,7 @@ import sudoku.CellWrapper;
 import sudoku.UndoTableModel;
 
 @SuppressWarnings("serial")
-public class CellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer
+public class PuzzleCellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer
 {
 	final Color backgroundColor = Color.WHITE;
 	final Font bigFont = new Font("Lucida Grande", Font.BOLD, 28);
@@ -40,7 +40,7 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
 	JLabel label;
 	Options options;
 	
-	public CellEditor(Options options) {
+	public PuzzleCellEditor(Options options) {
 		this.options = options;
 	}
 	

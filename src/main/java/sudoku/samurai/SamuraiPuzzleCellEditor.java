@@ -26,8 +26,7 @@
 
 package sudoku.samurai;
 
-import sudoku.samurai.SamuraiTableModel;
-import sudoku.swing.CellEditor;
+import sudoku.swing.PuzzleCellEditor;
 import sudoku.swing.Options;
 
 import javax.swing.*;
@@ -36,8 +35,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 
 @SuppressWarnings("serial")
-public class SamuraiCellEditor extends CellEditor {
-    public SamuraiCellEditor(Options options) {
+public class SamuraiPuzzleCellEditor extends PuzzleCellEditor
+{
+    public SamuraiPuzzleCellEditor(Options options) {
         super(options);
     }
 
@@ -64,7 +64,10 @@ public class SamuraiCellEditor extends CellEditor {
             if (newRow < 0) newRow = 20;
 
             if (!SamuraiTableModel.isVisible(newRow, column)) {
-                newRow -= 3;
+                if (column < 9 || column > 11)
+                    newRow -= 3;
+                else
+                    newRow = 14;
             }
             moveToCell(newRow, column);
         }
@@ -79,7 +82,10 @@ public class SamuraiCellEditor extends CellEditor {
             if (newRow > 20) newRow = 0;
 
             if (!SamuraiTableModel.isVisible(newRow, column)) {
-                newRow += 3;
+                if (column < 9 || column > 11)
+                    newRow += 3;
+                else
+                    newRow = 6;
             }
             moveToCell(newRow, column);
         }
@@ -94,7 +100,10 @@ public class SamuraiCellEditor extends CellEditor {
             if (newColumn < 0) newColumn = 20;
 
             if (!SamuraiTableModel.isVisible(row, newColumn)) {
-                newColumn -= 3;
+                if (row < 9 || row > 11)
+                    newColumn -= 3;
+                else
+                    newColumn = 14;
             }
             moveToCell(row, newColumn);
         }
@@ -109,8 +118,12 @@ public class SamuraiCellEditor extends CellEditor {
             int newColumn = column + 1;
             if (newColumn > 20) newColumn = 0;
 
+            // TODO: does not take middle bars into account
             if (!SamuraiTableModel.isVisible(row, newColumn)) {
-                newColumn += 3;
+                if (row < 9 || row > 11)
+                    newColumn += 3;
+                else
+                    newColumn = 6;
             }
             moveToCell(row, newColumn);
         }
