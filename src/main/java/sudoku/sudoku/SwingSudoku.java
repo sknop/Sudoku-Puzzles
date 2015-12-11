@@ -38,6 +38,7 @@ import sudoku.swing.SwingPuzzle;
 
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import java.awt.*;
@@ -104,6 +105,10 @@ public class SwingSudoku extends SwingPuzzle
 
     @Override
     protected JTable createTable(TableModel model) {
+
+        PuzzleCellEditor editor = createCellEditor(options);
+        PuzzleCellEditor renderer = createCellEditor(options);
+
         return new JTable(model) {
             @Override
             public Component prepareRenderer(
@@ -124,6 +129,16 @@ public class SwingSudoku extends SwingPuzzle
 
                     return c;
                 }
+
+            @Override
+            public TableCellEditor getCellEditor(int row, int column) {
+                return editor;
+            }
+
+            @Override
+            public TableCellRenderer getCellRenderer(int row, int column) {
+                return renderer;
+            }
 
             @Override
             public void changeSelection(final int row, final int column, boolean toggle, boolean extend) {

@@ -80,8 +80,8 @@ public abstract class SwingPuzzle implements StatusListener
         table.setRowSelectionAllowed(false);
         table.setColumnSelectionAllowed(false);
 
-        table.setDefaultEditor(CellWrapper.class, createCellEditor(options));
-        table.setDefaultRenderer(CellWrapper.class, createCellEditor(options));
+        // table.setDefaultEditor(CellWrapper.class, createCellEditor(options));
+        // table.setDefaultRenderer(CellWrapper.class, createCellEditor(options));
         table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 
         final int height = cellSize;

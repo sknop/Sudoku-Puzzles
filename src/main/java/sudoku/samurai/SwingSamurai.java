@@ -38,6 +38,7 @@ import sudoku.swing.SwingPuzzle;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import java.awt.*;
@@ -106,6 +107,10 @@ public class SwingSamurai extends SwingPuzzle
 
     protected JTable createTable(TableModel model) {
         return new JTable(model) {
+            PuzzleCellEditor editor = createCellEditor(options);
+            PuzzleCellEditor renderer = createCellEditor(options);
+            JPanel squarePanel = new SquarePanel();
+
             @Override
             public Component prepareRenderer(
                     TableCellRenderer renderer, int row, int column)
@@ -134,6 +139,11 @@ public class SwingSamurai extends SwingPuzzle
                 }
             }
 
+            @Override
+            public TableCellEditor getCellEditor(int row, int column) {
+                return editor;
+            }
+
             class SquarePanel extends JPanel
             {
                 public SquarePanel() {
@@ -160,10 +170,10 @@ public class SwingSamurai extends SwingPuzzle
             @Override
             public TableCellRenderer getCellRenderer(int row, int column) {
                 if ( SamuraiTableModel.isVisible(row, column) ) {
-                    return super.getCellRenderer(row, column);
+                    return renderer;
                 }
                 else {
-                    return (t,  v,  i,  h,  r,  c) ->  new SquarePanel();
+                    return (t,  v,  i,  h,  r,  c) ->  squarePanel;
                 }
             }
         };
