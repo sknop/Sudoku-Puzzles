@@ -117,12 +117,10 @@ public abstract class Puzzle
 	public abstract int getLow();
 	public abstract int getHigh();
 	
-	private final String CHARS = " 123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	
 	protected String getValueAsString(int x, int y) {
 		int val = getValue(x, y);
 		
-		return CHARS.substring(val, val+1);
+		return NumberConverter.getValueAsString(val);
 	}
 	
 

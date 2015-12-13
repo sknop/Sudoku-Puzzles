@@ -26,6 +26,7 @@ import javax.swing.text.PlainDocument;
 
 import sudoku.Cell;
 import sudoku.CellWrapper;
+import sudoku.NumberConverter;
 import sudoku.UndoTableModel;
 
 @SuppressWarnings("serial")
@@ -61,7 +62,7 @@ public class PuzzleCellEditor extends AbstractCellEditor implements TableCellEdi
 		textField.setFont(bigFont);
 		
     	textField.setBackground( backgroundColor );
-    	textField.setDocument(new FieldLimit(9));
+    	textField.setDocument(createFieldLimit());
     	
 		label = new JLabel();
 		label.setFont(smallFont);
@@ -73,7 +74,7 @@ public class PuzzleCellEditor extends AbstractCellEditor implements TableCellEdi
 			Cell cell = wrapper.getCell();
 	
 	    	if (cell.getValue() > 0) {
-	    		textField.setText(Integer.toString(cell.getValue()));
+	    		textField.setText(NumberConverter.getValueAsString(cell.getValue()));
 	
 	    		if (cell.isReadOnly()) {
 	        		textField.setForeground( Color.BLUE );
@@ -85,7 +86,7 @@ public class PuzzleCellEditor extends AbstractCellEditor implements TableCellEdi
 			else {
 				if ( wrapper.getIllegalValue() > 0 ) {
 			        textField.setForeground( Color.RED );
-			        textField.setText(Integer.toString(wrapper.getIllegalValue()));
+			        textField.setText(NumberConverter.getValueAsString(wrapper.getIllegalValue()));
 			    }
 			}
 			
@@ -103,7 +104,11 @@ public class PuzzleCellEditor extends AbstractCellEditor implements TableCellEdi
 		return panel;
 	}
 
-	private String formatMarkup(BitSet set) {
+	protected FieldLimit createFieldLimit() {
+        return new FieldLimit(9);
+    }
+
+	protected String formatMarkup(BitSet set) {
 		StringBuilder b = new StringBuilder();
 		if (set.cardinality() > 0) {
 			b.append("<html>");
@@ -175,30 +180,30 @@ public class PuzzleCellEditor extends AbstractCellEditor implements TableCellEdi
         }
     }
     static class RightAction extends ArrowAction {
-        public RightAction(JTable table, int row, int column) {
-            super(table, row, column);
-        }
+	public RightAction(JTable table, int row, int column) {
+		super(table, row, column);
+	}
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            int newColumn = column + 1;
-            if (newColumn > 8) newColumn = 0;
-            moveToCell(row, newColumn);
-        }
-    }
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		int newColumn = column + 1;
+		if (newColumn > 8) newColumn = 0;
+		moveToCell(row, newColumn);
+	}
+}
 
-    public ArrowAction getUpAction(JTable table, int row, int column) {
-        return new UpAction(table, row, column);
-    }
-    public ArrowAction getDownAction(JTable table, int row, int column) {
-        return new DownAction(table, row, column);
-    }
-    public ArrowAction getLeftAction(JTable table, int row, int column) {
-        return new LeftAction(table, row, column);
-    }
-    public ArrowAction getRightAction(JTable table, int row, int column) {
-        return new RightAction(table, row, column);
-    }
+	public ArrowAction getUpAction(JTable table, int row, int column) {
+		return new UpAction(table, row, column);
+	}
+	public ArrowAction getDownAction(JTable table, int row, int column) {
+		return new DownAction(table, row, column);
+	}
+	public ArrowAction getLeftAction(JTable table, int row, int column) {
+		return new LeftAction(table, row, column);
+	}
+	public ArrowAction getRightAction(JTable table, int row, int column) {
+		return new RightAction(table, row, column);
+	}
 
 	@Override
 	public Component getTableCellEditorComponent(JTable table, Object value,
@@ -227,33 +232,3 @@ public class PuzzleCellEditor extends AbstractCellEditor implements TableCellEdi
 }
 
 
-@SuppressWarnings("serial")
-class FieldLimit extends PlainDocument {
-    private int limit;
-
-    FieldLimit(int limit) {
-       super();
-       this.limit = limit;
-    }
-
-    static boolean isNumeric(String str)
-    {
-        for (char c : str.toCharArray())
-        {
-            if (!Character.isDigit(c)) return false;
-        }
-        return true;
-    }
-    
-    public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
-       if (str == null)
-         return;
-
-       if (isNumeric(str)) {
-	       int value = Integer.parseInt(str);
-	       if ((value <= limit) && getLength() == 0) {
-	         super.insertString(offset, str.toUpperCase(), attr);
-	       }
-       }
-    }
-}

@@ -163,7 +163,7 @@ public class PuzzleTableModel extends AbstractTableModel implements UndoTableMod
         int intValue = 0;
         
         if (!stringValue.isEmpty()) {
-        	intValue = Integer.parseInt(stringValue);
+        	intValue = NumberConverter.getCharAsValue(stringValue.charAt(0));
         }
         else {
         	// for easier comparing to existing cell value below
