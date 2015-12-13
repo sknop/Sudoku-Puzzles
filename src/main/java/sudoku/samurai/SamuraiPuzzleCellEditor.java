@@ -54,8 +54,8 @@ public class SamuraiPuzzleCellEditor extends PuzzleCellEditor
 
     class UpAction extends ArrowAction {
 
-        public UpAction(JTable table, int row, int column) {
-            super(table, row, column);
+        public UpAction(JTable table, int row, int column, int limit) {
+            super(table, row, column, limit);
         }
 
         @Override
@@ -73,8 +73,8 @@ public class SamuraiPuzzleCellEditor extends PuzzleCellEditor
         }
     }
     class DownAction extends ArrowAction {
-        public DownAction(JTable table, int row, int column) {
-            super(table, row, column);
+        public DownAction(JTable table, int row, int column, int limit) {
+            super(table, row, column, limit);
         }
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -91,8 +91,8 @@ public class SamuraiPuzzleCellEditor extends PuzzleCellEditor
         }
     }
     class LeftAction extends ArrowAction {
-        public LeftAction(JTable table, int row, int column) {
-            super(table, row, column);
+        public LeftAction(JTable table, int row, int column, int limit) {
+            super(table, row, column, limit);
         }
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -109,8 +109,8 @@ public class SamuraiPuzzleCellEditor extends PuzzleCellEditor
         }
     }
     class RightAction extends ArrowAction {
-        public RightAction(JTable table, int row, int column) {
-            super(table, row, column);
+        public RightAction(JTable table, int row, int column, int limit) {
+            super(table, row, column, limit);
         }
 
         @Override
@@ -131,25 +131,25 @@ public class SamuraiPuzzleCellEditor extends PuzzleCellEditor
     @Override
 	public
     ArrowAction getUpAction(JTable table, int row, int column) {
-        return new UpAction(table, row, column);
+        return new UpAction(table, row, column, 20);
     }
 
     @Override
 	public
     ArrowAction getDownAction(JTable table, int row, int column) {
-        return new DownAction(table, row, column);
+        return new DownAction(table, row, column, 20);
     }
 
     @Override
 	public
     ArrowAction getLeftAction(JTable table, int row, int column) {
-        return new LeftAction(table, row, column);
+        return new LeftAction(table, row, column, 20);
     }
 
     @Override
 	public
     ArrowAction getRightAction(JTable table, int row, int column) {
-        return new RightAction(table, row, column);
+        return new RightAction(table, row, column, 20);
     }
 }
 
