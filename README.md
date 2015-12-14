@@ -50,7 +50,7 @@ Super
 =====
 
 Super is a 16x16 Sudoku with Cell values of {123456789ABCDEF}
-Full command-line interface with import and export. Creating puzzles takes a long time, beware. No Swing GUI yet.
+Full command-line interface with import and export. Creating puzzles will take a long time, so beware.
 
 Futoshiki
 =========
