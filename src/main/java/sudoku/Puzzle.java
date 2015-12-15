@@ -208,8 +208,7 @@ public abstract class Puzzle
 	
 				head.reset();
 			} catch (CellContentException e) {
-				// now violates a condition, therefore incorrect entry
-				// try next value
+                System.err.println("Should never happen!");
 				continue;
 			}
 		}
@@ -254,8 +253,7 @@ public abstract class Puzzle
 	
 				head.reset();
 			} catch (CellContentException e) {
-				// now violates a condition, therefore incorrect entry
-				// try next value
+				System.err.println("Should never happen!");
 				continue;
 			}
 		}
