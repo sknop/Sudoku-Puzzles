@@ -375,7 +375,7 @@ public class Futoshiki extends Puzzle
         // row of numbers indicating each cell position
         b.append("     ");
         for (int i = 1; i <= maxValue; i++) {
-            b.append(i);
+            b.append(NumberConverter.getValueAsString(i));
             b.append("   ");
         }
         b.append("\n");
@@ -408,7 +408,7 @@ public class Futoshiki extends Puzzle
 
     private void drawContentRow(StringBuilder b, int row) {
         b.append(" ");
-        b.append(row);
+        b.append(NumberConverter.getValueAsString(row));
         b.append(" |");
         for (int col = 1; col < maxValue; col++) {
             b.append(" ");
@@ -595,6 +595,10 @@ public class Futoshiki extends Puzzle
         // then we will remove stuff.
 
         Collections.shuffle(removables);
+
+        // idea - if the removable is a relation, roll a dice
+        // if below a certain threshold, move the relation to the end of the queue
+
         for (Removable r : removables) {
             r.remove();
             if (isUnique() > 1) {

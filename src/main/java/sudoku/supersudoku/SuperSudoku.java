@@ -16,6 +16,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import sudoku.Cell;
+import sudoku.NumberConverter;
 import sudoku.Point;
 import sudoku.Puzzle;
 import sudoku.exceptions.AddCellException;
@@ -34,7 +35,7 @@ public class SuperSudoku extends Puzzle
 		initialize();
 	}
 
-	private final void initialize() {
+	private void initialize() {
 		try {
 			// create the Cells first, easier to see this way
 			
@@ -132,7 +133,6 @@ public class SuperSudoku extends Puzzle
 	 *  
 	 * @param path : Path
 	 * @throws IOException
-	 * @author Sven Erik Knop
 	 * @throws IOException, IllegalFileFormatException, CellContentException 
 	 */
 	@Override
@@ -214,7 +214,7 @@ public class SuperSudoku extends Puzzle
 		b.append(getBigBorder(4)); b.append("\n");
 
 		for (int row = 1; row <= 16; row++) {
-			b.append(formatAsString(row)); // prepend each row with its number
+			b.append(NumberConverter.getValueAsString(row)); // prepend each row with its number
 			
 			b.append(Front);
 			for (int section = 0; section < 4; section++) {
@@ -231,19 +231,6 @@ public class SuperSudoku extends Puzzle
 		
 		return b.toString();
 	}
-
-	private String formatAsString(int value) {
-        char c = '0';
-
-        if (value < 10) {
-            c = (char) ('0' + value);
-        }
-        else {
-            c = (char) ('A' + value - 10);
-        }
-
-        return String.valueOf(c);
-    }
 
 	final String SuperSection = " %s %s %s %s |";
 	
@@ -309,10 +296,6 @@ public class SuperSudoku extends Puzzle
 		int[] boxSeeds = independentBoxes[ random.nextInt(independentBoxes.length)];
 		
 		for (int i : boxSeeds) {
-			System.out.println(i);
-		}
-		
-		for (int i : boxSeeds) {
 			Sexdectet box = boxes.get(i - 1);
 			List<Cell> cells = box.getCells();
 			
@@ -332,9 +315,7 @@ public class SuperSudoku extends Puzzle
 		// fill in the missing entries
 		
 		solveBruteForce();
-		
-		System.out.println(toCLIString());
-		
+
 		// now try to remove entries until the solution is not unique anymore
 		
 		// first, we get all Cells and shuffle them
@@ -350,8 +331,6 @@ public class SuperSudoku extends Puzzle
 
 			// for now, need to solve performance problems
 			
-			if (counter++ > 200) break;
-			
 			if (isUnique() > 1) {
 				try {
 					// does not produce unique puzzle, reset this value
@@ -360,7 +339,12 @@ public class SuperSudoku extends Puzzle
 					System.err.println("Should not happen " + e);
 				}
 			}
-		}
+
+            // System.out.println("Removed " + counter + " entry");
+
+            // only check if we reached the limit after checking for uniqueness
+            if (counter++ > 200) break;
+        }
 		
 		for (Cell c : allCells) {
 			c.makeReadOnly();

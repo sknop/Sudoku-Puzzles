@@ -467,7 +467,7 @@ public class Samurai extends Puzzle
 		for (Cell c : allCells) {
 			int value = c.getValue();
 			c.reset();
-			counter++;
+
 			if (isUnique() > 1) {
 				try {
 					// does not produce unique puzzle, reset this value
@@ -477,7 +477,7 @@ public class Samurai extends Puzzle
 				}
 			}
 			
-			if (counter > removeLimit) {
+			if (counter++ > removeLimit) {
 				break;
 			}
 		}
