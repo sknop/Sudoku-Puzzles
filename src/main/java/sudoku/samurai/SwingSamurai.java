@@ -60,28 +60,9 @@ public class SwingSamurai extends SwingPuzzle
             throws ArgumentParserException,
                    IOException,
                    IllegalFileFormatException,
-                   CellContentException {
-
-        super();
-
-        ArgumentParser parser = ArgumentParsers.newArgumentParser("Samurai",true);
-        parser.addArgument("-i", "--input").
-			help("Input file, if not set, create empty puzzle");
-
-        try {
-	        Namespace options = parser.parseArgs(args);
-	
-	        String fileName = options.get("input");
-	        if (fileName != null) {
-	            Path path = FileSystems.getDefault().getPath(fileName);
-	            puzzle.importFile(path);
-	        }
-	
-	        initialize();
-        }
-        catch(HelpScreenException e) {
-        	System.exit(0);
-        }
+                   CellContentException
+    {
+        super("Samurai", args);
     }
 
     @Override

@@ -26,6 +26,11 @@
 package sudoku.swing;
 
 
+import net.sourceforge.argparse4j.ArgumentParsers;
+import net.sourceforge.argparse4j.inf.ArgumentParser;
+import net.sourceforge.argparse4j.inf.ArgumentParserException;
+import net.sourceforge.argparse4j.inf.Namespace;
+import net.sourceforge.argparse4j.internal.HelpScreenException;
 import sudoku.Cell;
 import sudoku.CellWrapper;
 import sudoku.Puzzle;
@@ -59,9 +64,31 @@ public abstract class SwingPuzzle implements StatusListener
     JFileChooser fileChooser = new JFileChooser();
     File lastDirectory = new File(".");
 
-    public SwingPuzzle() {
+    public SwingPuzzle(String name, String args[]) throws ArgumentParserException,
+            IOException,
+            IllegalFileFormatException,
+            CellContentException
+    {
         tableModel = createTableModel();
         tableModel.addListener(this);
+
+        ArgumentParser parser = ArgumentParsers.newArgumentParser(name).defaultHelp(true);
+        parser.addArgument("-i", "--input").
+                help("Input file, if not set, create empty puzzle");
+
+        try {
+            Namespace options = parser.parseArgs(args);
+
+            String fileName = options.get("input");
+            if (fileName != null) {
+                Path path = FileSystems.getDefault().getPath(fileName);
+                puzzle.importFile(path);
+            }
+
+            initialize();
+        } catch (HelpScreenException e) {
+            System.exit(0);
+        }
     }
 
     /**
