@@ -25,47 +25,11 @@
 
 package sudoku.unit;
 
-import sudoku.Cell;
-import sudoku.exceptions.AddCellException;
-import sudoku.exceptions.CellContentException;
-
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
-
-public abstract class Relation implements Constraint
+/**
+ * Created by sknop on 18/12/2015.
+ */
+public enum Direction
 {
-    protected Cell source;
-    protected Cell target;
-    protected int maxValue;
-
-    public Relation(Cell source, Cell target, int maxValue) {
-        this.source = source;
-        this.target = target;
-        this.maxValue = maxValue;
-    }
-
-    @Override
-    public void checkUpdate(int newValue) throws CellContentException {
-        update(0, newValue);
-    }
-
-    abstract public String getRepresentation(Direction direction);
-
-    /**
-     * We only report the target cell
-     *
-     * @return List containing the target cell
-     */
-    @Override
-    public List<Cell> getCells() {
-        ArrayList<Cell> array = new ArrayList<>();
-        array.add(target);
-
-        return array;
-    }
-
-    public Cell getSource() {
-        return source;
-    }
+    Horizontal,
+    Vertical
 }

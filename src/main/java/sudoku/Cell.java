@@ -29,7 +29,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
 import sudoku.unit.Constraint;
 
@@ -101,15 +100,15 @@ public class Cell implements Iterable<Integer>
 	}
 	
 	public void reset() {
-		readOnly = false;
-		try {
-			setValue(0);
-		} catch (CellContentException e) {
-			System.err.println("Should not happen" + e);
-		}
-	}
-	
-	public BitSet getMarkUp() {
+        readOnly = false;
+        try {
+            setValue(0);
+        } catch (CellContentException e) {
+            System.err.println("Should not happen" + e);
+        }
+    }
+
+ 	public BitSet getMarkUp() {
 		BitSet markUp = new BitSet();
 		
 		if (value == 0) {			

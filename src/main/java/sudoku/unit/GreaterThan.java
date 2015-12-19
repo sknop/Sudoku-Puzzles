@@ -37,6 +37,17 @@ public class GreaterThan extends Relation
     }
 
     @Override
+    public String getRepresentation(Direction direction) {
+        if (direction == Direction.Horizontal)
+            return ">";
+        else if (direction == Direction.Vertical)
+            return "v";
+        else {
+            throw new RuntimeException("Should not be possible");
+        }
+    }
+
+    @Override
     public void update(int oldValue, int newValue) throws CellContentException {
         if (newValue != 0) {
             if (! (newValue > getMinValue()) ) {

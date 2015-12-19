@@ -46,6 +46,17 @@ public class LessThan extends Relation
     }
 
     @Override
+    public String getRepresentation(Direction direction) {
+        if (direction == Direction.Horizontal)
+            return "<";
+        else if (direction == Direction.Vertical)
+            return "^";
+        else {
+            throw new RuntimeException("Should not be possible");
+        }
+    }
+
+    @Override
     public BitSet getNumbers() {
         BitSet set = new BitSet(maxValue);
 

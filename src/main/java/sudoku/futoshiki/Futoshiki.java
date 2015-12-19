@@ -433,11 +433,6 @@ public class Futoshiki extends Puzzle
         b.append(" |\n");
     }
 
-    private enum Direction {
-        Horizontal,
-        Vertical
-    }
-
     private String getRelation(int row, int col, Direction direction, String emptyString) {
         Point from = new Point(row, col);
 
@@ -454,19 +449,7 @@ public class Futoshiki extends Puzzle
 
         String result = emptyString;
         if (relation != null) {
-            if (relation.getClass() == GreaterThan.class) {
-                if (direction == Direction.Horizontal) {
-                    result = ">";
-                } else {
-                    result = "v";
-                }
-            } else if (relation.getClass() == LessThan.class) {
-                if (direction == Direction.Horizontal) {
-                    result = "<";
-                } else {
-                    result = "^";
-                }
-            }
+            result = relation.getRepresentation(direction);
         }
         return result;
     }
@@ -564,14 +547,14 @@ public class Futoshiki extends Puzzle
 
     @Override
     public void createRandomPuzzle() {
-        reset();
+        reset(maxValue);
 
         createLatinSquare();
 
         List<Removable> removables = getCells().values().
                 stream().
                 map(CellRemovable::new).
-                collect(Collectors.toList());
+                collect( Collectors.toCollection(LinkedList::new) );
 
         // now add relations, might as well keep track of them, we are going to remove some of them again
         // first horizontal
@@ -596,8 +579,27 @@ public class Futoshiki extends Puzzle
 
         Collections.shuffle(removables);
 
-        // idea - if the removable is a relation, roll a dice
-        // if below a certain threshold, move the relation to the end of the queue
+//        // idea - if the removable is a relation, roll a dice
+//        // if below a certain threshold, move the relation to the end of the queue
+//
+//        double threshold = .4;
+//        Random random = new Random();
+//
+//        List<Removable> saved = new LinkedList<>();
+//        for (Removable r : removables) {
+//            if (r.getClass() == RelationRemovable.class) {
+//                if (random.nextDouble() > threshold) {
+//                    saved.add(r);
+//                }
+//            }
+//        }
+
+/*
+        for (Removable r : saved) {
+            removables.remove(r);
+            removables.add(r);
+        }
+*/
 
         for (Removable r : removables) {
             r.remove();
