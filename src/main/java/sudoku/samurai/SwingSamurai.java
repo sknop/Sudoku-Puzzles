@@ -23,11 +23,7 @@
  *******************************************************************************/
 package sudoku.samurai;
 
-import net.sourceforge.argparse4j.ArgumentParsers;
-import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
-import net.sourceforge.argparse4j.inf.Namespace;
-import net.sourceforge.argparse4j.internal.HelpScreenException;
 import sudoku.Puzzle;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
@@ -43,8 +39,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 
 
 public class SwingSamurai extends SwingPuzzle
@@ -79,7 +73,7 @@ public class SwingSamurai extends SwingPuzzle
 
     @Override
     protected PuzzleCellEditor createCellEditor(Options options) {
-        return new SamuraiPuzzleCellEditor(options);
+        return new SamuraiCellEditor(options);
     }
 
     protected SamuraiTableModel createTableModel() {

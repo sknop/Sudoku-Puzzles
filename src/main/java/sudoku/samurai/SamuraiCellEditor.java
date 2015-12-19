@@ -35,9 +35,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 
 @SuppressWarnings("serial")
-public class SamuraiPuzzleCellEditor extends PuzzleCellEditor
+public class SamuraiCellEditor extends PuzzleCellEditor
 {
-    public SamuraiPuzzleCellEditor(Options options) {
+    public SamuraiCellEditor(Options options) {
         super(options);
     }
 
