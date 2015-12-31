@@ -1,8 +1,8 @@
 package sudoku;
 
 public class CellWrapper {
-	Cell cell;
-	int illegalValue = 0;
+	protected Cell cell;
+	protected int illegalValue = 0;
 	
 	public CellWrapper(Cell cell, int illegalValue) {
 		this.cell = cell;
