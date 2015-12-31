@@ -51,7 +51,7 @@ public class PuzzleTableModel extends AbstractTableModel implements UndoTableMod
 	protected Map<Point, Integer> illegalEntries = new HashMap<>();
 	protected List<StatusListener> listeners = new ArrayList<>();
 	
-	class PuzzleUndo extends AbstractUndoableEdit {
+	protected class PuzzleUndo extends AbstractUndoableEdit {
 		private String value;
 		private String previousValue;
 		private int row;
@@ -155,7 +155,7 @@ public class PuzzleTableModel extends AbstractTableModel implements UndoTableMod
 	public Class<?> getColumnClass(int columnIndex) {
 		return CellWrapper.class;
 	}
-	
+
 	@Override
 	public void setValueAt(Object value, int row, int col) {
         Point p = new Point(row + 1, col + 1);
