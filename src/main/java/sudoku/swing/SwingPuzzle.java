@@ -26,13 +26,12 @@
 package sudoku.swing;
 
 
+import net.sourceforge.argparse4j.ArgumentParserBuilder;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
-import net.sourceforge.argparse4j.internal.HelpScreenException;
 import sudoku.Cell;
-import sudoku.CellWrapper;
 import sudoku.Puzzle;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
@@ -72,23 +71,21 @@ public abstract class SwingPuzzle implements StatusListener
         tableModel = createTableModel();
         tableModel.addListener(this);
 
-        ArgumentParser parser = ArgumentParsers.newArgumentParser(name).defaultHelp(true);
+        ArgumentParserBuilder builder = ArgumentParsers.newFor(name).addHelp(true);
+
+        ArgumentParser parser = builder.build();
         parser.addArgument("-i", "--input").
                 help("Input file, if not set, create empty puzzle");
 
-        try {
-            Namespace options = parser.parseArgs(args);
+        Namespace options = parser.parseArgs(args);
 
-            String fileName = options.get("input");
-            if (fileName != null) {
-                Path path = FileSystems.getDefault().getPath(fileName);
-                puzzle.importFile(path);
-            }
-
-            initialize();
-        } catch (HelpScreenException e) {
-            System.exit(0);
+        String fileName = options.get("input");
+        if (fileName != null) {
+            Path path = FileSystems.getDefault().getPath(fileName);
+            puzzle.importFile(path);
         }
+
+        initialize();
     }
 
     /**
@@ -243,7 +240,7 @@ public abstract class SwingPuzzle implements StatusListener
 
         JToggleButton readWriteButton = new JToggleButton("Write");
         readWriteButton.addActionListener( e -> {
-            Consumer<Cell> command = null;
+            Consumer<Cell> command;
 
             // cheeky hack - remove selection so that the cell is not blocked
             table.editCellAt(-1, -1);

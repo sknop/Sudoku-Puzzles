@@ -10,6 +10,7 @@ import java.util.Scanner;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import net.sourceforge.argparse4j.ArgumentParserBuilder;
 import net.sourceforge.argparse4j.impl.Arguments;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalCellPositionException;
@@ -22,7 +23,6 @@ import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
-import net.sourceforge.argparse4j.internal.HelpScreenException;
 
 public class CLI implements Runnable
 {
@@ -248,7 +248,9 @@ public class CLI implements Runnable
     }
 
     public static void main(String[] args) {
-        ArgumentParser parser = ArgumentParsers.newArgumentParser("CLI", true);
+        ArgumentParserBuilder builder = ArgumentParsers.newFor("CLI").addHelp(true);
+
+        ArgumentParser parser = builder.build();
         parser.addArgument("-i", "--input")
                 .help("Input file, if not set, create empty puzzle");
         parser.addArgument("-p", "--puzzle")
@@ -266,9 +268,6 @@ public class CLI implements Runnable
             CLI cli = new CLI(options);
 
             cli.run();
-
-        } catch (HelpScreenException e) {
-            // prints out the Help screen already. Simply stop here
         } catch (ArgumentParserException e) {
             System.err.println(e.getMessage());
             System.err.println();
