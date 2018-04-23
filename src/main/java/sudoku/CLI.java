@@ -1,5 +1,19 @@
 package sudoku;
 
+import net.sourceforge.argparse4j.ArgumentParserBuilder;
+import net.sourceforge.argparse4j.ArgumentParsers;
+import net.sourceforge.argparse4j.impl.Arguments;
+import net.sourceforge.argparse4j.inf.ArgumentParser;
+import net.sourceforge.argparse4j.inf.ArgumentParserException;
+import net.sourceforge.argparse4j.inf.Namespace;
+import sudoku.exceptions.CellContentException;
+import sudoku.exceptions.IllegalCellPositionException;
+import sudoku.exceptions.IllegalFileFormatException;
+import sudoku.futoshiki.Futoshiki;
+import sudoku.samurai.Samurai;
+import sudoku.sudoku.Sudoku;
+import sudoku.supersudoku.SuperSudoku;
+
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -9,20 +23,6 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
-import net.sourceforge.argparse4j.ArgumentParserBuilder;
-import net.sourceforge.argparse4j.impl.Arguments;
-import sudoku.exceptions.CellContentException;
-import sudoku.exceptions.IllegalCellPositionException;
-import sudoku.exceptions.IllegalFileFormatException;
-import sudoku.futoshiki.Futoshiki;
-import sudoku.samurai.Samurai;
-import sudoku.sudoku.Sudoku;
-import sudoku.supersudoku.SuperSudoku;
-import net.sourceforge.argparse4j.ArgumentParsers;
-import net.sourceforge.argparse4j.inf.ArgumentParser;
-import net.sourceforge.argparse4j.inf.ArgumentParserException;
-import net.sourceforge.argparse4j.inf.Namespace;
 
 public class CLI implements Runnable
 {

@@ -327,7 +327,6 @@ public class Samurai extends Puzzle
 	 *  0,0,0,0,0,0,0,0,0
 	 *  
 	 * @param path : Path
-	 * @throws IOException
 	 * @throws IOException, IllegalFileFormatException, CellContentException 
 	 */
 	@Override
