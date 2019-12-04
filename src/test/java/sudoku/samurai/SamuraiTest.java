@@ -23,7 +23,11 @@
  *******************************************************************************/
 package sudoku.samurai;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -32,10 +36,6 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalCellPositionException;
@@ -46,7 +46,7 @@ public class SamuraiTest
 	Samurai samurai;
 	Path path;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		samurai = new Samurai();
 		path = FileSystems.getDefault().getPath("test.samurai");
@@ -54,16 +54,16 @@ public class SamuraiTest
 
 	@Test
 	public void testSetValue() {
-		assertTrue("Cell (1,1) not empty", samurai.getValue(1, 1) == 0);
+		assertEquals(samurai.getValue(1, 1), 0,"Cell (1,1) not empty");
 		try {
 			samurai.setValue(1, 1, 1);
 		} catch (CellContentException | IllegalCellPositionException e) {
 			fail("Should not happen " + e);
 		}
 		
-		assertTrue("Cell (1,1) is not 1", samurai.getValue(1, 1) == 1);
+		assertEquals(samurai.getValue(1, 1), 1, "Cell (1,1) is not 1");
 		
-		assertFalse("Samurai claims to be finished", samurai.isSolved());
+		assertFalse(samurai.isSolved(),"Samurai claims to be finished");
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class SamuraiTest
 		
 		samurai.importFile(path);
 		
-		assertTrue("First value is not 0", samurai.getValue(1, 1) == 0);
+		assertEquals(samurai.getValue(1, 1) , 0,"First value is not 0");
 	}
 
 	@Test
@@ -130,8 +130,8 @@ public class SamuraiTest
 		
 		samurai.importFile(path);
 
-		assertTrue("First value is not 5", samurai.getValue(1, 1) == 5);
-		assertTrue("Last value is not 2", samurai.getValue(21, 21) == 2);
+		assertEquals(samurai.getValue(1, 1), 5, "First value is not 5");
+		assertEquals(samurai.getValue(21, 21),2,"Last value is not 2");
 	}
 
 	@Test
@@ -167,7 +167,7 @@ public class SamuraiTest
 		}
 	}
 	
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		Files.deleteIfExists(path);
 	}

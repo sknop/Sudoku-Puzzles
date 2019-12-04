@@ -1,15 +1,14 @@
 package sudoku.tests;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import sudoku.Cell;
 import sudoku.Point;
@@ -31,7 +30,7 @@ public class TestHints
 		}		
 	}
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		for (int x = 1; x <= maxSize; x++) {
 			for (int y = 1; y <= maxSize; y++) {
@@ -119,7 +118,6 @@ public class TestHints
 		assertTrue(hints.get(1));
 		assertFalse(hints.get(2));
 		assertFalse(hints.get(3));
-		
 	}
 
 }

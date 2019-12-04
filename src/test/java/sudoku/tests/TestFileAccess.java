@@ -23,7 +23,11 @@
  *******************************************************************************/
 package sudoku.tests;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -32,10 +36,6 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
@@ -46,7 +46,7 @@ public class TestFileAccess
 	Sudoku sudoku;
 	Path path;
 	
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		sudoku = new Sudoku();
 		path = FileSystems.getDefault().getPath("sudoku.csv");
@@ -70,7 +70,7 @@ public class TestFileAccess
 		
 		sudoku.importFile(path);
 		
-		assertTrue("First value is not 0", sudoku.getValue(1, 1) == 0);
+		assertEquals(sudoku.getValue(1, 1), 0, "First value is not 0");
 	}
 
 	@Test
@@ -103,7 +103,7 @@ public class TestFileAccess
 		
 		sudoku.importFile(path);
 
-		assertTrue("First value is not 1", sudoku.getValue(1, 1) == 1);
+		assertEquals(sudoku.getValue(1, 1), 1,"First value is not 1");
 	}
 
 	@Test
@@ -130,12 +130,12 @@ public class TestFileAccess
 
 		for (int row = 1; row <=9; row++) {
 			for (int col = 1; col <= 9; col++) {
-				assertTrue("Values do not match", sudoku.getValue(row, col) == newSudoku.getValue(row,col));
+				assertTrue(sudoku.getValue(row, col) == newSudoku.getValue(row,col),"Values do not match");
 			}
 		}
 	}
 	
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		Files.deleteIfExists(path);
 	}

@@ -25,17 +25,13 @@
 
 package sudoku.unit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 import sudoku.Cell;
 import sudoku.exceptions.CellContentException;
-import sudoku.unit.GreaterThan;
-import sudoku.unit.LessThan;
-import sudoku.unit.Relation;
 
 import java.util.BitSet;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class GreaterThanTest
 {

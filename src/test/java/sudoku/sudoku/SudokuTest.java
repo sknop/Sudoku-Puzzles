@@ -23,12 +23,12 @@
  *******************************************************************************/
 package sudoku.sudoku;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.BitSet;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import sudoku.Point;
 import sudoku.exceptions.CellContentException;
@@ -39,7 +39,7 @@ public class SudokuTest
 {
 	Sudoku sudoku;
 	
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		sudoku = new Sudoku();
 	}
@@ -61,7 +61,7 @@ public class SudokuTest
 		try {
 			sudoku.setValue(p, 1);
 			
-			assertTrue("Correct value", sudoku.getValue(p) == 1);
+			assertEquals(sudoku.getValue(p), 1, "Correct value");
 		}
 		catch( Exception e) {
 			fail("Do not expect exception here");
@@ -78,37 +78,37 @@ public class SudokuTest
 			sudoku.setValue(p2, 9);
 
 			sudoku.setValue(p2, 0);
-			assertTrue("Correct value", sudoku.getValue(p2) == 0);
+			assertEquals(sudoku.getValue(p2),0, "Correct value");
 			sudoku.setValue(p1, 9);
 			
-			assertTrue("Correct value", sudoku.getValue(p1) == 9);
+			assertEquals(sudoku.getValue(p1),9,"Correct value");
 		}
 		catch( Exception e) {
 			fail("Do not expect exception here");
 		}
 	}
 
-	@Test(expected=ValueOutsideRangeException.class)
+	@Test
 	public void testValueOutSideRange() throws CellContentException, IllegalCellPositionException
 	{
 		Point p1 = new Point(1,1);
-		sudoku.setValue(p1, -1);
+		assertThrows(ValueOutsideRangeException.class, () -> sudoku.setValue(p1, -1));
 	}
 	
-	@Test(expected=CellContentException.class)
+	@Test
 	public void testDoubleValue() throws CellContentException, IllegalCellPositionException {
 		Point p1 = new Point(1,1);
 		Point p2 = new Point(2,1);
 
 		sudoku.setValue(p1, 1);
-		sudoku.setValue(p2, 1);
+		assertThrows(CellContentException.class, () -> sudoku.setValue(p2, 1));
 	}
 
-	@Test(expected=IllegalCellPositionException.class)
+	@Test
 	public void testIllegalCell() throws CellContentException, IllegalCellPositionException {
 		Point p1 = new Point(9,10);
 
-		sudoku.setValue(p1, 1);
+		assertThrows(IllegalCellPositionException.class, () -> sudoku.setValue(p1, 1));
 	}
 
 	private boolean checkMarkup(Point p, int value) {
@@ -127,18 +127,18 @@ public class SudokuTest
 			for (int row = 2; row <= 9; row++) {
 				Point t = new Point(row, 1);
 				
-				assertTrue(String.format("Found 1 in %s", t), ! checkMarkup(t, 1));
-				assertTrue(String.format("No 2 in %s", t), checkMarkup(t, 2));
+				assertTrue(! checkMarkup(t, 1),String.format("Found 1 in %s", t));
+				assertTrue(checkMarkup(t, 2),String.format("No 2 in %s", t));
 			}
 
 			for (int col = 2; col <= 9; col++) {
 				Point t = new Point(1, col);
 				
-				assertTrue(String.format("Found 1 in %s", t), ! checkMarkup(t,1));
-				assertTrue(String.format("No 2 in %s", t), checkMarkup(t, 2));
+				assertTrue(! checkMarkup(t,1),String.format("Found 1 in %s", t));
+				assertTrue(checkMarkup(t, 2),String.format("No 2 in %s", t));
 			}
 
-			assertTrue("Markup not empty", sudoku.getHints(p,0).isEmpty());
+			assertTrue(sudoku.getHints(p,0).isEmpty(),"Markup not empty");
 		}
 		catch( Exception e) {
 			fail("Do not expect exception here: " + e);
@@ -149,8 +149,8 @@ public class SudokuTest
 	@Test
 	public void testBruteForce() {
 		try {
-			assertTrue("Cannot solve empty Sudoku brute force", sudoku.solveBruteForce());
-			assertTrue("Not solved after brute force", sudoku.isSolved());
+			assertTrue(sudoku.solveBruteForce(),"Cannot solve empty Sudoku brute force");
+			assertTrue(sudoku.isSolved(),"Not solved after brute force");
 		}
 		catch( Exception e) {
 			fail("Do not expect exception here " + e);

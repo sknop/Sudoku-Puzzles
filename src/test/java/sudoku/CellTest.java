@@ -23,9 +23,9 @@
  *******************************************************************************/
 package sudoku;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import sudoku.exceptions.CellContentException;
 
@@ -35,7 +35,7 @@ public class CellTest
 	@Test
 	public void testSetValue() {
 		Cell cell = new Cell(1, 1,1);
-		assertTrue("Cell is not empty", cell.getValue() == 0);
+		assertEquals(0, cell.getValue(),"Cell is not empty");
 		
 		try {
 			cell.setValue(1);
@@ -43,14 +43,14 @@ public class CellTest
 		catch(Exception e) {
 			fail("Not supposed to throw an exception yet");
 		}
-		
-		assertTrue("Cell value not expected", cell.getValue() == 1);
+
+		assertEquals(1, cell.getValue(),"Cell value not expected");
 	}
 
-	@Test(expected=CellContentException.class)
+	@Test
 	public void testReadOnly() throws CellContentException {
 		Cell cell = new Cell(1, 1,1);
-		assertTrue("Cell is not empty", cell.getValue() == 0);
+		assertEquals(0, cell.getValue(),"Cell is not empty");
 		
 		try {
 			cell.setInitValue(1);
@@ -58,14 +58,14 @@ public class CellTest
 		catch(Exception e) {
 			fail("Not supposed to throw an exception yet");
 		}
-		
-		cell.setValue(0);
+
+		assertThrows(CellContentException.class, () -> cell.setInitValue(0));
 	}
 
     @Test
     public void testRange() {
         Cell cell = new Cell(16, 1,1);
-        assertTrue("Cell is not empty", cell.empty());
+        assertTrue(cell.empty(),"Cell is not empty");
 
         try {
             cell.setValue(16);
@@ -74,8 +74,8 @@ public class CellTest
             fail("Not supposed to throw an exception yet");
         }
 
-        assertTrue("Cell value not expected", cell.getValue() == 16);
-        assertEquals("Incorrect String conversion", "(1,1) : G", cell.toString());
+				assertEquals(16, cell.getValue(),"Cell value not expected");
+        assertEquals("(1,1) : G", cell.toString(),"Incorrect String conversion");
     }
 
 }

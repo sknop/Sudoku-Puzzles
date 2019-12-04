@@ -23,17 +23,15 @@
  *******************************************************************************/
 package sudoku.unit;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
 import sudoku.Cell;
 import sudoku.exceptions.AddCellException;
-import sudoku.unit.AbstractConstraint;
-import sudoku.unit.Nonet;
 
 public class NonetTest
 {
