@@ -1,5 +1,6 @@
 /bin/
 /target/
+/lib/
 .idea
 out
 *.iml
