@@ -60,18 +60,10 @@ public abstract class Puzzle
 		return getCells().get(p).getValue();
 	}
 
-	public BitSet getHints(int x, int y, int level) {
-		return getHints(new Point(x,y), level);
-	}
-
 	public BitSet getHints(Point point, int level) {
 		return getCells().get(point).getHints(level);
 	}
 
-	public boolean isReadOnly(int x, int y) {
-		return isReadOnly(new Point(x,y));
-	}
-	
 	public boolean isReadOnly(Point p) {
 		return getCells().get(p).isReadOnly();
 	}
