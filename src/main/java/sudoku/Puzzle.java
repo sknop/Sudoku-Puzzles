@@ -171,7 +171,7 @@ public abstract class Puzzle
 		return getCells().values()
 				.stream()
 				.filter(Cell::empty)
-				.sorted( (a,b) -> a.getLocation().compareTo(b.getLocation()) )
+				.sorted(Comparator.comparing(Cell::getLocation))
 				.collect( Collectors.toCollection(LinkedList::new) );
 	}
 
