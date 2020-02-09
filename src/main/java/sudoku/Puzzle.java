@@ -192,7 +192,7 @@ public abstract class Puzzle
 				head.setValue(i);
 				
 				// several orders of magnitude faster to sort Cells by number of remaining entries
-				Collections.sort(tail, (Cell c1, Cell c2) -> c1.getMarkUp().cardinality() - c2.getMarkUp().cardinality());
+				Collections.sort(tail, Comparator.comparingInt((Cell c) -> c.getMarkUp().cardinality()));
 				
 				if (solveRecursive(tail)) {
 					return true;
