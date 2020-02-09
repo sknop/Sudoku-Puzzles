@@ -123,7 +123,7 @@ public abstract class Puzzle
 	 * @return true if this Sudoku is solved
 	 */
 	public boolean isSolved() {
-        return getCells().values().stream().allMatch(c -> ! c.empty());
+        return getCells().values().stream().noneMatch(c -> c.empty());
 	}
 
 	public void setValue(int x, int y, int value)
