@@ -318,7 +318,7 @@ public class Sudoku extends Puzzle
 		
 		// first, we get all Cells and shuffle them
 		
-		List<Cell> allCells = getCells().values().stream().collect(Collectors.toList());
+		List<Cell> allCells = new ArrayList<>(getCells().values());
 		Collections.shuffle(allCells);
 		
 		for (Cell c : allCells) {
@@ -340,7 +340,7 @@ public class Sudoku extends Puzzle
 	public static void main(String args[]) {
 		Sudoku sudoku = new Sudoku();
 		
-		System.out.println(sudoku);
+		System.out.println(sudoku.toCLIString());
 	}
 
 }

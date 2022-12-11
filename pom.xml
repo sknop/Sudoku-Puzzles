@@ -9,7 +9,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>11</java.version>
 		<junit.jupiter.version>5.5.2</junit.jupiter.version>
-		<argparse4j.version>0.8.1</argparse4j.version>
+		<argparse4j.version>0.9.0</argparse4j.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -35,7 +35,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
+				<version>3.10.1</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>

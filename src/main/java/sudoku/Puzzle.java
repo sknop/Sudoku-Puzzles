@@ -69,9 +69,7 @@ public abstract class Puzzle
 	}
 
 	private void times(StringBuilder b, String what, int times) {
-		for (int i = 0; i < times; i++) {
-			b.append(what);
-		}
+		b.append(String.valueOf(what).repeat(Math.max(0, times)));
 	}
 	
 	protected String getBigBorder(int size) {
@@ -123,7 +121,7 @@ public abstract class Puzzle
 	 * @return true if this Sudoku is solved
 	 */
 	public boolean isSolved() {
-        return getCells().values().stream().noneMatch(c -> c.empty());
+        return getCells().values().stream().noneMatch(Cell::empty);
 	}
 
 	public void setValue(int x, int y, int value)
@@ -161,10 +159,8 @@ public abstract class Puzzle
 		LinkedList<Cell> emptyCells = getEmpties();
 		
 		tries = 0;
-		boolean result = solveRecursive(emptyCells);
-		
-		// System.out.println("Needed " + tries + " to solve.");
-		return result;
+
+		return solveRecursive(emptyCells);
 	}
 
 	private LinkedList<Cell> getEmpties() {
@@ -192,7 +188,7 @@ public abstract class Puzzle
 				head.setValue(i);
 				
 				// several orders of magnitude faster to sort Cells by number of remaining entries
-				Collections.sort(tail, Comparator.comparingInt((Cell c) -> c.getMarkUp().cardinality()));
+				tail.sort(Comparator.comparingInt((Cell c) -> c.getMarkUp().cardinality()));
 				
 				if (solveRecursive(tail)) {
 					return true;
@@ -201,7 +197,6 @@ public abstract class Puzzle
 				head.reset();
 			} catch (CellContentException e) {
                 System.err.println("Should never happen!");
-				continue;
 			}
 		}
 		
@@ -235,7 +230,7 @@ public abstract class Puzzle
 				head.setValue(i);
 				
 				// several orders of magnitude faster to sort Cells by number of remaining entries
-				Collections.sort(tail, Comparator.comparingInt((Cell c) -> c.getMarkUp().cardinality()));
+				tail.sort(Comparator.comparingInt((Cell c) -> c.getMarkUp().cardinality()));
 
 				result = uniqueRecursive(tail, result);
 				if (result > 1) {
@@ -246,7 +241,6 @@ public abstract class Puzzle
 				head.reset();
 			} catch (CellContentException e) {
 				System.err.println("Should never happen!");
-				continue;
 			}
 		}
 		
