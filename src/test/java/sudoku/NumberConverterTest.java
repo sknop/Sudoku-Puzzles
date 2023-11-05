@@ -25,6 +25,7 @@
 
 package sudoku;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -34,29 +35,29 @@ public class NumberConverterTest
     @Test
     public void testGetString() {
         String result = NumberConverter.getValueAsString(1);
-        assertTrue(result.equals("1"),"Value 1 does not give int 1");
+        assertEquals("1", result, "Value 1 does not give int 1");
 
         result = NumberConverter.getValueAsString(16);
-        assertTrue(result.equals("G"),"Value 1 does not give 'G'");
+        assertEquals("G", result, "Value 1 does not give 'G'");
 
         result = NumberConverter.getValueAsString(0);
-        assertTrue(result.equals(" "),"Value 1 does not give ' '");
+        assertEquals(" ", result, "Value 1 does not give ' '");
 
     }
 
     @Test
     public void testGetInteger() {
         int result = NumberConverter.getCharAsValue('1');
-        assertTrue(result == 1,"Value '1' does not give 1");
+        assertEquals(1, result, "Value '1' does not give 1");
 
         result = NumberConverter.getCharAsValue('G');
-        assertTrue(result == 16,"Value 'G' does not give 16");
+        assertEquals(16, result, "Value 'G' does not give 16");
 
         result = NumberConverter.getCharAsValue('0');
-        assertTrue(result == 0,"Value '0' does not give 0");
+        assertEquals(0, result, "Value '0' does not give 0");
 
         result = NumberConverter.getCharAsValue(' ');
-        assertTrue(result == 0,"Value ' ' does not give 0");
+        assertEquals(0, result, "Value ' ' does not give 0");
     }
 
 }
