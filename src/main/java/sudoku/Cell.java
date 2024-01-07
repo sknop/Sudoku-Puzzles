@@ -130,6 +130,9 @@ public class Cell implements Iterable<Integer>
 		if (level > 1) {
 			markUp = removePairs(markUp);
 		}
+		if (level > 2) {
+			markUp = detectSingle(markUp);
+		}
 		return markUp;
 	}
 	
@@ -184,6 +187,34 @@ public class Cell implements Iterable<Integer>
 		}
 		
 		return copyMarkUp;
+	}
+
+	// Idea:
+	// Find any value that is not in another constraint. If not there, it is unique
+	public BitSet detectSingle(BitSet markup) {
+		BitSet copyMarkup = (BitSet) markup.clone();
+		// Find all set bits
+		for (int i = copyMarkup.nextSetBit(0); i >= 0; i = copyMarkup.nextSetBit(i + 1)) {
+			boolean found = false;
+
+			// look through each constraint to see if that value exists there as well
+			for (Constraint u: belongsTo) {
+				for (Cell cell : u.getCells()) {
+					if (cell != this) {
+						if (cell.getMarkUp().get(i)) {
+							found = true;
+						}
+					}
+				}
+			}
+
+			if (! found) {
+				BitSet newMarkup = new BitSet(limit);
+				newMarkup.set(i);
+				return newMarkup;
+			}
+		}
+		return copyMarkup;
 	}
 
 	public boolean addConstraint(Constraint constraint) {

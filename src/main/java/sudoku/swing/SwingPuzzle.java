@@ -150,6 +150,7 @@ public abstract class SwingPuzzle implements StatusListener
         hintOptions.addItem("Markup");
         hintOptions.addItem("Hints 1");
         hintOptions.addItem("Hints 2");
+        hintOptions.addItem("Hints 3");
         reports.add(hintOptions);
 
         hintOptions.addActionListener( e -> {
