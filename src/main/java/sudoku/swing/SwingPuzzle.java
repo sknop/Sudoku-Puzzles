@@ -63,7 +63,7 @@ public abstract class SwingPuzzle implements StatusListener
     JFileChooser fileChooser = new JFileChooser();
     File lastDirectory = new File(".");
 
-    public SwingPuzzle(String name, String args[]) throws ArgumentParserException,
+    public SwingPuzzle(String name, String[] args) throws ArgumentParserException,
             IOException,
             IllegalFileFormatException,
             CellContentException
@@ -91,7 +91,6 @@ public abstract class SwingPuzzle implements StatusListener
     /**
      * Initialize the contents of the frame.
      */
-    @SuppressWarnings("serial")
     protected void initialize() {
         frame = new JFrame();
         frame.setLayout(new BorderLayout());

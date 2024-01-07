@@ -35,10 +35,10 @@ import sudoku.unit.Constraint;
 public class Cell implements Iterable<Integer>
 {
 	private int value = 0;
-	private Point location;
-	private List<Constraint> belongsTo = new ArrayList<>();
+	final private Point location;
+	final private List<Constraint> belongsTo = new ArrayList<>();
 	private boolean readOnly = false;
-	private int limit;
+	final private int limit;
 	
 	public boolean isReadOnly() {
         return readOnly;
@@ -80,7 +80,7 @@ public class Cell implements Iterable<Integer>
 
 	public void setValue(int value) throws CellContentException {
 		if (readOnly) {
-			throw new CellContentException(this.toString() + " is read only");
+			throw new CellContentException(this + " is read only");
 		}
 		else if (value > limit) {
 			throw new CellContentException("Value " + value + " larger than " + limit);
@@ -253,8 +253,8 @@ public class Cell implements Iterable<Integer>
 
 	@Override
 	public Iterator<Integer> iterator() {
-		return new Iterator<Integer>() {
-			BitSet  markUp = getMarkUp();
+		return new Iterator<>() {
+			final BitSet markUp = getMarkUp();
 			int nextValue = markUp.nextSetBit(0);
 			
 			@Override
