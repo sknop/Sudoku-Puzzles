@@ -175,7 +175,7 @@ public abstract class Puzzle
 	
 	protected boolean solveRecursive(LinkedList<Cell> empties) {
 		// recursive bottom
-		if (empties.size() == 0) 
+		if (empties.isEmpty())
 			return true;
 	
 		tries++;
