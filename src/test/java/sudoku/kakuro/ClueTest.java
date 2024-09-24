@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ClueTest {
 
     @Test
-    void compareToOnTotal() {
+    void compareOnTotal() {
         Clue clue1 = new Clue(4, 2);
         Clue clue2 = new Clue(3,2);
 
