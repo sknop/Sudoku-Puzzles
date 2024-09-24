@@ -41,8 +41,9 @@ class PartitionsTest {
 
     @Test
     void allElements() {
-        for (Clue key : partitions.partitions.keySet()) {
-            var entry = partitions.partitions.get(key);
+        var p = partitions.getPartitions();
+        for (Clue key : p.keySet()) {
+            var entry = p.get(key);
 
             System.out.println(STR."\{key} : \{entry}");
         }

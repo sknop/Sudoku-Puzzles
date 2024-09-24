@@ -1,15 +1,12 @@
 package sudoku.kakuro;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Partitions {
     private final int maxValue;
 
-    final TreeMap<Clue, List<List<Integer>>> partitions = new TreeMap<>();
+    private final SortedMap<Clue, List<List<Integer>>> partitions = new TreeMap<>();
 
     public Partitions(int maxValue) {
         this.maxValue = maxValue;
@@ -17,12 +14,16 @@ public class Partitions {
         allElements();
     }
 
+    public SortedMap<Clue, List<List<Integer>>> getPartitions() {
+        return Collections.unmodifiableSortedMap(partitions);
+    }
+
     void allElements() {
         List<List<List<Integer>>> rawPartitions = allPartitions();
         for (List<List<Integer>> elements : rawPartitions) {
             for (var entry : elements) {
                 int total = entry.stream().mapToInt(Integer::intValue).sum();
-                Clue key = new Clue(total, elements.size());
+                Clue key = new Clue(total, entry.size());
                 if (partitions.containsKey(key)) {
                     partitions.get(key).add(entry);
                 }
