@@ -45,12 +45,12 @@ class PartitionsTest {
         for (Clue key : p.keySet()) {
             var entry = p.get(key);
 
-            System.out.println(STR."\{key} : \{entry}");
+            System.out.println(key + " : " + entry);
         }
 
-        assertEquals(p.get(new Clue(3,2)).size(), 1);
-        assertEquals(p.get(new Clue(5,2)).size(), 2);
-        assertEquals(p.get(new Clue(17,2)).size(), 1);
-        assertEquals(p.get(new Clue(45,9)).size(), 1);
+        assertEquals(1, p.get(new Clue(3,2)).size());
+        assertEquals(2, p.get(new Clue(5,2)).size());
+        assertEquals(1, p.get(new Clue(17,2)).size());
+        assertEquals(1, p.get(new Clue(45,9)).size());
     }
 }
