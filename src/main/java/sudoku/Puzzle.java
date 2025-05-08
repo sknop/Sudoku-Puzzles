@@ -68,6 +68,26 @@ public abstract class Puzzle
 		return getCells().get(p).isReadOnly();
 	}
 
+	public int getTotalFilledCells() {
+		int total = 0;
+		for (Cell cell : getCells().values()) {
+			if (!cell.empty()) {
+				total++;
+			}
+		}
+		return total;
+	}
+
+	public int getTotalPossibleValues() {
+		int total = 0;
+		for (Cell cell : getCells().values()) {
+			for (var counter : cell) {
+				total++;
+			}
+		}
+		return total;
+	}
+
 	private void times(StringBuilder b, String what, int times) {
 		b.append(String.valueOf(what).repeat(Math.max(0, times)));
 	}
@@ -143,7 +163,7 @@ public abstract class Puzzle
 			throw new IllegalCellPositionException("No cell at " + p);
 	}
 
-	protected void reset() {
+	public void reset() {
         getCells().values().forEach(Cell::reset);
 	}
 

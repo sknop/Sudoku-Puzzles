@@ -55,6 +55,8 @@ public abstract class SwingPuzzle implements StatusListener
     protected JFrame frame;
     protected JTable table;
     protected JLabel solved;
+    protected JLabel filledCells;
+    protected JLabel totalPotentialValues;
 
     protected Options options = new Options();
 
@@ -134,8 +136,8 @@ public abstract class SwingPuzzle implements StatusListener
         createButtons(buttons);
 
         JPanel reports = new JPanel();
-        reports.setLayout(new GridLayout(2,2,0,0));
-        Dimension reportSize = new Dimension(180,60);
+        reports.setLayout(new GridLayout(4,2,0,0));
+        Dimension reportSize = new Dimension(180,90);
         reports.setMaximumSize(reportSize);
         reports.setMinimumSize(reportSize);
         reports.setPreferredSize(reportSize);
@@ -164,6 +166,18 @@ public abstract class SwingPuzzle implements StatusListener
 
         solved = new JLabel();
         reports.add(solved);
+
+        JLabel filledCellsLabel = new JLabel("Filled cells :");
+        reports.add(filledCellsLabel);
+
+        filledCells = new JLabel();
+        reports.add(filledCells);
+
+        JLabel totalPotentialValuesLabel = new JLabel("Potentials :");
+        reports.add(totalPotentialValuesLabel);
+
+        totalPotentialValues = new JLabel();
+        reports.add(totalPotentialValues);
 
         statusChanged();
 
@@ -211,6 +225,7 @@ public abstract class SwingPuzzle implements StatusListener
                 Path path = FileSystems.getDefault().getPath(file.getPath());
 
                 try {
+                    puzzle.reset();
                     puzzle.importFile(path);
                 } catch (IOException |IllegalFileFormatException |CellContentException e1) {
                     e1.printStackTrace();
@@ -292,6 +307,9 @@ public abstract class SwingPuzzle implements StatusListener
                 } else {
                     solved.setText("Not unique");
                 }
+
+                filledCells.setText(Integer.toString(puzzle.getTotalFilledCells()));
+                totalPotentialValues.setText(Integer.toString(puzzle.getTotalPossibleValues()));
             }
         }
     }
