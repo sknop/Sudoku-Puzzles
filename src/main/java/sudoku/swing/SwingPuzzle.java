@@ -127,11 +127,12 @@ public abstract class SwingPuzzle implements StatusListener
         frame.getContentPane().add(table, BorderLayout.CENTER);
 
         JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new BorderLayout());
         frame.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
 
         JPanel buttons = new JPanel();
         buttons.setLayout(new GridLayout(2, 3));
-        bottomPanel.add(buttons);
+        bottomPanel.add(buttons, BorderLayout.WEST);
 
         createButtons(buttons);
 
@@ -141,7 +142,7 @@ public abstract class SwingPuzzle implements StatusListener
         reports.setMaximumSize(reportSize);
         reports.setMinimumSize(reportSize);
         reports.setPreferredSize(reportSize);
-        bottomPanel.add(reports);
+        bottomPanel.add(reports, BorderLayout.EAST);
 
         JLabel optionsLabel = new JLabel("Hints :");
         reports.add(optionsLabel);
