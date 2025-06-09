@@ -85,21 +85,21 @@ public abstract class Puzzle
 	public int getTotalPossibleValues() {
 		int total = 0;
 		for (Cell cell : getCells().values()) {
-			for (var counter : cell) {
+			for (var ignored : cell) {
 				total++;
 			}
 		}
 		return total;
 	}
 
-	private void times(StringBuilder b, String what, int times) {
-		b.append(String.valueOf(what).repeat(Math.max(0, times)));
+	private void times(StringBuilder b, int times) {
+		b.append("-".repeat(Math.max(0, times)));
 	}
 	
 	protected String getBigBorder(int size) {
 		StringBuilder b = new StringBuilder();
 		b.append("  +");
-		times(b, "-",  (2 * size + 1 ) * size + size - 1);
+		times(b, (2 * size + 1 ) * size + size - 1);
 		b.append("+");
 		
 		return b.toString();
@@ -108,10 +108,10 @@ public abstract class Puzzle
 	protected String getLittleBorder(int size) {
 		StringBuilder b = new StringBuilder();
 		b.append("  |");
-		times(b, "-", size * 2 + 1);
+		times(b, size * 2 + 1);
 		for (int i = 1; i < size; i++) {
 			b.append("+");
-			times(b, "-", size * 2 + 1);
+			times(b, size * 2 + 1);
 		}
 		b.append("|");
 		return b.toString();
@@ -203,18 +203,17 @@ public abstract class Puzzle
 			return true;
 	
 		tries++;
-		LinkedList<Cell> tail = empties; //not a copy
 
-		Cell head = empties.remove();
+        Cell head = empties.remove();
 		
 		for (int i : head) {
 			try {
 				head.setValue(i);
 				
 				// several orders of magnitude faster to sort Cells by number of remaining entries
-				tail.sort(Comparator.comparingInt((Cell c) -> c.getMarkUp().cardinality()));
+				empties.sort(Comparator.comparingInt((Cell c) -> c.getMarkUp().cardinality()));
 				
-				if (solveRecursive(tail)) {
+				if (solveRecursive(empties)) {
 					return true;
 				}
 	
