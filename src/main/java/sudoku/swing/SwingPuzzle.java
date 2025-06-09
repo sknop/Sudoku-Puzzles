@@ -110,11 +110,10 @@ public abstract class SwingPuzzle implements StatusListener
         // table.setDefaultRenderer(CellWrapper.class, createCellEditor(options));
         table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 
-        final int height = cellSize;
         final int width = cellSize;
 
         TableColumnModel cm = table.getColumnModel();
-        table.setRowHeight(height);
+        table.setRowHeight(cellSize);
         for (int c = 0; c < cm.getColumnCount(); c++) {
             TableColumn tc = cm.getColumn(c);
             tc.setPreferredWidth(width);
