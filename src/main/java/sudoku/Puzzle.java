@@ -230,32 +230,28 @@ public abstract class Puzzle
 
 	public int isUnique() {
 		LinkedList<Cell> emptyCells = getEmpties();
-		
-		int solutions = uniqueRecursive(emptyCells, 0);
-		
-		return solutions;
+
+        return uniqueRecursive(emptyCells, 0);
 	}
 	
 	private int uniqueRecursive(LinkedList<Cell> empties, int solutions) {
 		// recursive bottom
-		if (empties.size() == 0) {
+		if (empties.isEmpty()) {
 			return solutions + 1;			
 		}
 	
 		int result = solutions;
 
-		LinkedList<Cell> tail = empties; //not a copy
-
-		Cell head = tail.remove();
+        Cell head = empties.remove();
 		
 		for (int i : head) {
 			try {
 				head.setValue(i);
 				
 				// several orders of magnitude faster to sort Cells by number of remaining entries
-				tail.sort(Comparator.comparingInt((Cell c) -> c.getMarkUp().cardinality()));
+				empties.sort(Comparator.comparingInt((Cell c) -> c.getMarkUp().cardinality()));
 
-				result = uniqueRecursive(tail, result);
+				result = uniqueRecursive(empties, result);
 				if (result > 1) {
 					head.reset(); // need to reset, or the puzzle is solved
 					return result;
@@ -285,7 +281,7 @@ public abstract class Puzzle
 
         Collections.shuffle(seed);
 
-        Integer corner = seed.get(0);
+        Integer corner = seed.getFirst();
 
         for (int c = 0; c < maxValue; c++) {
             Point p = new Point(c + 1, 1);
