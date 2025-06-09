@@ -44,6 +44,10 @@ public abstract class Puzzle
 		return maxValue;
 	}
 
+	public int getTries() {
+		return tries;
+	}
+
 	protected int tries = 0;
 	
 	private final Map<Point, Cell> cells = new HashMap<>();

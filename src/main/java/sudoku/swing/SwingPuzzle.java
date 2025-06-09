@@ -57,6 +57,7 @@ public abstract class SwingPuzzle implements StatusListener
     protected JLabel solved;
     protected JLabel filledCells;
     protected JLabel totalPotentialValues;
+    protected JLabel stepsToSolve;
 
     protected Options options = new Options();
 
@@ -137,7 +138,7 @@ public abstract class SwingPuzzle implements StatusListener
         createButtons(buttons);
 
         JPanel reports = new JPanel();
-        reports.setLayout(new GridLayout(4,2,0,0));
+        reports.setLayout(new GridLayout(5,2,0,0));
         Dimension reportSize = new Dimension(180,90);
         reports.setMaximumSize(reportSize);
         reports.setMinimumSize(reportSize);
@@ -180,6 +181,12 @@ public abstract class SwingPuzzle implements StatusListener
         totalPotentialValues = new JLabel();
         reports.add(totalPotentialValues);
 
+        JLabel stepsToSolveLabel = new JLabel("Steps :");
+        reports.add(stepsToSolveLabel);
+
+        stepsToSolve = new JLabel();
+        reports.add(stepsToSolve);
+
         statusChanged();
 
         UndoKeys.addUndoKeys(frame.getRootPane(), tableModel);
@@ -205,6 +212,7 @@ public abstract class SwingPuzzle implements StatusListener
 
             puzzle.solveBruteForce();
             tableModel.fireTableDataChanged();
+            statusChanged();
             solved.setText("Cheated");
         });
         buttons.add(solveButton);
@@ -308,10 +316,10 @@ public abstract class SwingPuzzle implements StatusListener
                 } else {
                     solved.setText("Not unique");
                 }
-
-                filledCells.setText(Integer.toString(puzzle.getTotalFilledCells()));
-                totalPotentialValues.setText(Integer.toString(puzzle.getTotalPossibleValues()));
             }
         }
+        filledCells.setText(Integer.toString(puzzle.getTotalFilledCells()));
+        totalPotentialValues.setText(Integer.toString(puzzle.getTotalPossibleValues()));
+        stepsToSolve.setText(Integer.toString(puzzle.getTries()));
     }
 }
