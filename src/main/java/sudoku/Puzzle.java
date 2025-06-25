@@ -1,13 +1,13 @@
 /*******************************************************************************
  * Copyright (c) 2014 Sven Erik Knop.
  * Licensed under the EUPL V.1.1
- *
+ * <p>
  * This Software is provided to You under the terms of the European 
  * Union Public License (the "EUPL") version 1.1 as published by the 
  * European Union. Any use of this Software, other than as authorized 
  * under this License is strictly prohibited (to the extent such use 
  * is covered by a right of the copyright holder of this Software).
- *
+ * <p>
  * This Software is provided under the License on an "AS IS" basis and 
  * without warranties of any kind concerning the Software, including 
  * without limitation merchantability, fitness for a particular purpose, 
@@ -15,9 +15,9 @@
  * intellectual property rights other than copyright. This disclaimer 
  * of warranty is an essential part of the License and a condition for 
  * the grant of any rights to this Software.
- *
+ * <p>
  * For more details, see http://joinup.ec.europa.eu/software/page/eupl.
- *
+ * <p>
  * Contributors:
  *     2014 - Sven Erik Knop - initial API and implementation
  *******************************************************************************/
@@ -81,7 +81,7 @@ public abstract class Puzzle
 	public int getTotalPossibleValues() {
 		int total = 0;
 		for (Cell cell : getCells().values()) {
-			for (var counter : cell) {
+			for (var ignored : cell) {
 				total++;
 			}
 		}
@@ -199,18 +199,17 @@ public abstract class Puzzle
 			return true;
 	
 		tries++;
-		LinkedList<Cell> tail = empties; //not a copy
 
-		Cell head = empties.remove();
+        Cell head = empties.remove();
 		
 		for (int i : head) {
 			try {
 				head.setValue(i);
 				
 				// several orders of magnitude faster to sort Cells by number of remaining entries
-				tail.sort(Comparator.comparingInt((Cell c) -> c.getMarkUp().cardinality()));
+				empties.sort(Comparator.comparingInt((Cell c) -> c.getMarkUp().cardinality()));
 				
-				if (solveRecursive(tail)) {
+				if (solveRecursive(empties)) {
 					return true;
 				}
 	
@@ -227,32 +226,28 @@ public abstract class Puzzle
 
 	public int isUnique() {
 		LinkedList<Cell> emptyCells = getEmpties();
-		
-		int solutions = uniqueRecursive(emptyCells, 0);
-		
-		return solutions;
+
+        return uniqueRecursive(emptyCells, 0);
 	}
 	
 	private int uniqueRecursive(LinkedList<Cell> empties, int solutions) {
 		// recursive bottom
-		if (empties.size() == 0) {
+		if (empties.isEmpty()) {
 			return solutions + 1;			
 		}
 	
 		int result = solutions;
 
-		LinkedList<Cell> tail = empties; //not a copy
-
-		Cell head = tail.remove();
+        Cell head = empties.remove();
 		
 		for (int i : head) {
 			try {
 				head.setValue(i);
 				
 				// several orders of magnitude faster to sort Cells by number of remaining entries
-				tail.sort(Comparator.comparingInt((Cell c) -> c.getMarkUp().cardinality()));
+				empties.sort(Comparator.comparingInt((Cell c) -> c.getMarkUp().cardinality()));
 
-				result = uniqueRecursive(tail, result);
+				result = uniqueRecursive(empties, result);
 				if (result > 1) {
 					head.reset(); // need to reset, or the puzzle is solved
 					return result;
@@ -282,7 +277,7 @@ public abstract class Puzzle
 
         Collections.shuffle(seed);
 
-        Integer corner = seed.get(0);
+        Integer corner = seed.getFirst();
 
         for (int c = 0; c < maxValue; c++) {
             Point p = new Point(c + 1, 1);
