@@ -309,9 +309,9 @@ public abstract class SwingPuzzle implements StatusListener
                     solved.setText("Not unique");
                 }
 
-                filledCells.setText(Integer.toString(puzzle.getTotalFilledCells()));
-                totalPotentialValues.setText(Integer.toString(puzzle.getTotalPossibleValues()));
             }
         }
+        filledCells.setText(Integer.toString(puzzle.getTotalFilledCells()));
+        totalPotentialValues.setText(Integer.toString(puzzle.getTotalPossibleValues()));
     }
 }
