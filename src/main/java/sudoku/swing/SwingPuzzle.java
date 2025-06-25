@@ -206,6 +206,7 @@ public abstract class SwingPuzzle implements StatusListener
             puzzle.solveBruteForce();
             tableModel.fireTableDataChanged();
             solved.setText("Cheated");
+            statusChanged();
         });
         buttons.add(solveButton);
 
