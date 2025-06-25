@@ -39,13 +39,7 @@ public abstract class Puzzle
 	protected static final String Section = " %s %s %s |";
 
 	protected int maxValue;
-	
-	public int getMaxValue() {
-		return maxValue;
-	}
-
 	protected int tries = 0;
-	
 	private final Map<Point, Cell> cells = new HashMap<>();
 
 	public Puzzle(int maxValue) {
@@ -58,6 +52,10 @@ public abstract class Puzzle
 
 	public int getValue(final Point p) {
 		return getCells().get(p).getValue();
+	}
+
+	public int getMaxValue() {
+		return maxValue;
 	}
 
 	public BitSet getHints(Point point, int level) {
