@@ -399,9 +399,7 @@ public class Futoshiki extends Puzzle
 
     private void drawBorder(StringBuilder b) {
         b.append("   +");
-        for (int i = 0; i < maxValue * 3 + maxValue - 1; i++) {
-            b.append("-");
-        }
+        b.append("-".repeat(Math.max(0, maxValue * 3 + maxValue - 1)));
         b.append("+");
         b.append("\n");
     }
