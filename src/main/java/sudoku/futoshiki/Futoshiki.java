@@ -513,11 +513,11 @@ public class Futoshiki extends Puzzle
             target = back.getSource();
 
             // let's be a bit paranoid and check whether the remove actually works
-            if (!source.removeConstraint(forward)) {
+            if (source.removeConstraintWithCheck(forward)) {
                 System.err.println("Remove forward failed. Should never happen!");
                 System.exit(1);
             }
-            if (!target.removeConstraint(back)) {
+            if (target.removeConstraintWithCheck(back)) {
                 System.err.println("Remove back failed. Should never happen!");
                 System.exit(1);
             }

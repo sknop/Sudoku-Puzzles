@@ -33,16 +33,17 @@ import sudoku.exceptions.IllegalCellPositionException;
 import sudoku.exceptions.IllegalFileFormatException;
 import sudoku.exceptions.ValueOutsideRangeException;
 
-public abstract class Puzzle
+public abstract class Puzzle implements Cloneable
 {
 	protected static final String Front = " |";
 	protected static final String Section = " %s %s %s |";
 
 	protected int maxValue;
     protected int tries = 0;
-    private final Map<Point, Cell> cells = new HashMap<>();
 
-    public int getMaxValue() {
+	private final Map<Point, Cell> cells = new HashMap<>();
+
+	public int getMaxValue() {
 		return maxValue;
 	}
 
@@ -320,4 +321,18 @@ public abstract class Puzzle
 	public Map<Point, Cell> getCells() {
 		return cells;
 	}
+
+    @Override
+    public Puzzle clone() {
+        try {
+            Puzzle clone = (Puzzle) super.clone();
+			clone.maxValue = maxValue;
+			clone.tries = 0; // We do not need the current number of tries here (?)
+
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

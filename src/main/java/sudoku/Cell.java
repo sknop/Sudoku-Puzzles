@@ -217,12 +217,12 @@ public class Cell implements Iterable<Integer>
 		return copyMarkup;
 	}
 
-	public boolean addConstraint(Constraint constraint) {
-        return belongsTo.add(constraint);
+	public void addConstraint(Constraint constraint) {
+		belongsTo.add(constraint);
 	}
 
-    public boolean removeConstraint(Constraint constraint) {
-        return belongsTo.remove(constraint);
+    public boolean removeConstraintWithCheck(Constraint constraint) {
+        return !belongsTo.remove(constraint);
     }
 
 	public int getValue() {
