@@ -219,14 +219,14 @@ public class Futoshiki extends Puzzle
      *
      * Imports a Futoshiki puzzle from a file.
      * The expected format is
-     *
+     * <p>
      * First line: size=N
      * Followed by data:
      * CSV in 2*N-1 rows, 2*N-1 columns
      * Empty Cells are signaled by a 0
      * Relationship is shown by '-' (for no relationship), '<', '>', '^', 'v'
      * For example
-     *
+     * <p>
      *  size=5
      *  0,<,0,<,0,<,0,<,5   0
      *  -,-,^,-,-,-,-,-,-   1
@@ -358,10 +358,10 @@ public class Futoshiki extends Puzzle
                 if (!isReadOnly(p)) {
                     BitSet markUp = getHints(p, level);
                     if (level == 0) {
-                        System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
+                        System.out.printf("(%s, %s) : %s%n", x, y, markUp);
                     }
                     else {
-                        System.out.println(String.format("(%s, %s) : %s [%s]", x, y, markUp, getHints(p, 0)));
+                        System.out.printf("(%s, %s) : %s [%s]%n", x, y, markUp, getHints(p, 0));
                     }
                 }
             }
@@ -464,7 +464,7 @@ public class Futoshiki extends Puzzle
         return maxValue;
     }
 
-    class CellRemovable implements Removable
+    static class CellRemovable implements Removable
     {
         Cell cell;
         int value = 0;
@@ -579,7 +579,7 @@ public class Futoshiki extends Puzzle
 
         Collections.shuffle(removables);
 
-//        // idea - if the removable is a relation, roll a dice
+//        // idea - if the removable is a relation, roll a die
 //        // if below a certain threshold, move the relation to the end of the queue
 //
 //        double threshold = .4;
