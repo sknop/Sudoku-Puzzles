@@ -39,18 +39,16 @@ public abstract class Puzzle
 	protected static final String Section = " %s %s %s |";
 
 	protected int maxValue;
-	
-	public int getMaxValue() {
+    protected int tries = 0;
+    private final Map<Point, Cell> cells = new HashMap<>();
+
+    public int getMaxValue() {
 		return maxValue;
 	}
 
 	public int getTries() {
 		return tries;
 	}
-
-	protected int tries = 0;
-	
-	private final Map<Point, Cell> cells = new HashMap<>();
 
 	public Puzzle(int maxValue) {
 		this.maxValue = maxValue;

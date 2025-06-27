@@ -1,13 +1,13 @@
 /*******************************************************************************
  * Copyright (c) 2014 Sven Erik Knop.
  * Licensed under the EUPL V.1.1
- *
+ * <p>
  * This Software is provided to You under the terms of the European 
  * Union Public License (the "EUPL") version 1.1 as published by the 
  * European Union. Any use of this Software, other than as authorized 
  * under this License is strictly prohibited (to the extent such use 
  * is covered by a right of the copyright holder of this Software).
- *
+ * <p>
  * This Software is provided under the License on an "AS IS" basis and 
  * without warranties of any kind concerning the Software, including 
  * without limitation merchantability, fitness for a particular purpose, 
@@ -15,9 +15,9 @@
  * intellectual property rights other than copyright. This disclaimer 
  * of warranty is an essential part of the License and a condition for 
  * the grant of any rights to this Software.
- *
+ * <p>
  * For more details, see http://joinup.ec.europa.eu/software/page/eupl.
- *
+ * <p>
  * Contributors:
  *     2014 - Sven Erik Knop - initial API and implementation
  *******************************************************************************/
@@ -36,7 +36,6 @@ import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import sudoku.Cell;
 import sudoku.Point;
@@ -126,17 +125,16 @@ public class Sudoku extends Puzzle
 	/**
 	 * Imports a Sudoku puzzle from a file.
 	 * The expected format is
-	 * 
+	 * <p>
 	 * CSV in 9 rows
 	 * Empty Cells are signaled by a 0
 	 * For example
-	 * 
+	 * <p>
 	 *  1,0,3,0,0,6,7,8,9
 	 *  0,0,0,0,0,0,0,0,0
-	 *  
+	 *
 	 * @param path : Path
-	 * @throws IOException
-	 * @throws IOException, IllegalFileFormatException, CellContentException 
+	 * @throws IOException, IllegalFileFormatException, CellContentException
 	 */
 	@Override
 	public void importFile (Path path) 
@@ -180,10 +178,10 @@ public class Sudoku extends Puzzle
 				if (!isReadOnly(p)) {
 					BitSet markUp = getHints(p, level);
 					if (level == 0) {
-						System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
+						System.out.printf("(%s, %s) : %s%n", x, y, markUp);
 					}
 					else {
-						System.out.println(String.format("(%s, %s) : %s [%s]", x, y, markUp, getHints(p, 0)));						
+						System.out.printf("(%s, %s) : %s [%s]%n", x, y, markUp, getHints(p, 0));
 					}
 				}
 			}
@@ -337,7 +335,7 @@ public class Sudoku extends Puzzle
 		allCells.forEach(Cell::makeReadOnly);
 	}
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		Sudoku sudoku = new Sudoku();
 		
 		System.out.println(sudoku.toCLIString());
