@@ -45,11 +45,10 @@ import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
 import sudoku.unit.Nonet;
 
-public class Sudoku extends Puzzle
-{
-	private final List<Nonet> rows = new ArrayList<>();
-	private final List<Nonet> columns = new ArrayList<>();
-	private final List<Nonet> boxes = new ArrayList<>();
+public class Sudoku extends Puzzle implements Cloneable {
+	List<Nonet> rows = new ArrayList<>();
+	List<Nonet> columns = new ArrayList<>();
+	List<Nonet> boxes = new ArrayList<>();
 	
 	
 	public Sudoku() {
@@ -68,49 +67,53 @@ public class Sudoku extends Puzzle
 					getCells().put(p, cell);
 				}
 			}
-			
-			for (int x = 1; x <= 9; x++) {
-				Nonet row = new Nonet(String.format("Row %d", x));
-				rows.add(row);
-				for (int y = 1; y <= 9; y++) {
-					Point p = new Point(x,y);
-					Cell cell = getCells().get(p);
-					row.addCell(cell);					
-				}
-			}
 
-			for (int y = 1; y <= 9; y++) {
-				Nonet column = new Nonet(String.format("Column %d", y));
-				columns.add(column);
-				for (int x = 1; x <= 9; x++) {
-					Point p = new Point(x,y);
-					Cell cell = getCells().get(p);
-					column.addCell(cell);					
-				}
-			}
-			
-			for (int x1 = 0; x1 < 3; x1++) {
-				for (int y1 = 0; y1 < 3; y1++) {
-					Nonet box = new Nonet(String.format("Box %d/%d", x1+1, y1+1));
-					boxes.add(box);
-					
-					for (int x2 = 1; x2 < 4; x2++) {
-						int x = x1 * 3 + x2;
-						for (int y2 = 1; y2 < 4; y2++) {
-							int y = y1 * 3 + y2;
-							Point p = new Point(x,y);
-							Cell cell = getCells().get(p);
-							box.addCell(cell);
-						}
-					}
-				}
-			}
+			linkCellsToConstraints();
 		}
 		catch(AddCellException e) {
 			System.err.println("Should never happen:" + e);
 		}
 	}
-	
+
+	private void linkCellsToConstraints() throws AddCellException {
+		for (int x = 1; x <= 9; x++) {
+			Nonet row = new Nonet(String.format("Row %d", x));
+			rows.add(row);
+			for (int y = 1; y <= 9; y++) {
+				Point p = new Point(x,y);
+				Cell cell = getCells().get(p);
+				row.addCell(cell);
+			}
+		}
+
+		for (int y = 1; y <= 9; y++) {
+			Nonet column = new Nonet(String.format("Column %d", y));
+			columns.add(column);
+			for (int x = 1; x <= 9; x++) {
+				Point p = new Point(x,y);
+				Cell cell = getCells().get(p);
+				column.addCell(cell);
+			}
+		}
+
+		for (int x1 = 0; x1 < 3; x1++) {
+			for (int y1 = 0; y1 < 3; y1++) {
+				Nonet box = new Nonet(String.format("Box %d/%d", x1+1, y1+1));
+				boxes.add(box);
+
+				for (int x2 = 1; x2 < 4; x2++) {
+					int x = x1 * 3 + x2;
+					for (int y2 = 1; y2 < 4; y2++) {
+						int y = y1 * 3 + y2;
+						Point p = new Point(x,y);
+						Cell cell = getCells().get(p);
+						box.addCell(cell);
+					}
+				}
+			}
+		}
+	}
+
 	public void importArray(int[][] values) throws CellContentException {
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++) {
@@ -341,4 +344,37 @@ public class Sudoku extends Puzzle
 		System.out.println(sudoku.toCLIString());
 	}
 
+    @Override
+    public Sudoku clone() {
+        Sudoku clone = (Sudoku) super.clone();
+
+		// TODO: need to actually create new entries here
+		clone.rows = new ArrayList<>();
+		clone.columns = new ArrayList<>();
+		clone.boxes = new ArrayList<>();
+
+        getCells().forEach((key, value) -> {
+			clone.getCells().put(key, value.clone());
+		});
+
+        try {
+            clone.linkCellsToConstraints();
+        } catch (AddCellException e) {
+			System.err.println("Should not happen " + e);
+        }
+
+		// Need to copy the values across
+		// No need to set cells to read-only, clones are not modified by users
+
+		getCells().forEach((key, original) -> {
+			if (!original.empty()) {
+                try {
+                    clone.getCells().get(key).setValue(original.getValue());
+                } catch (CellContentException e) {
+                    System.err.println("Shouldn't happen " + e);
+                }
+            }
+		});
+        return clone;
+    }
 }

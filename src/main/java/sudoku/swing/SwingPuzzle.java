@@ -319,6 +319,11 @@ public abstract class SwingPuzzle implements StatusListener
         }
         filledCells.setText(Integer.toString(puzzle.getTotalFilledCells()));
         totalPotentialValues.setText(Integer.toString(puzzle.getTotalPossibleValues()));
-        stepsToSolve.setText(Integer.toString(puzzle.getTries()));
+
+        Puzzle clone = puzzle.clone();
+        clone.solveBruteForce();
+        var steps = clone.getTries();
+
+        stepsToSolve.setText(Integer.toString(steps));
     }
 }

@@ -29,7 +29,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.BitSet;
+import java.util.Map;
 
+import sudoku.Cell;
 import sudoku.Point;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalCellPositionException;
@@ -61,7 +63,7 @@ public class SudokuTest
 		try {
 			sudoku.setValue(p, 1);
 			
-			assertEquals(sudoku.getValue(p), 1, "Correct value");
+			assertEquals(1, sudoku.getValue(p), "Correct value");
 		}
 		catch( Exception e) {
 			fail("Do not expect exception here");
@@ -78,10 +80,10 @@ public class SudokuTest
 			sudoku.setValue(p2, 9);
 
 			sudoku.setValue(p2, 0);
-			assertEquals(sudoku.getValue(p2),0, "Correct value");
+			assertEquals(0, sudoku.getValue(p2), "Correct value");
 			sudoku.setValue(p1, 9);
 			
-			assertEquals(sudoku.getValue(p1),9,"Correct value");
+			assertEquals(9, sudoku.getValue(p1),"Correct value");
 		}
 		catch( Exception e) {
 			fail("Do not expect exception here");
@@ -126,15 +128,15 @@ public class SudokuTest
 			
 			for (int row = 2; row <= 9; row++) {
 				Point t = new Point(row, 1);
-				
-				assertTrue(! checkMarkup(t, 1),String.format("Found 1 in %s", t));
+
+                assertFalse(checkMarkup(t, 1), String.format("Found 1 in %s", t));
 				assertTrue(checkMarkup(t, 2),String.format("No 2 in %s", t));
 			}
 
 			for (int col = 2; col <= 9; col++) {
 				Point t = new Point(1, col);
-				
-				assertTrue(! checkMarkup(t,1),String.format("Found 1 in %s", t));
+
+                assertFalse(checkMarkup(t, 1), String.format("Found 1 in %s", t));
 				assertTrue(checkMarkup(t, 2),String.format("No 2 in %s", t));
 			}
 
@@ -153,6 +155,31 @@ public class SudokuTest
 			assertTrue(sudoku.isSolved(),"Not solved after brute force");
 		}
 		catch( Exception e) {
+			fail("Do not expect exception here " + e);
+		}
+	}
+
+	@Test
+	public void testCloneable() {
+		sudoku.createRandomPuzzle();
+
+		Sudoku clonedSudoku = sudoku.clone();
+		try {
+			for (Map.Entry<Point, Cell> entry : sudoku.getCells().entrySet()) {
+				assertTrue(clonedSudoku.getCells().containsKey(entry.getKey()), "Key not found");
+				assertNotSame(clonedSudoku.getCells().get(entry.getKey()), entry.getValue(), "Cells not cloned");
+				assertEquals(clonedSudoku.getCells().get(entry.getKey()).getValue(), entry.getValue().getValue(), "Cells not the same");
+				assertEquals(clonedSudoku.isSolved(), sudoku.isSolved());
+				assertEquals(clonedSudoku.getTotalFilledCells(), sudoku.getTotalFilledCells());
+				assertEquals(clonedSudoku.getTotalPossibleValues(), sudoku.getTotalPossibleValues());
+
+				clonedSudoku.solveBruteForce();
+				sudoku.solveBruteForce();
+
+				assertEquals(clonedSudoku.getTries(), sudoku.getTries());
+			}
+		}
+		catch (Exception e) {
 			fail("Do not expect exception here " + e);
 		}
 	}

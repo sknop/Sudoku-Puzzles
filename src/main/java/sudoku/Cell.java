@@ -32,11 +32,11 @@ import java.util.List;
 import sudoku.exceptions.CellContentException;
 import sudoku.unit.Constraint;
 
-public class Cell implements Iterable<Integer>
+public class Cell implements Iterable<Integer>, Cloneable
 {
 	private int value = 0;
 	final private Point location;
-	final private List<Constraint> belongsTo = new ArrayList<>();
+	private List<Constraint> belongsTo = new ArrayList<>();
 	private boolean readOnly = false;
 	final private int limit;
 	
@@ -272,4 +272,21 @@ public class Cell implements Iterable<Integer>
 			
 		};
 	}
+
+    @Override
+    public Cell clone() {
+        try {
+            Cell clone = (Cell) super.clone();
+
+			// reset the Cell, we will be setting the value explicitly
+
+			clone.value = 0;
+			clone.readOnly = false;
+			clone.belongsTo = new ArrayList<>();
+
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }
