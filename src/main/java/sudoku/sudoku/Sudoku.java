@@ -353,9 +353,7 @@ public class Sudoku extends Puzzle implements Cloneable {
 		clone.columns = new ArrayList<>();
 		clone.boxes = new ArrayList<>();
 
-        getCells().forEach((key, value) -> {
-			clone.getCells().put(key, value.clone());
-		});
+        getCells().forEach((key, value) -> clone.getCells().put(key, value.clone()));
 
         try {
             clone.linkCellsToConstraints();

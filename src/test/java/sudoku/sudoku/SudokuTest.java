@@ -1,13 +1,13 @@
 /*******************************************************************************
  * Copyright (c) 2014 Sven Erik Knop.
  * Licensed under the EUPL V.1.1
- *
+ * <p>
  * This Software is provided to You under the terms of the European 
  * Union Public License (the "EUPL") version 1.1 as published by the 
  * European Union. Any use of this Software, other than as authorized 
  * under this License is strictly prohibited (to the extent such use 
  * is covered by a right of the copyright holder of this Software).
- *
+ * <p>
  * This Software is provided under the License on an "AS IS" basis and 
  * without warranties of any kind concerning the Software, including 
  * without limitation merchantability, fitness for a particular purpose, 
@@ -15,9 +15,9 @@
  * intellectual property rights other than copyright. This disclaimer 
  * of warranty is an essential part of the License and a condition for 
  * the grant of any rights to this Software.
- *
+ * <p>
  * For more details, see http://joinup.ec.europa.eu/software/page/eupl.
- *
+ * <p>
  * Contributors:
  *     2014 - Sven Erik Knop - initial API and implementation
  *******************************************************************************/
@@ -42,7 +42,7 @@ public class SudokuTest
 	Sudoku sudoku;
 	
 	@BeforeEach
-	public void setUp() throws Exception {
+	public void setUp() {
 		sudoku = new Sudoku();
 	}
 
@@ -91,7 +91,7 @@ public class SudokuTest
 	}
 
 	@Test
-	public void testValueOutSideRange() throws CellContentException, IllegalCellPositionException
+	public void testValueOutSideRange()
 	{
 		Point p1 = new Point(1,1);
 		assertThrows(ValueOutsideRangeException.class, () -> sudoku.setValue(p1, -1));
@@ -107,7 +107,7 @@ public class SudokuTest
 	}
 
 	@Test
-	public void testIllegalCell() throws CellContentException, IllegalCellPositionException {
+	public void testIllegalCell() {
 		Point p1 = new Point(9,10);
 
 		assertThrows(IllegalCellPositionException.class, () -> sudoku.setValue(p1, 1));
