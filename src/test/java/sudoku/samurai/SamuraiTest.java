@@ -1,13 +1,13 @@
 /*******************************************************************************
  * Copyright (c) 2014 Sven Erik Knop.
  * Licensed under the EUPL V.1.1
- *
+ * <p>
  * This Software is provided to You under the terms of the European 
  * Union Public License (the "EUPL") version 1.1 as published by the 
  * European Union. Any use of this Software, other than as authorized 
  * under this License is strictly prohibited (to the extent such use 
  * is covered by a right of the copyright holder of this Software).
- *
+ * <p>
  * This Software is provided under the License on an "AS IS" basis and 
  * without warranties of any kind concerning the Software, including 
  * without limitation merchantability, fitness for a particular purpose, 
@@ -15,9 +15,9 @@
  * intellectual property rights other than copyright. This disclaimer 
  * of warranty is an essential part of the License and a condition for 
  * the grant of any rights to this Software.
- *
+ * <p>
  * For more details, see http://joinup.ec.europa.eu/software/page/eupl.
- *
+ * <p>
  * Contributors:
  *     2014 - Sven Erik Knop - initial API and implementation
  *******************************************************************************/
@@ -54,14 +54,14 @@ public class SamuraiTest
 
 	@Test
 	public void testSetValue() {
-		assertEquals(samurai.getValue(1, 1), 0,"Cell (1,1) not empty");
+		assertEquals(0, samurai.getValue(1, 1),"Cell (1,1) not empty");
 		try {
 			samurai.setValue(1, 1, 1);
 		} catch (CellContentException | IllegalCellPositionException e) {
 			fail("Should not happen " + e);
 		}
 		
-		assertEquals(samurai.getValue(1, 1), 1, "Cell (1,1) is not 1");
+		assertEquals(1, samurai.getValue(1, 1), "Cell (1,1) is not 1");
 		
 		assertFalse(samurai.isSolved(),"Samurai claims to be finished");
 	}
@@ -85,7 +85,7 @@ public class SamuraiTest
 		
 		samurai.importFile(path);
 		
-		assertEquals(samurai.getValue(1, 1) , 0,"First value is not 0");
+		assertEquals(0, samurai.getValue(1, 1),"First value is not 0");
 	}
 
 	@Test
@@ -130,8 +130,8 @@ public class SamuraiTest
 		
 		samurai.importFile(path);
 
-		assertEquals(samurai.getValue(1, 1), 5, "First value is not 5");
-		assertEquals(samurai.getValue(21, 21),2,"Last value is not 2");
+		assertEquals(5, samurai.getValue(1, 1), "First value is not 5");
+		assertEquals(2, samurai.getValue(21, 21),"Last value is not 2");
 	}
 
 	@Test

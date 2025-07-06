@@ -1,13 +1,13 @@
 /*******************************************************************************
  * Copyright (c) 2014 Sven Erik Knop.
  * Licensed under the EUPL V.1.1
- *
+ * <p>
  * This Software is provided to You under the terms of the European 
  * Union Public License (the "EUPL") version 1.1 as published by the 
  * European Union. Any use of this Software, other than as authorized 
  * under this License is strictly prohibited (to the extent such use 
  * is covered by a right of the copyright holder of this Software).
- *
+ * <p>
  * This Software is provided under the License on an "AS IS" basis and 
  * without warranties of any kind concerning the Software, including 
  * without limitation merchantability, fitness for a particular purpose, 
@@ -15,9 +15,9 @@
  * intellectual property rights other than copyright. This disclaimer 
  * of warranty is an essential part of the License and a condition for 
  * the grant of any rights to this Software.
- *
+ * <p>
  * For more details, see http://joinup.ec.europa.eu/software/page/eupl.
- *
+ * <p>
  * Contributors:
  *     2014 - Sven Erik Knop - initial API and implementation
  *******************************************************************************/
@@ -46,11 +46,11 @@ import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
 import sudoku.unit.Nonet;
 
-public class Samurai extends Puzzle
+public class Samurai extends Puzzle implements Cloneable
 {
-	private final List<Nonet> rows = new ArrayList<>();
-	private final List<Nonet> columns = new ArrayList<>();
-	private final List<Nonet> boxes = new ArrayList<>();
+	private List<Nonet> rows = new ArrayList<>();
+	private List<Nonet> columns = new ArrayList<>();
+	private List<Nonet> boxes = new ArrayList<>();
 	
 	public final int PUZZLE_WIDTH = 21;
 	public final int removeLimit = 280;
@@ -59,8 +59,8 @@ public class Samurai extends Puzzle
 		super(9);
 		initialize();
 	}
-	
-	private interface CellAccess {
+
+    private interface CellAccess {
 		void apply(int x, int y) throws CellContentException;
 	}
 
@@ -68,7 +68,7 @@ public class Samurai extends Puzzle
 	 * Iterates through all the cells and applies the CellAccess functor
 	 * Will exclude the empty regions.
 	 * @param access : CellAccess
-	 * @throws CellContentException
+	 * @throws CellContentException from access.apply().
 	 */
 	private void eachCell(CellAccess access) throws CellContentException {
 		for (int x = 1; x <= PUZZLE_WIDTH; x++) {
@@ -102,21 +102,25 @@ public class Samurai extends Puzzle
 		} catch (CellContentException e) {
 			System.out.println("Should not happen " + e);
 		}
-				
-		Object[][] sections = { 
+
+		linkToConstraints();
+	}
+
+	private void linkToConstraints() {
+		Object[][] sections = {
 				{ "A", 0, 0, false },
 				{ "B", 12, 0, false },
 				{ "C", 6, 6, true },
 				{ "D", 0, 12, false },
 				{ "E", 12, 12, false }
 		};
-		
+
 		for ( Object[] section : sections) {
 			String name = (String) section[0];
 			int x = (int) section[1];
 			int y = (int) section[2];
 			boolean middle = (boolean) section[3];
-			
+
 			try {
 				createSection(name, x, y, middle);
 			} catch (AddCellException e) {
@@ -124,7 +128,7 @@ public class Samurai extends Puzzle
 			}
 		}
 	}
-	
+
 	private void createSection(String name, int startX, int startY, boolean middle) 
 			throws AddCellException {
 		for (int x = 1; x <= 9; x++) {
@@ -318,11 +322,11 @@ public class Samurai extends Puzzle
 	/**
 	 * Imports a Sudoku puzzle from a file.
 	 * The expected format is
-	 * 
+	 * <p>
 	 * CSV in 9 rows
 	 * Empty Cells are signaled by a 0
 	 * For example
-	 * 
+	 * <p>
 	 *  1,0,3,0,0,6,7,8,9
 	 *  0,0,0,0,0,0,0,0,0
 	 *  
@@ -458,7 +462,7 @@ public class Samurai extends Puzzle
 			solveRecursive(smallSolve);
 		}
 
-		List<Cell> allCells = getCells().values().stream().collect(Collectors.toList());
+		List<Cell> allCells = new ArrayList<>(getCells().values());
 		Collections.shuffle(allCells);
 		
 		int counter = 0;
@@ -512,10 +516,10 @@ public class Samurai extends Puzzle
                     BitSet markUp = getHints(p, level);
 
                     if (level == 0) {
-                        System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
+                        System.out.printf("(%s, %s) : %s%n", x, y, markUp);
                     }
                     else {
-                        System.out.println(String.format("(%s, %s) : %s [%s]", x, y, markUp, getHints(p, 0)));
+                        System.out.printf("(%s, %s) : %s [%s]%n", x, y, markUp, getHints(p, 0));
                     }
                 }
             });
@@ -523,5 +527,30 @@ public class Samurai extends Puzzle
 			System.out.println("Shouldn't happen " + e);
 		}
 		System.out.println();
+	}
+
+	@Override
+	public Samurai clone() {
+		Samurai clone = (Samurai) super.clone();
+
+		clone.rows = new ArrayList<>();
+		clone.columns = new ArrayList<>();
+		clone.boxes = new ArrayList<>();
+
+		getCells().forEach((key, value) -> clone.getCells().put(key, value.clone()));
+
+		clone.linkToConstraints();
+
+		getCells().forEach((key, original) -> {
+			if (!original.empty()) {
+				try {
+					clone.getCells().get(key).setValue(original.getValue());
+				} catch (CellContentException e) {
+					System.err.println("Shouldn't happen " + e);
+				}
+			}
+		});
+
+		return clone;
 	}
 }

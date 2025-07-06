@@ -348,7 +348,6 @@ public class Sudoku extends Puzzle implements Cloneable {
     public Sudoku clone() {
         Sudoku clone = (Sudoku) super.clone();
 
-		// TODO: need to actually create new entries here
 		clone.rows = new ArrayList<>();
 		clone.columns = new ArrayList<>();
 		clone.boxes = new ArrayList<>();
