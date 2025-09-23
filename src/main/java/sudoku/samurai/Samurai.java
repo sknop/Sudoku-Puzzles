@@ -30,12 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import sudoku.Cell;
@@ -299,7 +294,7 @@ public class Samurai extends Puzzle implements Cloneable
 	private void addCells(StringBuilder builder) {
 		ArrayList<Cell> sortedCells = getCells().values()
 			.stream()
-			.sorted( (a,b) -> a.getLocation().compareTo(b.getLocation()) )
+			.sorted(Comparator.comparing(Cell::getLocation))
 			.collect( Collectors.toCollection(ArrayList::new) );
 		
 		for (Cell c : sortedCells) {
