@@ -131,7 +131,7 @@ public abstract class SwingPuzzle implements StatusListener
         frame.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
 
         JPanel buttons = new JPanel();
-        buttons.setLayout(new GridLayout(2, 3));
+        buttons.setLayout(new GridLayout(3, 3));
         bottomPanel.add(buttons, BorderLayout.WEST);
 
         createButtons(buttons);
@@ -194,9 +194,19 @@ public abstract class SwingPuzzle implements StatusListener
     }
 
     private void createButtons(JPanel buttons) {
+        JButton newButton = new JButton("New");
+        newButton.addActionListener( e -> {
+            clearTable();
+
+            puzzle.reset();
+            tableModel.fireTableDataChanged();
+        });
+        buttons.add(newButton);
+
         JButton createButton = new JButton("Create");
         createButton.addActionListener( e -> {
-            tableModel.clearIllegal();
+            clearTable();
+
             puzzle.createRandomPuzzle();
             tableModel.fireTableDataChanged();
             statusChanged();
@@ -205,9 +215,7 @@ public abstract class SwingPuzzle implements StatusListener
 
         JButton solveButton = new JButton("Solve");
         solveButton.addActionListener( e -> {
-            // cheeky hack - remove selection so that the cell is not blocked
-            table.editCellAt(-1, -1);
-            table.getSelectionModel().clearSelection();
+            clearTable();
 
             puzzle.solveBruteForce();
             tableModel.fireTableDataChanged();
@@ -215,13 +223,6 @@ public abstract class SwingPuzzle implements StatusListener
             solved.setText("Cheated");
         });
         buttons.add(solveButton);
-
-        JButton quitButton = new JButton("Quit");
-        quitButton.addActionListener( e -> {
-            frame.dispose();
-            System.exit(0);
-        });
-        buttons.add(quitButton);
 
         JButton loadButton = new JButton("Load");
         loadButton.addActionListener( e -> {
@@ -233,6 +234,7 @@ public abstract class SwingPuzzle implements StatusListener
                 Path path = FileSystems.getDefault().getPath(file.getPath());
 
                 try {
+                    clearTable();
                     puzzle.reset();
                     puzzle.importFile(path);
                 } catch (IOException |IllegalFileFormatException |CellContentException e1) {
@@ -263,11 +265,9 @@ public abstract class SwingPuzzle implements StatusListener
 
         JToggleButton readWriteButton = new JToggleButton("Write");
         readWriteButton.addActionListener( e -> {
-            Consumer<Cell> command;
+            clearTable();
 
-            // cheeky hack - remove selection so that the cell is not blocked
-            table.editCellAt(-1, -1);
-            table.getSelectionModel().clearSelection();
+            Consumer<Cell> command;
 
             if (readWriteButton.getText().equals("Write")) {
                 readWriteButton.setText("R/O");
@@ -286,6 +286,19 @@ public abstract class SwingPuzzle implements StatusListener
         });
         buttons.add(readWriteButton);
 
+        JButton quitButton = new JButton("Quit");
+        quitButton.addActionListener( e -> {
+            frame.dispose();
+            System.exit(0);
+        });
+        buttons.add(quitButton);
+    }
+
+    private void clearTable() {
+        // Cheeky little trick to ensure editing is off
+        table.editCellAt(-1, -1);
+        table.getSelectionModel().clearSelection();
+        tableModel.clearIllegal();
     }
 
     protected abstract PuzzleTableModel createTableModel();
