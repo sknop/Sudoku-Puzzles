@@ -331,9 +331,25 @@ public abstract class Puzzle implements Cloneable
 			clone.maxValue = maxValue;
 			clone.tries = 0;
 
-            return clone;
+			getCells().forEach((key, value) -> clone.getCells().put(key, value.clone()));
+
+			return clone;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
     }
+
+	// Need to copy the values across
+	// No need to set cells to read-only, clones are not modified by users
+	protected void copyCellContentToClone(Puzzle clone) {
+		getCells().forEach((key, original) -> {
+			if (!original.empty()) {
+				try {
+					clone.getCells().get(key).setValue(original.getValue());
+				} catch (CellContentException e) {
+					System.err.println("Shouldn't happen " + e);
+				}
+			}
+		});
+	}
 }

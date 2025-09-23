@@ -537,20 +537,11 @@ public class Samurai extends Puzzle implements Cloneable
 		clone.columns = new ArrayList<>();
 		clone.boxes = new ArrayList<>();
 
-		getCells().forEach((key, value) -> clone.getCells().put(key, value.clone()));
-
 		clone.linkToConstraints();
 
-		getCells().forEach((key, original) -> {
-			if (!original.empty()) {
-				try {
-					clone.getCells().get(key).setValue(original.getValue());
-				} catch (CellContentException e) {
-					System.err.println("Shouldn't happen " + e);
-				}
-			}
-		});
+		copyCellContentToClone(clone);
 
 		return clone;
 	}
+
 }
