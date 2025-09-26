@@ -30,47 +30,93 @@ import java.util.Iterator;
 public class MarkUp implements Iterable<Integer>
 {
 	private long bitset = 0;
-	private int width;
+	private final int width;
 	
 	public MarkUp(int width) {
 		this.width = width;
 	}
-	
+
+    private MarkUp(int width, long bitset) {
+        this(width);
+        this.bitset = bitset;
+    }
+
 	public void set(int value) {
 		assertValue(value);
 		
-		bitset |= 1L << value;
+		bitset |= 1L << value - 1;
 	}
-	
+
+    public void unset(int value) {
+        assertValue(value);
+
+        bitset &= ~(1L << value - 1);
+    }
+
 	public boolean get(int value) {
 		assertValue(value);
 		
-		return (bitset & 1L << value) > 0;
+		return (bitset & 1L << (value - 1)) > 0;
 	}
-	
-	private void assertValue(int value) {
-		if (value > width) {
-			throw new RuntimeException("MarkUp value " + value + " exceeded width " + width);
+
+    public void clear() {
+        bitset = 0;
+    }
+
+    public MarkUp complement() {
+        return new MarkUp(width, bitset ^ MarkUp.allSet(width).bitset);
+    }
+
+    public int cardinality() {
+        long tempBitset = bitset;
+        int count = 0;
+
+        while (tempBitset != 0) {
+            tempBitset =  tempBitset & (tempBitset - 1);
+            count++;
+        }
+        return count;
+    }
+
+    public static MarkUp allSet(int width) {
+        long bitset = 0;
+        for (int i = 0; i < width; i++) {
+            bitset |= 1L << i;
+        }
+
+        return new MarkUp(width, bitset);
+    }
+
+    private void assertValue(int value) {
+        if (value <= 0 || value > width) {
+			throw new IllegalArgumentException("MarkUp value " + value + " outside of [1, " + width + "]");
 		}
 	}
 	
 	@Override
 	public String toString() {
-		return Long.toBinaryString(bitset);
+		String s = Long.toBinaryString(bitset);
+
+        return "0".repeat(width - s.length()) + s;
 	}
 	
 	@Override
 	public Iterator<Integer> iterator() {
-		return new Iterator<Integer>() {
+		return new Iterator<>() {
+            long current = bitset;
 
 			@Override
 			public boolean hasNext() {
-				return false;
+				return (current & -current) > 0;
 			}
 
 			@Override
 			public Integer next() {
-				return null;
+                long next = current & -current;
+                int result = Long.numberOfTrailingZeros(next) + 1;
+                current &= ~(1L << result - 1);
+
+				return result;
 			}
 			
 		};
