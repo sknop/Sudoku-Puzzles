@@ -150,9 +150,9 @@ public abstract class SwingPuzzle implements StatusListener
         final JComboBox<String> hintOptions = new JComboBox<>();
         hintOptions.addItem("None");
         hintOptions.addItem("Markup");
-        hintOptions.addItem("Hints 1");
-        hintOptions.addItem("Hints 2");
-        hintOptions.addItem("Hints 3");
+        hintOptions.addItem("Remove Uniques");
+        hintOptions.addItem("Remove Pairs");
+        hintOptions.addItem("Detect Single");
         reports.add(hintOptions);
 
         hintOptions.addActionListener( e -> {
