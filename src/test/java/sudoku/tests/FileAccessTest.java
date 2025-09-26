@@ -41,7 +41,7 @@ import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
 import sudoku.sudoku.Sudoku;
 
-public class TestFileAccess
+public class FileAccessTest
 {
 	Sudoku sudoku;
 	Path path;

@@ -15,7 +15,7 @@ import sudoku.Point;
 import sudoku.exceptions.CellContentException;
 import sudoku.unit.AbstractConstraint;
 
-public class TestHints
+public class HintsTest
 {
 	final List<Trio> rows = new ArrayList<>();
 	final List<Trio> columns = new ArrayList<>();
