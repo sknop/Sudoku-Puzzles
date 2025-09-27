@@ -1,13 +1,13 @@
 /*******************************************************************************
  * Copyright (c) 2014 Sven Erik Knop.
  * Licensed under the EUPL V.1.1
- *
+ * <p>
  * This Software is provided to You under the terms of the European 
  * Union Public License (the "EUPL") version 1.1 as published by the 
  * European Union. Any use of this Software, other than as authorized 
  * under this License is strictly prohibited (to the extent such use 
  * is covered by a right of the copyright holder of this Software).
- *
+ * <p>
  * This Software is provided under the License on an "AS IS" basis and 
  * without warranties of any kind concerning the Software, including 
  * without limitation merchantability, fitness for a particular purpose, 
@@ -15,9 +15,9 @@
  * intellectual property rights other than copyright. This disclaimer 
  * of warranty is an essential part of the License and a condition for 
  * the grant of any rights to this Software.
- *
+ * <p>
  * For more details, see http://joinup.ec.europa.eu/software/page/eupl.
- *
+ * <p>
  * Contributors:
  *     2014 - Sven Erik Knop - initial API and implementation
  *******************************************************************************/
@@ -25,66 +25,64 @@ package sudoku;
 
 import java.util.Iterator;
 
-// TODO This class is not finished yet, still using BitMap
-
 public class MarkUp implements Iterable<Integer>
 {
-	private long bitset = 0;
+	private long bits = 0;
 	private final int width;
 	
 	public MarkUp(int width) {
 		this.width = width;
 	}
 
-    private MarkUp(int width, long bitset) {
+    private MarkUp(int width, long bits) {
         this(width);
-        this.bitset = bitset;
+        this.bits = bits;
     }
 
 	public void set(int value) {
 		assertValue(value);
 		
-		bitset |= 1L << value - 1;
+		bits |= 1L << value - 1;
 	}
 
     public void unset(int value) {
         assertValue(value);
 
-        bitset &= ~(1L << value - 1);
+        bits &= ~(1L << value - 1);
     }
 
 	public boolean get(int value) {
 		assertValue(value);
 		
-		return (bitset & 1L << (value - 1)) > 0;
+		return (bits & 1L << (value - 1)) > 0;
 	}
 
     public void clear() {
-        bitset = 0;
+        bits = 0;
     }
 
     public MarkUp complement() {
-        return new MarkUp(width, bitset ^ MarkUp.allSet(width).bitset);
+        return new MarkUp(width, bits ^ MarkUp.allSet(width).bits);
     }
 
     public int cardinality() {
-        long tempBitset = bitset;
+        long tempBits = bits;
         int count = 0;
 
-        while (tempBitset != 0) {
-            tempBitset =  tempBitset & (tempBitset - 1);
+        while (tempBits != 0) {
+            tempBits =  tempBits & (tempBits - 1);
             count++;
         }
         return count;
     }
 
     public static MarkUp allSet(int width) {
-        long bitset = 0;
+        long bits = 0;
         for (int i = 0; i < width; i++) {
-            bitset |= 1L << i;
+            bits |= 1L << i;
         }
 
-        return new MarkUp(width, bitset);
+        return new MarkUp(width, bits);
     }
 
     private void assertValue(int value) {
@@ -95,7 +93,7 @@ public class MarkUp implements Iterable<Integer>
 	
 	@Override
 	public String toString() {
-		String s = Long.toBinaryString(bitset);
+		String s = Long.toBinaryString(bits);
 
         return "0".repeat(width - s.length()) + s;
 	}
@@ -103,7 +101,7 @@ public class MarkUp implements Iterable<Integer>
 	@Override
 	public Iterator<Integer> iterator() {
 		return new Iterator<>() {
-            long current = bitset;
+            long current = bits;
 
 			@Override
 			public boolean hasNext() {
