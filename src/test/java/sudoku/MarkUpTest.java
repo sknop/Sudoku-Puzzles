@@ -30,9 +30,61 @@ public class MarkUpTest {
     public void testAllSet() {
         MarkUp markup = MarkUp.allSet(width);
 
-        for (int i = 1; i <= width;  ++ i) {
+        for (int i = 1; i <= width; ++i) {
             assertTrue(markup.get(i));
         }
+    }
+
+
+    @Test
+    public void testOr() {
+        MarkUp markup = new MarkUp(width);
+        markup.set(1);
+        markup.set(3);
+
+        MarkUp other = new MarkUp(width);
+        other.set(1);
+        other.set(2);
+
+        var result = markup.or(other);
+        assertTrue(result.get(1));
+        assertTrue(result.get(2));
+        assertTrue(result.get(3));
+        assertFalse(result.get(4));
+    }
+
+    @Test
+    public void testAnd() {
+        MarkUp markup = new MarkUp(width);
+        markup.set(1);
+        markup.set(3);
+
+        MarkUp other = new MarkUp(width);
+        other.set(1);
+        other.set(2);
+
+        var result = markup.and(other);
+        assertTrue(result.get(1));
+        assertFalse(result.get(2));
+        assertFalse(result.get(3));
+        assertFalse(result.get(4));
+    }
+
+    @Test
+    public void testXor() {
+        MarkUp markup = new MarkUp(width);
+        markup.set(1);
+        markup.set(3);
+
+        MarkUp other = new MarkUp(width);
+        other.set(1);
+        other.set(2);
+
+        var result = markup.xor(other);
+        assertFalse(result.get(1));
+        assertTrue(result.get(2));
+        assertTrue(result.get(3));
+        assertFalse(result.get(4));
     }
 
     @Test
@@ -62,9 +114,9 @@ public class MarkUpTest {
         MarkUp markup = new MarkUp(width);
         markup.set(1);
         markup.set(2);
-        String s= markup.toString();
+        String s = markup.toString();
 
-        assertEquals("000000011",s);
+        assertEquals("000000011", s);
     }
 
     @Test
@@ -111,10 +163,27 @@ public class MarkUpTest {
         MarkUp markup = new MarkUp(width);
         try {
             markup.set(10);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return;
         }
         fail("Should have thrown exception");
+    }
+
+    @Test
+    public void testEqualsAndHash() {
+        MarkUp markup = new MarkUp(width);
+        markup.set(1);
+        markup.set(3);
+
+        MarkUp other = new MarkUp(width);
+        other.set(1);
+        other.set(3);
+
+        assertEquals(markup, other);
+        assertEquals(markup.hashCode(), other.hashCode());
+
+        other.unset(3);
+        assertNotEquals(markup, other);
+        assertNotEquals(markup.hashCode(), other.hashCode());
     }
 }

@@ -24,6 +24,7 @@
 package sudoku;
 
 import java.util.Iterator;
+import java.util.Objects;
 
 public class MarkUp implements Iterable<Integer>
 {
@@ -39,7 +40,25 @@ public class MarkUp implements Iterable<Integer>
         this.bits = bits;
     }
 
-	public void set(int value) {
+    // equals, hashCode
+
+    @Override
+    public boolean equals(Object otherObject) {
+        if (otherObject instanceof MarkUp other) {
+            return (width == other.width) && (bits == other.bits);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int  hash = 7;
+        hash = 31 * hash + width;
+        hash = 31 * hash + Objects.hashCode(bits);
+        return hash;
+    }
+
+ 	public void set(int value) {
 		assertValue(value);
 		
 		bits |= 1L << value - 1;
@@ -57,12 +76,29 @@ public class MarkUp implements Iterable<Integer>
 		return (bits & 1L << (value - 1)) > 0;
 	}
 
-    public void clear() {
-        bits = 0;
+    // Operations
+
+    public MarkUp or(MarkUp other) {
+        return new MarkUp(width, bits | other.bits);
     }
+
+    public MarkUp and(MarkUp other) {
+        return new MarkUp(width, bits & other.bits);
+    }
+
+    public MarkUp xor(MarkUp other) {
+        return new MarkUp(width, bits ^ other.bits);
+    }
+
 
     public MarkUp complement() {
         return new MarkUp(width, bits ^ MarkUp.allSet(width).bits);
+    }
+
+    // Cleanup
+
+    public void clear() {
+        bits = 0;
     }
 
     public int cardinality() {
