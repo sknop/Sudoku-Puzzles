@@ -26,7 +26,7 @@ package sudoku;
 import java.util.Iterator;
 import java.util.Objects;
 
-public class MarkUp implements Iterable<Integer>
+public class MarkUp implements Iterable<Integer>, Cloneable
 {
 	private long bits = 0;
 	private final int width;
@@ -181,4 +181,12 @@ public class MarkUp implements Iterable<Integer>
 		
 	}
 
+    @Override
+    public MarkUp clone() {
+        try {
+            return (MarkUp) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

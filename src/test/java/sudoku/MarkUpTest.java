@@ -186,4 +186,47 @@ public class MarkUpTest {
         assertNotEquals(markup, other);
         assertNotEquals(markup.hashCode(), other.hashCode());
     }
+
+    @Test
+    public void testCombineMarkUp() {
+        MarkUp one = new MarkUp(width);
+        one.set(1);
+        one.set(3);
+
+        MarkUp two = new MarkUp(width);
+        two.set(1);
+        two.set(4);
+        two.set(7);
+
+        MarkUp merged = new MarkUp(width);
+        merged = merged.or(one);
+        merged = merged.or(two);
+
+        assertTrue(merged.get(1));
+        assertTrue(merged.get(3));
+        assertTrue(merged.get(4));
+
+        var result = merged.complement();
+
+        assertTrue(result.get(2));
+        assertTrue(result.get(5));
+        assertTrue(result.get(6));
+        assertTrue(result.get(8));
+        assertTrue(result.get(9));
+
+        assertFalse(result.get(1));
+        assertFalse(result.get(3));
+        assertFalse(result.get(4));
+        assertFalse(result.get(7));
+    }
+
+    @Test
+    public void testClone() {
+        MarkUp markup = new MarkUp(width);
+        markup.set(1);
+        markup.set(3);
+
+        MarkUp clone = markup.clone();
+        assertEquals(markup, clone);
+    }
 }
