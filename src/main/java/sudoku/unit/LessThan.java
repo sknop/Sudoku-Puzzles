@@ -26,6 +26,7 @@
 package sudoku.unit;
 
 import sudoku.Cell;
+import sudoku.MarkUp;
 import sudoku.exceptions.CellContentException;
 
 import java.util.BitSet;
@@ -57,15 +58,15 @@ public class LessThan extends Relation
     }
 
     @Override
-    public BitSet getNumbers() {
-        BitSet set = new BitSet(maxValue);
+    public MarkUp getNumbers() {
+        MarkUp set = new MarkUp(maxValue);
 
         for (int i = 1; i < getMaxValue(); i++) {
             set.set(i);
         }
 
-        set.flip(1, maxValue + 1); // we want to show the numbers already set, not the ones available
-        return set;
+        // we want to show the numbers already set, not the ones available
+        return set.complement();
     }
 
     private int getMaxValue() {

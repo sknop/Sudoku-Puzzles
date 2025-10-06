@@ -108,21 +108,21 @@ public class Cell implements Iterable<Integer>, Cloneable
         }
     }
 
- 	public BitSet getMarkUp() {
-		BitSet markUp = new BitSet();
+ 	public MarkUp getMarkUp() {
+		MarkUp markUp = new MarkUp(limit);
 		
 		if (value == 0) {			
 			for (Constraint u : belongsTo) {
-				markUp.or(u.getNumbers());
+				markUp = markUp.or(u.getNumbers());
 			}
-			markUp.flip(1, limit + 1);
+			markUp = markUp.complement();
 		}
 		
 		return markUp;
 	}
 	
-	public BitSet getHints(int level) {
-		BitSet markUp = getMarkUp();
+	public MarkUp getHints(int level) {
+		MarkUp markUp = getMarkUp();
 		
 		if (level > 0) {
 			markUp = removeUniques(markUp);
@@ -138,15 +138,15 @@ public class Cell implements Iterable<Integer>, Cloneable
 	
 	// Uniques are simple: their markup only contains one value
 	// This value cannot show up in any other Cell in the Constraint - job done
-	public BitSet removeUniques(BitSet markUp) {
-		BitSet copyMarkUp = (BitSet) markUp.clone();
+	public MarkUp removeUniques(MarkUp markUp) {
+		MarkUp copyMarkUp = (MarkUp) markUp.clone();
 		for (Constraint u : belongsTo) {
 			for (Cell c : u.getCells()) {
 				if (c != this) {
-					BitSet itsMarkUp = c.getMarkUp();
+					MarkUp itsMarkUp = c.getMarkUp();
 					if (itsMarkUp.cardinality() == 1) {
-						int uniqueValue = itsMarkUp.nextSetBit(0);
-						copyMarkUp.clear(uniqueValue);
+						int uniqueValue = itsMarkUp.nextSetBit();
+						copyMarkUp.unset(uniqueValue);
 					}
 				}
 			}
@@ -158,24 +158,24 @@ public class Cell implements Iterable<Integer>, Cloneable
 	// So what exactly is a pair?
 	// 	cardinality of 2
 	//	an identical pair has to exist in the same Constraint
-	public BitSet removePairs(BitSet markUp) {
-		BitSet copyMarkUp = (BitSet) markUp.clone();
+	public MarkUp removePairs(MarkUp markUp) {
+		MarkUp copyMarkUp = (MarkUp) markUp.clone();
 		for (Constraint u : belongsTo) {
 			Cell secondFound = null;
 			
 			for (Cell c1 : u.getCells()) {
 				if (c1 != this && c1 != secondFound) {
-					BitSet m1 = c1.getMarkUp();
+					MarkUp m1 = c1.getMarkUp();
 					
 					if (m1.cardinality() == 2) {
 						for (Cell c2 : u.getCells()) {
 							if (c2 != this && c2 != c1) {
-								BitSet m2 = c2.getMarkUp();
+								MarkUp m2 = c2.getMarkUp();
 								
 								if (m1.equals(m2)) {
 									secondFound = c2;
-									for (int i = m2.nextSetBit(0); i >= 0; i = m2.nextSetBit(i+1)) {
-										copyMarkUp.clear(i);
+									for (int i = m2.nextSetBit(); i >= 0; i = m2.nextSetBit(i+1)) {
+										copyMarkUp.unset(i);
 									}
 								}
 							}
@@ -191,8 +191,8 @@ public class Cell implements Iterable<Integer>, Cloneable
 
 	// Idea:
 	// Find any value that is not in another constraint. If not there, it is unique
-	public BitSet detectSingle(BitSet markup) {
-		BitSet copyMarkup = (BitSet) markup.clone();
+	public MarkUp detectSingle(MarkUp markup) {
+		MarkUp copyMarkup = markup.clone();
 		// Find all set bits
 		for (int i = copyMarkup.nextSetBit(0); i >= 0; i = copyMarkup.nextSetBit(i + 1)) {
 			boolean found = false;

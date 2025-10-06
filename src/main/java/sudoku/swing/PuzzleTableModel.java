@@ -37,7 +37,6 @@ import javax.swing.undo.*;
 import sudoku.*;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalCellPositionException;
-import sudoku.swing.StatusListener;
 import sudoku.unit.Constraint;
 
 @SuppressWarnings("serial")
@@ -213,7 +212,7 @@ public class PuzzleTableModel extends AbstractTableModel implements UndoTableMod
         	for (Cell c : u.getCells()) {
         		Point point = c.getLocation();
         		// Sudoku is 1 based, JTable is 0 based, so need to remove 1
-        		fireTableCellUpdated(point.getX() - 1, point.getY() - 1);
+        		fireTableCellUpdated(point.x() - 1, point.y() - 1);
         	}
         }
 

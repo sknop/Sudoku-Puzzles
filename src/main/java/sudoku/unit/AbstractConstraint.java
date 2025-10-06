@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 
 import sudoku.Cell;
+import sudoku.MarkUp;
 import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.TooManyCellsException;
@@ -38,14 +39,14 @@ public abstract class AbstractConstraint implements Constraint
 	protected List<Cell> cells;
 	protected int maxCells;
 	protected String position;
-	protected BitSet numbers;
+	protected MarkUp numbers;
 	
-	protected AbstractConstraint(int size, String position) {
-		this.maxCells = size;
-		this.cells = new ArrayList<>(size);
+	protected AbstractConstraint(int width, String position) {
+		this.maxCells = width;
+		this.cells = new ArrayList<>(width);
 		this.position = position;
 		
-		this.numbers = new BitSet(size);
+		this.numbers = new MarkUp(width);
 	}
 	
 	public void addCell(Cell cell) throws AddCellException {
@@ -77,7 +78,7 @@ public abstract class AbstractConstraint implements Constraint
 	public void update(int oldValue, int newValue) throws CellContentException {
 		if ( oldValue != 0 ) {
 			// need to remove the old value
-			numbers.clear(oldValue);
+			numbers.unset(oldValue);
 		}
 		
 		if ( newValue != 0) {
@@ -91,7 +92,7 @@ public abstract class AbstractConstraint implements Constraint
 	}
 
 	@Override
-	public BitSet getNumbers() {
-		return (BitSet) numbers.clone();
+	public MarkUp getNumbers() {
+		return (MarkUp) numbers.clone();
 	}
 }

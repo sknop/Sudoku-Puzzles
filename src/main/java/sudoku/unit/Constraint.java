@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.BitSet;
 
 import sudoku.Cell;
+import sudoku.MarkUp;
 import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
 
@@ -38,5 +39,5 @@ public interface Constraint
 
 	void update(int oldValue, int newValue) throws CellContentException;
 	
-	BitSet getNumbers();
+	MarkUp getNumbers();
 }

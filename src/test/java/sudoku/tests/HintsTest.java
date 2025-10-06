@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import sudoku.Cell;
+import sudoku.MarkUp;
 import sudoku.Point;
 import sudoku.exceptions.CellContentException;
 import sudoku.unit.AbstractConstraint;
@@ -69,7 +70,7 @@ public class HintsTest
 		Cell topLeft = cells.get(new Point(1,1));
 		assertEquals(1, topLeft.getValue());
 		
-		BitSet markUp;
+		MarkUp markUp;
 		
 		Cell topRight = cells.get(new Point(1,2));
 		markUp = topRight.getMarkUp();
@@ -87,7 +88,7 @@ public class HintsTest
 	
 	@Test
 	public void testHintsUnique() throws CellContentException {
-		BitSet hints;
+		MarkUp hints;
 		
 		Cell topMiddle = cells.get(new Point(1,2));
 		topMiddle.setValue(2);
@@ -107,7 +108,7 @@ public class HintsTest
 
 	@Test
 	public void testHintsPairs() throws CellContentException {
-		BitSet hints;
+		MarkUp hints;
 		
 		Cell topMiddle = cells.get(new Point(2,2));
 		topMiddle.setValue(1);

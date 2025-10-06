@@ -76,6 +76,10 @@ public class MarkUp implements Iterable<Integer>, Cloneable
 		return (bits & 1L << (value - 1)) > 0;
 	}
 
+    public int nextSetBit() {
+        return Long.numberOfTrailingZeros(bits) + 1;
+    }
+
     // Operations
 
     public MarkUp or(MarkUp other) {
