@@ -126,8 +126,8 @@ public class MarkUp implements Iterable<Integer>, Cloneable
     }
 
     private void assertValue(int value) {
-        if (value <= 0 || value > width) {
-			throw new IllegalArgumentException("MarkUp value " + value + " outside of [1, " + width + "]");
+        if (value < 0 || value > width) {
+			throw new IllegalArgumentException("MarkUp value " + value + " outside of [0, " + width + "]");
 		}
 	}
 	
@@ -192,5 +192,9 @@ public class MarkUp implements Iterable<Integer>, Cloneable
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    public boolean isEmpty() {
+        return bits == 0;
     }
 }

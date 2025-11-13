@@ -23,6 +23,8 @@
  *******************************************************************************/
 package sudoku.unit;
 
+import sudoku.MarkUp;
+
 import java.util.BitSet;
 
 public class Nonet extends Unit
@@ -33,8 +35,7 @@ public class Nonet extends Unit
 
 	@Override 
 	public String toString() {
-		BitSet complement = (BitSet) numbers.clone();
-		complement.flip(1, 10);
+		MarkUp complement = numbers.complement();
 		return "Nonet " + super.toString() + " : " + numbers + " : " + complement;
 	}
 

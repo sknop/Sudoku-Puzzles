@@ -24,10 +24,7 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
-import sudoku.Cell;
-import sudoku.CellWrapper;
-import sudoku.NumberConverter;
-import sudoku.UndoTableModel;
+import sudoku.*;
 
 @SuppressWarnings("serial")
 public class PuzzleCellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer
@@ -105,7 +102,7 @@ public class PuzzleCellEditor extends AbstractCellEditor implements TableCellEdi
         return new FieldLimit(9);
     }
 
-    protected String formatMarkup(BitSet set) {
+    protected String formatMarkup(MarkUp set) {
         StringBuilder b = new StringBuilder();
         if (set.cardinality() > 0) {
             b.append("<html>");

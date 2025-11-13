@@ -356,7 +356,7 @@ public class Futoshiki extends Puzzle
                 Point p = new Point(x,y);
 
                 if (!isReadOnly(p)) {
-                    BitSet markUp = getHints(p, level);
+                    MarkUp markUp = getHints(p, level);
                     if (level == 0) {
                         System.out.printf("(%s, %s) : %s%n", x, y, markUp);
                     }

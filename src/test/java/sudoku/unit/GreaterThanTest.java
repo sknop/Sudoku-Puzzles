@@ -29,9 +29,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import sudoku.Cell;
+import sudoku.MarkUp;
 import sudoku.exceptions.CellContentException;
-
-import java.util.BitSet;
 
 public class GreaterThanTest
 {
@@ -42,9 +41,9 @@ public class GreaterThanTest
         Cell target = new Cell(2, 1, 2);
         Relation relation = new GreaterThan(source, target, 2);
 
-        BitSet possibles = relation.getNumbers();
+        MarkUp possibles = relation.getNumbers();
 
-        assertTrue(totalSet(possibles) == 1);
+        assertEquals(1, totalSet(possibles));
         assertTrue(possibles.get(1));
     }
 
@@ -54,9 +53,9 @@ public class GreaterThanTest
         Cell target = new Cell(5,4,3);
         Relation relation = new GreaterThan(source, target, 5);
 
-        BitSet taken = relation.getNumbers();
+        MarkUp taken = relation.getNumbers();
 
-        assertTrue(totalSet(taken) == 1);
+        assertEquals(1, totalSet(taken));
         assertTrue(taken.get(1));
     }
 
@@ -68,9 +67,9 @@ public class GreaterThanTest
 
         target.setValue(3);
 
-        BitSet possibles = relation.getNumbers();
+        MarkUp possibles = relation.getNumbers();
 
-        assertTrue(totalSet(possibles) == 3);
+        assertEquals(3, totalSet(possibles));
     }
 
     @Test
@@ -104,12 +103,10 @@ public class GreaterThanTest
         }
     }
 
-    private int totalSet(BitSet set) {
+    private int totalSet(MarkUp set) {
         int result = 0;
-        for (int i = 1; i < set.length(); i++) {
-            if (set.get(i)) {
-                result++;
-            }
+        for (Integer i : set) {
+            result++;
         }
 
         return result;

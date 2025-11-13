@@ -26,6 +26,7 @@
 package sudoku.supersudoku;
 
 
+import sudoku.MarkUp;
 import sudoku.NumberConverter;
 import sudoku.swing.FieldLimit;
 import sudoku.swing.Options;
@@ -47,7 +48,7 @@ public class SuperCellEditor extends PuzzleCellEditor
     }
 
     @Override
-    protected String formatMarkup(BitSet set) {
+    protected String formatMarkup(MarkUp set) {
         StringBuilder b = new StringBuilder();
         if (set.cardinality() > 0) {
             b.append("<html>");

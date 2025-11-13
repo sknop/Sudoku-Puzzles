@@ -139,7 +139,7 @@ public class Cell implements Iterable<Integer>, Cloneable
 	// Uniques are simple: their markup only contains one value
 	// This value cannot show up in any other Cell in the Constraint - job done
 	public MarkUp removeUniques(MarkUp markUp) {
-		MarkUp copyMarkUp = (MarkUp) markUp.clone();
+		MarkUp copyMarkUp = markUp.clone();
 		for (Constraint u : belongsTo) {
 			for (Cell c : u.getCells()) {
 				if (c != this) {
@@ -159,7 +159,7 @@ public class Cell implements Iterable<Integer>, Cloneable
 	// 	cardinality of 2
 	//	an identical pair has to exist in the same Constraint
 	public MarkUp removePairs(MarkUp markUp) {
-		MarkUp copyMarkUp = (MarkUp) markUp.clone();
+		MarkUp copyMarkUp = markUp.clone();
 		for (Constraint u : belongsTo) {
 			Cell secondFound = null;
 			
@@ -174,9 +174,12 @@ public class Cell implements Iterable<Integer>, Cloneable
 								
 								if (m1.equals(m2)) {
 									secondFound = c2;
-									for (int i = m2.nextSetBit(); i >= 0; i = m2.nextSetBit(i+1)) {
-										copyMarkUp.unset(i);
-									}
+                                    for (Integer integer : m2) {
+                                        copyMarkUp.unset(integer);
+                                    }
+//									for (int i = m2.nextSetBit(); i >= 0; i = m2.nextSetBit(i+1)) {
+//										copyMarkUp.unset(i);
+//									}
 								}
 							}
 						}
@@ -194,7 +197,7 @@ public class Cell implements Iterable<Integer>, Cloneable
 	public MarkUp detectSingle(MarkUp markup) {
 		MarkUp copyMarkup = markup.clone();
 		// Find all set bits
-		for (int i = copyMarkup.nextSetBit(0); i >= 0; i = copyMarkup.nextSetBit(i + 1)) {
+		for (Integer i : copyMarkup) {
 			boolean found = false;
 
 			// look through each constraint to see if that value exists there as well
@@ -209,9 +212,9 @@ public class Cell implements Iterable<Integer>, Cloneable
 			}
 
 			if (! found) {
-				BitSet newMarkup = new BitSet(limit);
-				newMarkup.set(i);
-				return newMarkup;
+                MarkUp newMarkUp = new MarkUp(limit);
+				newMarkUp.set(i);
+				return newMarkUp;
 			}
 		}
 		return copyMarkup;
@@ -253,24 +256,7 @@ public class Cell implements Iterable<Integer>, Cloneable
 
 	@Override
 	public Iterator<Integer> iterator() {
-		return new Iterator<>() {
-			final BitSet markUp = getMarkUp();
-			int nextValue = markUp.nextSetBit(0);
-			
-			@Override
-			public boolean hasNext() {
-				return nextValue >= 0;
-			}
-
-			@Override
-			public Integer next() {
-				int result = nextValue;
-				nextValue = markUp.nextSetBit(nextValue + 1);
-				
-				return result;
-			}
-			
-		};
+		return getMarkUp().iterator();
 	}
 
     @Override

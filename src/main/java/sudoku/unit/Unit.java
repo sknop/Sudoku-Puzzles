@@ -24,6 +24,8 @@
 
 package sudoku.unit;
 
+import sudoku.MarkUp;
+
 import java.util.BitSet;
 
 public class Unit extends AbstractConstraint
@@ -34,8 +36,7 @@ public class Unit extends AbstractConstraint
 
     @Override
     public String toString() {
-        BitSet complement = (BitSet) numbers.clone();
-        complement.flip(1, maxCells);
+        MarkUp complement = numbers.complement();
         return "Unit (" + maxCells + ") "+ super.toString() + " : " + numbers + " : " + complement;
     }
 }

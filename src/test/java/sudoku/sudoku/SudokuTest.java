@@ -32,6 +32,7 @@ import java.util.BitSet;
 import java.util.Map;
 
 import sudoku.Cell;
+import sudoku.MarkUp;
 import sudoku.Point;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalCellPositionException;
@@ -114,7 +115,7 @@ public class SudokuTest
 	}
 
 	private boolean checkMarkup(Point p, int value) {
-		BitSet markUp = sudoku.getHints(p,0);
+		MarkUp markUp = sudoku.getHints(p,0);
 		
 		return markUp.get(value);
 	}

@@ -5,6 +5,7 @@ import java.util.BitSet;
 import java.util.List;
 
 import sudoku.Cell;
+import sudoku.MarkUp;
 import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
 
@@ -17,8 +18,7 @@ public class Sexdectet extends Unit
 
 	@Override 
 	public String toString() {
-		BitSet complement = (BitSet) numbers.clone();
-		complement.flip(1, 17);
+		MarkUp complement = numbers.complement();
 		return "Sexdectet " + super.toString() + " : " + numbers + " : " + complement;
 	}
 

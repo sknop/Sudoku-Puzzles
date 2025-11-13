@@ -63,7 +63,7 @@ public abstract class Puzzle implements Cloneable
 		return getCells().get(p).getValue();
 	}
 
-	public BitSet getHints(Point point, int level) {
+	public MarkUp getHints(Point point, int level) {
 		return getCells().get(point).getHints(level);
 	}
 

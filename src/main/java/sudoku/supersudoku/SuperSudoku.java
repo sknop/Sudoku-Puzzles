@@ -15,10 +15,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import sudoku.Cell;
-import sudoku.NumberConverter;
-import sudoku.Point;
-import sudoku.Puzzle;
+import sudoku.*;
 import sudoku.exceptions.AddCellException;
 import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalFileFormatException;
@@ -192,7 +189,7 @@ public class SuperSudoku extends Puzzle
 				Point p = new Point(x,y);
 				
 				if (!isReadOnly(p)) {
-					BitSet markUp = getHints(p, level);
+					MarkUp markUp = getHints(p, level);
 					if (level == 0) {
 						System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
 					}
