@@ -1,7 +1,6 @@
 package sudoku.unit;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.List;
 
 import sudoku.Cell;
@@ -23,7 +22,7 @@ public class Sexdectet extends Unit
 	}
 
 
-	public static void main(String[] args) throws AddCellException, CellContentException {
+    static void main() throws AddCellException, CellContentException {
 		AbstractConstraint sexdectet = new Sexdectet("1st row");
 		AbstractConstraint sextectet2 = new Sexdectet("2nd row");
 		

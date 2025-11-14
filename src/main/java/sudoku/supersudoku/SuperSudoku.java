@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -120,16 +119,15 @@ public class SuperSudoku extends Puzzle
 	/**
 	 * Imports a Sudoku puzzle from a file.
 	 * The expected format is
-	 * 
+	 * <p>
 	 * CSV in 16 rows
 	 * Empty Cells are signalled by a 0
 	 * For example
-	 * 
+	 * <p>
 	 *  1,0,3,0,0,6,7,8,9,A,B,C,D,E,F,G
 	 *  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	 *  
 	 * @param path : Path
-	 * @throws IOException
 	 * @throws IOException, IllegalFileFormatException, CellContentException 
 	 */
 	@Override
@@ -191,10 +189,10 @@ public class SuperSudoku extends Puzzle
 				if (!isReadOnly(p)) {
 					MarkUp markUp = getHints(p, level);
 					if (level == 0) {
-						System.out.println(String.format("(%s, %s) : %s", x, y, markUp));
+						System.out.printf("(%s, %s) : %s%n", x, y, markUp);
 					}
 					else {
-						System.out.println(String.format("(%s, %s) : %s [%s]", x, y, markUp, getHints(p, 0)));						
+						System.out.printf("(%s, %s) : %s [%s]%n", x, y, markUp, getHints(p, 0));
 					}
 				}
 			}
@@ -317,7 +315,7 @@ public class SuperSudoku extends Puzzle
 		
 		// first, we get all Cells and shuffle them
 		
-		List<Cell> allCells = getCells().values().stream().collect(Collectors.toList());
+		List<Cell> allCells = new ArrayList<>(getCells().values());
 		Collections.shuffle(allCells);
 		
 		int counter = 0;
@@ -348,7 +346,7 @@ public class SuperSudoku extends Puzzle
 		}
 	}
 
-	public static void main(String[] args) {
+    static void main() {
 		SuperSudoku s = new SuperSudoku();
 		System.out.println(s);
 	}

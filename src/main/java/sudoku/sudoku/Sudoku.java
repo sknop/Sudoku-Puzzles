@@ -32,7 +32,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -339,7 +338,7 @@ public class Sudoku extends Puzzle implements Cloneable {
 		allCells.forEach(Cell::makeReadOnly);
 	}
 
-	public static void main(String[] args) {
+	public static void main() {
 		Sudoku sudoku = new Sudoku();
 		
 		System.out.println(sudoku.toCLIString());

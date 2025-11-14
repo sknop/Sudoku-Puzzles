@@ -33,8 +33,6 @@ import sudoku.swing.Options;
 import sudoku.swing.PuzzleCellEditor;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.util.BitSet;
 
 public class SuperCellEditor extends PuzzleCellEditor
 {

@@ -107,7 +107,7 @@ public class LessThanTest
 
     private int totalSet(MarkUp set) {
         int result = 0;
-        for (Integer i : set) {
+        for (Integer _ : set) {
             result++;
         }
 

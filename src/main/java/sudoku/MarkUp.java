@@ -160,7 +160,7 @@ public class MarkUp implements Iterable<Integer>, Cloneable
 		};
 	}
 
-	public static void main(String[] args) {
+	public static void main() {
 		MarkUp m = new MarkUp(9);
 		System.out.println(m);
 		

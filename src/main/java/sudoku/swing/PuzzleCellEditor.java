@@ -6,7 +6,6 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.BitSet;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractCellEditor;
@@ -20,13 +19,9 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.PlainDocument;
 
 import sudoku.*;
 
-@SuppressWarnings("serial")
 public class PuzzleCellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer
 {
     final Color backgroundColor = Color.WHITE;
