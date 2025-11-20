@@ -155,7 +155,7 @@ public abstract class SwingPuzzle implements StatusListener
         hintOptions.addItem("Detect Single");
         reports.add(hintOptions);
 
-        hintOptions.addActionListener( e -> {
+        hintOptions.addActionListener(_ -> {
             options.setHintLevel(hintOptions.getSelectedIndex());
             tableModel.fireTableDataChanged();
             if (table.isEditing())
@@ -195,7 +195,7 @@ public abstract class SwingPuzzle implements StatusListener
 
     private void createButtons(JPanel buttons) {
         JButton newButton = new JButton("New");
-        newButton.addActionListener( e -> {
+        newButton.addActionListener(_ -> {
             clearTable();
 
             puzzle.reset();
@@ -204,7 +204,7 @@ public abstract class SwingPuzzle implements StatusListener
         buttons.add(newButton);
 
         JButton createButton = new JButton("Create");
-        createButton.addActionListener( e -> {
+        createButton.addActionListener(_ -> {
             clearTable();
 
             puzzle.createRandomPuzzle();
@@ -214,7 +214,7 @@ public abstract class SwingPuzzle implements StatusListener
         buttons.add(createButton);
 
         JButton solveButton = new JButton("Solve");
-        solveButton.addActionListener( e -> {
+        solveButton.addActionListener(_ -> {
             clearTable();
 
             puzzle.solveBruteForce();
@@ -225,7 +225,7 @@ public abstract class SwingPuzzle implements StatusListener
         buttons.add(solveButton);
 
         JButton loadButton = new JButton("Load");
-        loadButton.addActionListener( e -> {
+        loadButton.addActionListener(_ -> {
             fileChooser.setCurrentDirectory(lastDirectory);
             int returnValue = fileChooser.showOpenDialog(null);
 
@@ -246,7 +246,7 @@ public abstract class SwingPuzzle implements StatusListener
         buttons.add(loadButton);
 
         JButton saveButton = new JButton("Save");
-        saveButton.addActionListener( e -> {
+        saveButton.addActionListener(_ -> {
             fileChooser.setCurrentDirectory(lastDirectory);
             int returnValue = fileChooser.showSaveDialog(null);
 
@@ -264,7 +264,7 @@ public abstract class SwingPuzzle implements StatusListener
         buttons.add(saveButton);
 
         JToggleButton readWriteButton = new JToggleButton("Write");
-        readWriteButton.addActionListener( e -> {
+        readWriteButton.addActionListener(_ -> {
             clearTable();
 
             Consumer<Cell> command;
@@ -287,7 +287,7 @@ public abstract class SwingPuzzle implements StatusListener
         buttons.add(readWriteButton);
 
         JButton resetButton = new JButton("Reset");
-        resetButton.addActionListener( e -> {
+        resetButton.addActionListener(_ -> {
             clearTable();
             puzzle.resetToReadOnly();
 
@@ -297,7 +297,7 @@ public abstract class SwingPuzzle implements StatusListener
         buttons.add(resetButton);
 
         JButton quitButton = new JButton("Quit");
-        quitButton.addActionListener( e -> {
+        quitButton.addActionListener(_ -> {
             frame.dispose();
             System.exit(0);
         });

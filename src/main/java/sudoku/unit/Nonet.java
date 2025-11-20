@@ -17,7 +17,7 @@
  * the grant of any rights to this Software.
  * <p>
  * For more details, see http://joinup.ec.europa.eu/software/page/eupl.
- *
+ * <p>
  * Contributors:
  *     2014 - Sven Erik Knop - initial API and implementation
  *******************************************************************************/
