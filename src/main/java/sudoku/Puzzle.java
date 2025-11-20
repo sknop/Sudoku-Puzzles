@@ -170,6 +170,14 @@ public abstract class Puzzle implements Cloneable
         getCells().values().forEach(Cell::reset);
 	}
 
+    public void resetToReadOnly() {
+        getCells().
+                values().
+                stream().
+                filter(c -> ! c.isReadOnly()).
+                forEach(Cell::reset);
+    }
+
 	protected void reset(int newMaxValue) {
         maxValue = newMaxValue;
         cells.clear();

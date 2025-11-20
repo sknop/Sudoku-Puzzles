@@ -286,6 +286,16 @@ public abstract class SwingPuzzle implements StatusListener
         });
         buttons.add(readWriteButton);
 
+        JButton resetButton = new JButton("Reset");
+        resetButton.addActionListener( e -> {
+            clearTable();
+            puzzle.resetToReadOnly();
+
+            tableModel.fireTableDataChanged();
+            statusChanged();
+        });
+        buttons.add(resetButton);
+
         JButton quitButton = new JButton("Quit");
         quitButton.addActionListener( e -> {
             frame.dispose();
