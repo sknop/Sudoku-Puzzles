@@ -50,7 +50,6 @@ public class Sudoku extends Puzzle implements Cloneable {
 	List<Nonet> columns = new ArrayList<>();
 	List<Nonet> boxes = new ArrayList<>();
 	
-	
 	public Sudoku() {
 		super(9);
 		initialize();
