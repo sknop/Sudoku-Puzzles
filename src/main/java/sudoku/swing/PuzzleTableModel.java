@@ -39,7 +39,6 @@ import sudoku.exceptions.CellContentException;
 import sudoku.exceptions.IllegalCellPositionException;
 import sudoku.unit.Constraint;
 
-@SuppressWarnings("serial")
 public class PuzzleTableModel extends AbstractTableModel implements UndoTableModel
 {
 	protected final Puzzle puzzle;
@@ -232,6 +231,6 @@ public class PuzzleTableModel extends AbstractTableModel implements UndoTableMod
     }
 
     public boolean anyIllegalValues() {
-        return (illegalEntries.size() > 0);
+        return (!illegalEntries.isEmpty());
     }
 }
