@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -121,4 +120,32 @@ public class HintsTest
 		assertFalse(hints.get(3));
 	}
 
+    @Test
+    public void testHintsUniquePairs() throws CellContentException {
+        MarkUp hints;
+
+		Cell middleTop =  cells.get(new Point(2,1));
+
+		// Nothing else set, so we expect 2 and 3 still available
+
+		hints = middleTop.getHints(4);
+
+		assertEquals(2, hints.cardinality());
+		assertTrue(hints.get(2));
+		assertTrue(hints.get(3));
+
+		Cell cell2 = cells.get(new Point(1,2));
+		cell2.setValue(2);
+
+		Cell cell3 = cells.get(new Point(3,3));
+		cell3.setValue(2);
+
+		// Nothing has changed so far
+		assertEquals(2, middleTop.getHints(0).cardinality());
+		// assertEquals(2, middleTop.getHints(1).cardinality());
+
+		hints = middleTop.detectSingle(middleTop.getMarkUp());
+
+		assertEquals(1, hints.cardinality());
+    }
 }
