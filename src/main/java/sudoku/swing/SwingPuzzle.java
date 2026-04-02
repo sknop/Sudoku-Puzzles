@@ -188,7 +188,7 @@ public abstract class SwingPuzzle implements StatusListener
 
         statusChanged();
 
-        UndoKeys.addUndoKeys(frame.getRootPane(), tableModel);
+        UndoKeys.addUndoKeys(frame.getRootPane(), tableModel, table);
 
         frame.pack();
     }

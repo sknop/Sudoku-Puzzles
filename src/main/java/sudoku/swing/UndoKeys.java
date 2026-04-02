@@ -1,22 +1,18 @@
 package sudoku.swing;
 
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 
 import sudoku.UndoTableModel;
 
 public class UndoKeys
 {
 	@SuppressWarnings("serial")
-	public static void addUndoKeys(JComponent comp, final UndoTableModel tableModel) {
-		InputMap inputMap = comp.getInputMap();
+	public static void addUndoKeys(JComponent comp, final UndoTableModel tableModel, final JTable table) {
+		InputMap inputMap = comp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		ActionMap actionMap = comp.getActionMap();
 		
 		KeyStroke meta_z = KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
@@ -29,7 +25,21 @@ public class UndoKeys
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				tableModel.undo();
+				Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+				Component editor = table != null ? table.getEditorComponent() : null;
+				if (editor != null && SwingUtilities.isDescendingFrom(focusOwner, editor)) {
+					int editingRow = table.getEditingRow();
+					int editingCol = table.getEditingColumn();
+					Object editorValue = table.getCellEditor().getCellEditorValue();
+					boolean changed = tableModel.isChanged(editingRow, editingCol, editorValue);
+					table.getCellEditor().cancelCellEditing();
+					if (!changed) {
+						tableModel.undo();
+					}
+				}
+				else {
+					tableModel.undo();
+				}
 			}
 			
 		});
@@ -38,7 +48,21 @@ public class UndoKeys
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				tableModel.redo();
+				Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+				Component editor = table != null ? table.getEditorComponent() : null;
+				if (editor != null && SwingUtilities.isDescendingFrom(focusOwner, editor)) {
+					int editingRow = table.getEditingRow();
+					int editingCol = table.getEditingColumn();
+					Object editorValue = table.getCellEditor().getCellEditorValue();
+					boolean changed = tableModel.isChanged(editingRow, editingCol, editorValue);
+					table.getCellEditor().cancelCellEditing();
+					if (!changed) {
+						tableModel.redo();
+					}
+				}
+				else {
+					tableModel.redo();
+				}
 			}
 			
 		});

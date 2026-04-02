@@ -108,6 +108,9 @@ public class PuzzleTableModel extends AbstractTableModel implements UndoTableMod
 		catch(CannotUndoException e) {
 			Toolkit.getDefaultToolkit().beep();
 		}
+		finally {
+			isUndoAction = false;
+		}
 	}
 
     @Override
@@ -118,6 +121,9 @@ public class PuzzleTableModel extends AbstractTableModel implements UndoTableMod
 		}
 		catch(CannotRedoException e) {
 			Toolkit.getDefaultToolkit().beep();
+		}
+		finally {
+			isUndoAction = false;
 		}
 	}
 	
@@ -176,22 +182,14 @@ public class PuzzleTableModel extends AbstractTableModel implements UndoTableMod
             return;
         }
 
-        if (isUndoAction) {
-        	isUndoAction = false;
-        }
-        else if (!stringValue.equals(previousValue)){
+        if (!isUndoAction) {
         	PuzzleUndo undo = new PuzzleUndo(stringValue, previousValue, row, col);
         	undoManager.addEdit(undo);
         }
-        else if (stringValue.equals("0")) {
-        	// when gaining focus on an empty cell, Swing tries to reset the value. Ignore it
-        	return;
-        }
-        
+		isUndoAction = false;
+
         try {
-			if (illegalEntries.containsKey(p)) {
-				illegalEntries.remove(p);
-			}
+            illegalEntries.remove(p);
 			puzzle.setValue(p, intValue);
 		} catch (IllegalCellPositionException e) {
 			System.err.println("Should never happen " + e);
@@ -233,4 +231,12 @@ public class PuzzleTableModel extends AbstractTableModel implements UndoTableMod
     public boolean anyIllegalValues() {
         return (!illegalEntries.isEmpty());
     }
+
+	@Override
+	public boolean isChanged(int row, int col, Object editorValue) {
+		String stringValue = (String) editorValue;
+		if (stringValue.isEmpty()) stringValue = "0";
+		String modelValue = Integer.toString(getValueAt(row, col).getVisibleValue());
+		return !modelValue.equals(stringValue);
+	}
 }

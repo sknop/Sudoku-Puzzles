@@ -24,6 +24,7 @@
 package sudoku;
 
 public interface UndoTableModel {
-    public void undo();
-    public void redo();
+    void undo();
+    void redo();
+    boolean isChanged(int row, int col, Object editorValue);
 }

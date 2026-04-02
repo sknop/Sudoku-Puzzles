@@ -229,8 +229,6 @@ public class PuzzleCellEditor extends AbstractCellEditor implements TableCellEdi
         am.put("Arrow.left", getLeftAction(table, row, column));
         am.put("Arrow.right", getRightAction(table, row, column));
 
-        UndoKeys.addUndoKeys(textField, (UndoTableModel) table.getModel());
-
         return panel;
     }
 
