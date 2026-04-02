@@ -10,13 +10,12 @@ import sudoku.UndoTableModel;
 
 public class UndoKeys
 {
-	@SuppressWarnings("serial")
 	public static void addUndoKeys(JComponent comp, final UndoTableModel tableModel, final JTable table) {
 		InputMap inputMap = comp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		ActionMap actionMap = comp.getActionMap();
 		
-		KeyStroke meta_z = KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
-		KeyStroke meta_y = KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+		KeyStroke meta_z = KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
+		KeyStroke meta_y = KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
 		
 		inputMap.put(meta_z, "undo");
 		inputMap.put(meta_y, "redo");
