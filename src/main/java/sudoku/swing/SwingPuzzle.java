@@ -134,62 +134,11 @@ public abstract class SwingPuzzle implements StatusListener
         tableInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "Table.Arrow.left");
         tableInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "Table.Arrow.right");
 
-        tableActionMap.put("Table.Arrow.up", new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                int row = table.getSelectedRow();
-                int col = table.getSelectedColumn();
-                if (row < 0 || col < 0) return;
-                int newRow = row;
-                for (int i = 0; i < table.getRowCount(); i++) {
-                    newRow = newRow == 0 ? table.getRowCount() - 1 : newRow - 1;
-                    if (tableModel.cellExists(newRow, col)) break;
-                }
-                table.editCellAt(newRow, col);
-                table.changeSelection(newRow, col, false, false);
-            }
-        });
-        tableActionMap.put("Table.Arrow.down", new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                int row = table.getSelectedRow();
-                int col = table.getSelectedColumn();
-                if (row < 0 || col < 0) return;
-                int newRow = row;
-                for (int i = 0; i < table.getRowCount(); i++) {
-                    newRow = newRow == table.getRowCount() - 1 ? 0 : newRow + 1;
-                    if (tableModel.cellExists(newRow, col)) break;
-                }
-                table.editCellAt(newRow, col);
-                table.changeSelection(newRow, col, false, false);
-            }
-        });
-        tableActionMap.put("Table.Arrow.left", new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                int row = table.getSelectedRow();
-                int col = table.getSelectedColumn();
-                if (row < 0 || col < 0) return;
-                int newCol = col;
-                for (int i = 0; i < table.getColumnCount(); i++) {
-                    newCol = newCol == 0 ? table.getColumnCount() - 1 : newCol - 1;
-                    if (tableModel.cellExists(row, newCol)) break;
-                }
-                table.editCellAt(row, newCol);
-                table.changeSelection(row, newCol, false, false);
-            }
-        });
-        tableActionMap.put("Table.Arrow.right", new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                int row = table.getSelectedRow();
-                int col = table.getSelectedColumn();
-                if (row < 0 || col < 0) return;
-                int newCol = col;
-                for (int i = 0; i < table.getColumnCount(); i++) {
-                    newCol = newCol == table.getColumnCount() - 1 ? 0 : newCol + 1;
-                    if (tableModel.cellExists(row, newCol)) break;
-                }
-                table.editCellAt(row, newCol);
-                table.changeSelection(row, newCol, false, false);
-            }
-        });
+        PuzzleCellEditor cellEditor = createCellEditor(options);
+        tableActionMap.put("Table.Arrow.up", cellEditor.getUpAction(table, tableModel));
+        tableActionMap.put("Table.Arrow.down", cellEditor.getDownAction(table, tableModel));
+        tableActionMap.put("Table.Arrow.left", cellEditor.getLeftAction(table, tableModel));
+        tableActionMap.put("Table.Arrow.right", cellEditor.getRightAction(table, tableModel));
 
         frame.getContentPane().add(table, BorderLayout.CENTER);
 

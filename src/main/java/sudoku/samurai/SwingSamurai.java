@@ -82,9 +82,9 @@ public class SwingSamurai extends SwingPuzzle
 
     protected JTable createTable(TableModel model) {
         return new JTable(model) {
-            PuzzleCellEditor editor = createCellEditor(options);
-            PuzzleCellEditor renderer = createCellEditor(options);
-            JPanel squarePanel = new SquarePanel();
+            final PuzzleCellEditor editor = createCellEditor(options);
+            final PuzzleCellEditor renderer = createCellEditor(options);
+            final JPanel squarePanel = new SquarePanel();
 
             @Override
             public Component prepareRenderer(

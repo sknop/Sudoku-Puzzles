@@ -28,13 +28,13 @@ package sudoku.samurai;
 
 import sudoku.swing.PuzzleCellEditor;
 import sudoku.swing.Options;
+import sudoku.swing.PuzzleTableModel;
 
 import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-@SuppressWarnings("serial")
 public class SamuraiCellEditor extends PuzzleCellEditor
 {
     public SamuraiCellEditor(Options options) {
@@ -52,53 +52,62 @@ public class SamuraiCellEditor extends PuzzleCellEditor
         return null;
     }
 
-    class UpAction extends ArrowAction {
-
-        public UpAction(JTable table, int row, int column, int limit) {
-            super(table, row, column, limit);
+    static class UpAction extends ArrowAction {
+        public UpAction(JTable table, PuzzleTableModel tableModel) {
+            super(table, tableModel);
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            int row = table.getSelectedRow();
+            int col = table.getSelectedColumn();
+            if (row < 0 || col < 0) return;
             int newRow = row - 1;
             if (newRow < 0) newRow = 20;
-
-            if (!SamuraiTableModel.isVisible(newRow, column)) {
-                if (column < 9 || column > 11)
+            if (!SamuraiTableModel.isVisible(newRow, col)) {
+                if (col < 9 || col > 11)
                     newRow -= 3;
                 else
                     newRow = 14;
             }
-            moveToCell(newRow, column);
+            moveToCell(newRow, col);
         }
     }
-    class DownAction extends ArrowAction {
-        public DownAction(JTable table, int row, int column, int limit) {
-            super(table, row, column, limit);
+
+    static class DownAction extends ArrowAction {
+        public DownAction(JTable table, PuzzleTableModel tableModel) {
+            super(table, tableModel);
         }
+
         @Override
         public void actionPerformed(ActionEvent e) {
+            int row = table.getSelectedRow();
+            int col = table.getSelectedColumn();
+            if (row < 0 || col < 0) return;
             int newRow = row + 1;
             if (newRow > 20) newRow = 0;
-
-            if (!SamuraiTableModel.isVisible(newRow, column)) {
-                if (column < 9 || column > 11)
+            if (!SamuraiTableModel.isVisible(newRow, col)) {
+                if (col < 9 || col > 11)
                     newRow += 3;
                 else
                     newRow = 6;
             }
-            moveToCell(newRow, column);
+            moveToCell(newRow, col);
         }
     }
-    class LeftAction extends ArrowAction {
-        public LeftAction(JTable table, int row, int column, int limit) {
-            super(table, row, column, limit);
+
+    static class LeftAction extends ArrowAction {
+        public LeftAction(JTable table, PuzzleTableModel tableModel) {
+            super(table, tableModel);
         }
+
         @Override
         public void actionPerformed(ActionEvent e) {
-            int newColumn = column - 1;
+            int row = table.getSelectedRow();
+            int col = table.getSelectedColumn();
+            if (row < 0 || col < 0) return;
+            int newColumn = col - 1;
             if (newColumn < 0) newColumn = 20;
-
             if (!SamuraiTableModel.isVisible(row, newColumn)) {
                 if (row < 9 || row > 11)
                     newColumn -= 3;
@@ -108,16 +117,19 @@ public class SamuraiCellEditor extends PuzzleCellEditor
             moveToCell(row, newColumn);
         }
     }
-    class RightAction extends ArrowAction {
-        public RightAction(JTable table, int row, int column, int limit) {
-            super(table, row, column, limit);
+
+    static class RightAction extends ArrowAction {
+        public RightAction(JTable table, PuzzleTableModel tableModel) {
+            super(table, tableModel);
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            int newColumn = column + 1;
+            int row = table.getSelectedRow();
+            int col = table.getSelectedColumn();
+            if (row < 0 || col < 0) return;
+            int newColumn = col + 1;
             if (newColumn > 20) newColumn = 0;
-
             if (!SamuraiTableModel.isVisible(row, newColumn)) {
                 if (row < 9 || row > 11)
                     newColumn += 3;
@@ -127,29 +139,25 @@ public class SamuraiCellEditor extends PuzzleCellEditor
             moveToCell(row, newColumn);
         }
     }
-    
+
     @Override
-	public
-    ArrowAction getUpAction(JTable table, int row, int column) {
-        return new UpAction(table, row, column, 20);
+    public ArrowAction getUpAction(JTable table, PuzzleTableModel tableModel) {
+        return new UpAction(table, tableModel);
     }
 
     @Override
-	public
-    ArrowAction getDownAction(JTable table, int row, int column) {
-        return new DownAction(table, row, column, 20);
+    public ArrowAction getDownAction(JTable table, PuzzleTableModel tableModel) {
+        return new DownAction(table, tableModel);
     }
 
     @Override
-	public
-    ArrowAction getLeftAction(JTable table, int row, int column) {
-        return new LeftAction(table, row, column, 20);
+    public ArrowAction getLeftAction(JTable table, PuzzleTableModel tableModel) {
+        return new LeftAction(table, tableModel);
     }
 
     @Override
-	public
-    ArrowAction getRightAction(JTable table, int row, int column) {
-        return new RightAction(table, row, column, 20);
+    public ArrowAction getRightAction(JTable table, PuzzleTableModel tableModel) {
+        return new RightAction(table, tableModel);
     }
 }
 

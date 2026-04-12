@@ -119,16 +119,12 @@ public class PuzzleCellEditor extends AbstractCellEditor implements TableCellEdi
 
     public static abstract class ArrowAction extends AbstractAction
     {
-        JTable table;
-        protected int row;
-        protected int column;
-        protected int limit;
+        protected JTable table;
+        protected PuzzleTableModel tableModel;
 
-        public ArrowAction(JTable table, int row, int column, int limit) {
+        public ArrowAction(JTable table, PuzzleTableModel tableModel) {
             this.table = table;
-            this.row = row;
-            this.column = column;
-            this.limit = limit;
+            this.tableModel = tableModel;
         }
 
         protected void moveToCell(int newRow, int newColumn) {
@@ -139,75 +135,98 @@ public class PuzzleCellEditor extends AbstractCellEditor implements TableCellEdi
 
     public static class UpAction extends ArrowAction
     {
-
-        public UpAction(JTable table, int row, int column, int limit) {
-            super(table, row, column, limit);
+        public UpAction(JTable table, PuzzleTableModel tableModel) {
+            super(table, tableModel);
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            int newRow = row - 1;
-            if (newRow < 0) newRow = limit;
-            moveToCell(newRow, column);
+            int row = table.getSelectedRow();
+            int col = table.getSelectedColumn();
+            if (row < 0 || col < 0) return;
+            int newRow = row;
+            for (int i = 0; i < table.getRowCount(); i++) {
+                newRow = newRow == 0 ? table.getRowCount() - 1 : newRow - 1;
+                if (tableModel.cellExists(newRow, col)) break;
+            }
+            moveToCell(newRow, col);
         }
     }
 
     public static class DownAction extends ArrowAction
     {
-        public DownAction(JTable table, int row, int column, int limit) {
-            super(table, row, column, limit);
+        public DownAction(JTable table, PuzzleTableModel tableModel) {
+            super(table, tableModel);
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            int newRow = row + 1;
-            if (newRow > limit) newRow = 0;
-            moveToCell(newRow, column);
+            int row = table.getSelectedRow();
+            int col = table.getSelectedColumn();
+            if (row < 0 || col < 0) return;
+            int newRow = row;
+            for (int i = 0; i < table.getRowCount(); i++) {
+                newRow = newRow == table.getRowCount() - 1 ? 0 : newRow + 1;
+                if (tableModel.cellExists(newRow, col)) break;
+            }
+            moveToCell(newRow, col);
         }
     }
 
     public static class LeftAction extends ArrowAction
     {
-        public LeftAction(JTable table, int row, int column, int limit) {
-            super(table, row, column, limit);
+        public LeftAction(JTable table, PuzzleTableModel tableModel) {
+            super(table, tableModel);
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            int newColumn = column - 1;
-            if (newColumn < 0) newColumn = limit;
-            moveToCell(row, newColumn);
+            int row = table.getSelectedRow();
+            int col = table.getSelectedColumn();
+            if (row < 0 || col < 0) return;
+            int newCol = col;
+            for (int i = 0; i < table.getColumnCount(); i++) {
+                newCol = newCol == 0 ? table.getColumnCount() - 1 : newCol - 1;
+                if (tableModel.cellExists(row, newCol)) break;
+            }
+            moveToCell(row, newCol);
         }
     }
 
     public static class RightAction extends ArrowAction
     {
-        public RightAction(JTable table, int row, int column, int limit) {
-            super(table, row, column, limit);
+        public RightAction(JTable table, PuzzleTableModel tableModel) {
+            super(table, tableModel);
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            int newColumn = column + 1;
-            if (newColumn > limit) newColumn = 0;
-            moveToCell(row, newColumn);
+            int row = table.getSelectedRow();
+            int col = table.getSelectedColumn();
+            if (row < 0 || col < 0) return;
+            int newCol = col;
+            for (int i = 0; i < table.getColumnCount(); i++) {
+                newCol = newCol == table.getColumnCount() - 1 ? 0 : newCol + 1;
+                if (tableModel.cellExists(row, newCol)) break;
+            }
+            moveToCell(row, newCol);
         }
     }
 
-    public ArrowAction getUpAction(JTable table, int row, int column) {
-        return new UpAction(table, row, column, 8);
+    public ArrowAction getUpAction(JTable table, PuzzleTableModel tableModel) {
+        return new UpAction(table, tableModel);
     }
 
-    public ArrowAction getDownAction(JTable table, int row, int column) {
-        return new DownAction(table, row, column, 8);
+    public ArrowAction getDownAction(JTable table, PuzzleTableModel tableModel) {
+        return new DownAction(table, tableModel);
     }
 
-    public ArrowAction getLeftAction(JTable table, int row, int column) {
-        return new LeftAction(table, row, column, 8);
+    public ArrowAction getLeftAction(JTable table, PuzzleTableModel tableModel) {
+        return new LeftAction(table, tableModel);
     }
 
-    public ArrowAction getRightAction(JTable table, int row, int column) {
-        return new RightAction(table, row, column, 8);
+    public ArrowAction getRightAction(JTable table, PuzzleTableModel tableModel) {
+        return new RightAction(table, tableModel);
     }
 
     @Override
@@ -224,10 +243,11 @@ public class PuzzleCellEditor extends AbstractCellEditor implements TableCellEdi
         im.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "Arrow.right");
 
         ActionMap am = textField.getActionMap();
-        am.put("Arrow.up", getUpAction(table, row, column));
-        am.put("Arrow.down", getDownAction(table, row, column));
-        am.put("Arrow.left", getLeftAction(table, row, column));
-        am.put("Arrow.right", getRightAction(table, row, column));
+        PuzzleTableModel model = (PuzzleTableModel) table.getModel();
+        am.put("Arrow.up", getUpAction(table, model));
+        am.put("Arrow.down", getDownAction(table, model));
+        am.put("Arrow.left", getLeftAction(table, model));
+        am.put("Arrow.right", getRightAction(table, model));
 
         return panel;
     }

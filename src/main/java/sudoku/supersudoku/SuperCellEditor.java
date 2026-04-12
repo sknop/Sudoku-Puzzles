@@ -57,24 +57,4 @@ public class SuperCellEditor extends PuzzleCellEditor
         }
         return b.toString();
     }
-
-    @Override
-    public ArrowAction getUpAction(JTable table, int row, int column) {
-        return new UpAction(table, row, column, 15);
-    }
-
-    @Override
-    public ArrowAction getDownAction(JTable table, int row, int column) {
-        return new DownAction(table, row, column, 15);
-    }
-
-    @Override
-    public ArrowAction getLeftAction(JTable table, int row, int column) {
-        return new LeftAction(table, row, column, 15);
-    }
-
-    @Override
-    public ArrowAction getRightAction(JTable table, int row, int column) {
-        return new RightAction(table, row, column, 15);
-    }
 }
