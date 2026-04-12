@@ -139,7 +139,11 @@ public abstract class SwingPuzzle implements StatusListener
                 int row = table.getSelectedRow();
                 int col = table.getSelectedColumn();
                 if (row < 0 || col < 0) return;
-                int newRow = row == 0 ? table.getRowCount() - 1 : row - 1;
+                int newRow = row;
+                for (int i = 0; i < table.getRowCount(); i++) {
+                    newRow = newRow == 0 ? table.getRowCount() - 1 : newRow - 1;
+                    if (tableModel.cellExists(newRow, col)) break;
+                }
                 table.editCellAt(newRow, col);
                 table.changeSelection(newRow, col, false, false);
             }
@@ -149,7 +153,11 @@ public abstract class SwingPuzzle implements StatusListener
                 int row = table.getSelectedRow();
                 int col = table.getSelectedColumn();
                 if (row < 0 || col < 0) return;
-                int newRow = row == table.getRowCount() - 1 ? 0 : row + 1;
+                int newRow = row;
+                for (int i = 0; i < table.getRowCount(); i++) {
+                    newRow = newRow == table.getRowCount() - 1 ? 0 : newRow + 1;
+                    if (tableModel.cellExists(newRow, col)) break;
+                }
                 table.editCellAt(newRow, col);
                 table.changeSelection(newRow, col, false, false);
             }
@@ -159,7 +167,11 @@ public abstract class SwingPuzzle implements StatusListener
                 int row = table.getSelectedRow();
                 int col = table.getSelectedColumn();
                 if (row < 0 || col < 0) return;
-                int newCol = col == 0 ? table.getColumnCount() - 1 : col - 1;
+                int newCol = col;
+                for (int i = 0; i < table.getColumnCount(); i++) {
+                    newCol = newCol == 0 ? table.getColumnCount() - 1 : newCol - 1;
+                    if (tableModel.cellExists(row, newCol)) break;
+                }
                 table.editCellAt(row, newCol);
                 table.changeSelection(row, newCol, false, false);
             }
@@ -169,7 +181,11 @@ public abstract class SwingPuzzle implements StatusListener
                 int row = table.getSelectedRow();
                 int col = table.getSelectedColumn();
                 if (row < 0 || col < 0) return;
-                int newCol = col == table.getColumnCount() - 1 ? 0 : col + 1;
+                int newCol = col;
+                for (int i = 0; i < table.getColumnCount(); i++) {
+                    newCol = newCol == table.getColumnCount() - 1 ? 0 : newCol + 1;
+                    if (tableModel.cellExists(row, newCol)) break;
+                }
                 table.editCellAt(row, newCol);
                 table.changeSelection(row, newCol, false, false);
             }

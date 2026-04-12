@@ -151,6 +151,8 @@ public class PuzzleTableModel extends AbstractTableModel implements UndoTableMod
 			return false;
 		
         Point p = new Point(rowIndex + 1, columnIndex + 1);
+		if (!puzzle.getCells().containsKey(p))
+			return false;
 		boolean isReadOnly = puzzle.isReadOnly(p);
 		return !isReadOnly;
 	}
@@ -238,5 +240,10 @@ public class PuzzleTableModel extends AbstractTableModel implements UndoTableMod
 		if (stringValue.isEmpty()) stringValue = "0";
 		String modelValue = Integer.toString(getValueAt(row, col).getVisibleValue());
 		return !modelValue.equals(stringValue);
+	}
+
+	public boolean cellExists(int row, int col) {
+		Point p = new Point(row + 1, col + 1);
+		return puzzle.getCells().containsKey(p);
 	}
 }
