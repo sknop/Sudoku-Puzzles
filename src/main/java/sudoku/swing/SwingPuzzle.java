@@ -41,6 +41,8 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -123,6 +125,55 @@ public abstract class SwingPuzzle implements StatusListener
 
         ListSelectionModel cellSelectionModel = table.getSelectionModel();
         cellSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        InputMap tableInputMap = table.getInputMap(JComponent.WHEN_FOCUSED);
+        ActionMap tableActionMap = table.getActionMap();
+
+        tableInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "Table.Arrow.up");
+        tableInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "Table.Arrow.down");
+        tableInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "Table.Arrow.left");
+        tableInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "Table.Arrow.right");
+
+        tableActionMap.put("Table.Arrow.up", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                int row = table.getSelectedRow();
+                int col = table.getSelectedColumn();
+                if (row < 0 || col < 0) return;
+                int newRow = row == 0 ? table.getRowCount() - 1 : row - 1;
+                table.editCellAt(newRow, col);
+                table.changeSelection(newRow, col, false, false);
+            }
+        });
+        tableActionMap.put("Table.Arrow.down", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                int row = table.getSelectedRow();
+                int col = table.getSelectedColumn();
+                if (row < 0 || col < 0) return;
+                int newRow = row == table.getRowCount() - 1 ? 0 : row + 1;
+                table.editCellAt(newRow, col);
+                table.changeSelection(newRow, col, false, false);
+            }
+        });
+        tableActionMap.put("Table.Arrow.left", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                int row = table.getSelectedRow();
+                int col = table.getSelectedColumn();
+                if (row < 0 || col < 0) return;
+                int newCol = col == 0 ? table.getColumnCount() - 1 : col - 1;
+                table.editCellAt(row, newCol);
+                table.changeSelection(row, newCol, false, false);
+            }
+        });
+        tableActionMap.put("Table.Arrow.right", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                int row = table.getSelectedRow();
+                int col = table.getSelectedColumn();
+                if (row < 0 || col < 0) return;
+                int newCol = col == table.getColumnCount() - 1 ? 0 : col + 1;
+                table.editCellAt(row, newCol);
+                table.changeSelection(row, newCol, false, false);
+            }
+        });
 
         frame.getContentPane().add(table, BorderLayout.CENTER);
 
