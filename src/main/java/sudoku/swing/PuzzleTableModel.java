@@ -50,10 +50,10 @@ public class PuzzleTableModel extends AbstractTableModel implements UndoTableMod
 	protected List<StatusListener> listeners = new ArrayList<>();
 	
 	protected class PuzzleUndo extends AbstractUndoableEdit {
-		private String value;
-		private String previousValue;
-		private int row;
-		private int column;
+		private final String value;
+		private final String previousValue;
+		private final int row;
+		private final int column;
 		
 		public PuzzleUndo(String value, String previousValue, int row, int column) {
 			this.value = value;
