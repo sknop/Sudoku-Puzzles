@@ -147,7 +147,8 @@ public class PuzzleCellEditor extends AbstractCellEditor implements TableCellEdi
             int newRow = row;
             for (int i = 0; i < table.getRowCount(); i++) {
                 newRow = newRow == 0 ? table.getRowCount() - 1 : newRow - 1;
-                if (tableModel.cellExists(newRow, col)) break;
+                if (tableModel.cellExists(newRow, col) && tableModel.isCellEditable(newRow, col))
+                    break;
             }
             moveToCell(newRow, col);
         }
@@ -167,7 +168,8 @@ public class PuzzleCellEditor extends AbstractCellEditor implements TableCellEdi
             int newRow = row;
             for (int i = 0; i < table.getRowCount(); i++) {
                 newRow = newRow == table.getRowCount() - 1 ? 0 : newRow + 1;
-                if (tableModel.cellExists(newRow, col)) break;
+                if (tableModel.cellExists(newRow, col) && tableModel.isCellEditable(newRow, col))
+                    break;
             }
             moveToCell(newRow, col);
         }
@@ -187,7 +189,8 @@ public class PuzzleCellEditor extends AbstractCellEditor implements TableCellEdi
             int newCol = col;
             for (int i = 0; i < table.getColumnCount(); i++) {
                 newCol = newCol == 0 ? table.getColumnCount() - 1 : newCol - 1;
-                if (tableModel.cellExists(row, newCol)) break;
+                if (tableModel.cellExists(row, newCol) && tableModel.isCellEditable(row, newCol))
+                    break;
             }
             moveToCell(row, newCol);
         }
@@ -207,7 +210,8 @@ public class PuzzleCellEditor extends AbstractCellEditor implements TableCellEdi
             int newCol = col;
             for (int i = 0; i < table.getColumnCount(); i++) {
                 newCol = newCol == table.getColumnCount() - 1 ? 0 : newCol + 1;
-                if (tableModel.cellExists(row, newCol)) break;
+                if (tableModel.cellExists(row, newCol) && tableModel.isCellEditable(row, newCol))
+                    break;
             }
             moveToCell(row, newCol);
         }
