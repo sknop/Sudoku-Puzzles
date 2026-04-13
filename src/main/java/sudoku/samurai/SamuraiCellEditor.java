@@ -61,14 +61,17 @@ public class SamuraiCellEditor extends PuzzleCellEditor
         public void actionPerformed(ActionEvent e) {
             int row = table.getSelectedRow();
             int col = table.getSelectedColumn();
-            if (row < 0 || col < 0) return;
-            int newRow = row - 1;
-            if (newRow < 0) newRow = 20;
-            if (!SamuraiTableModel.isVisible(newRow, col)) {
-                if (col < 9 || col > 11)
-                    newRow -= 3;
-                else
-                    newRow = 14;
+            int newRow = row;
+            for (int i = 0; i < 21; i++) {
+                newRow = newRow - 1;
+                if (newRow < 0) newRow = 20;
+                if (!SamuraiTableModel.isVisible(newRow, col)) {
+                    if (col < 9 || col > 11)
+                        newRow -= 3;
+                    else
+                        newRow = 14;
+                }
+                if (tableModel.isCellEditable(newRow, col)) break;
             }
             moveToCell(newRow, col);
         }
@@ -83,14 +86,17 @@ public class SamuraiCellEditor extends PuzzleCellEditor
         public void actionPerformed(ActionEvent e) {
             int row = table.getSelectedRow();
             int col = table.getSelectedColumn();
-            if (row < 0 || col < 0) return;
-            int newRow = row + 1;
-            if (newRow > 20) newRow = 0;
-            if (!SamuraiTableModel.isVisible(newRow, col)) {
-                if (col < 9 || col > 11)
-                    newRow += 3;
-                else
-                    newRow = 6;
+            int newRow = row;
+            for (int i = 0; i < 21; i++) {
+                newRow = newRow + 1;
+                if (newRow > 20) newRow = 0;
+                if (!SamuraiTableModel.isVisible(newRow, col)) {
+                    if (col < 9 || col > 11)
+                        newRow += 3;
+                    else
+                        newRow = 6;
+                }
+                if (tableModel.isCellEditable(newRow, col)) break;
             }
             moveToCell(newRow, col);
         }
@@ -105,14 +111,17 @@ public class SamuraiCellEditor extends PuzzleCellEditor
         public void actionPerformed(ActionEvent e) {
             int row = table.getSelectedRow();
             int col = table.getSelectedColumn();
-            if (row < 0 || col < 0) return;
-            int newColumn = col - 1;
-            if (newColumn < 0) newColumn = 20;
-            if (!SamuraiTableModel.isVisible(row, newColumn)) {
-                if (row < 9 || row > 11)
-                    newColumn -= 3;
-                else
-                    newColumn = 14;
+            int newColumn = col;
+            for (int i = 0; i < 21; i++) {
+                newColumn = newColumn - 1;
+                if (newColumn < 0) newColumn = 20;
+                if (!SamuraiTableModel.isVisible(row, newColumn)) {
+                    if (row < 9 || row > 11)
+                        newColumn -= 3;
+                    else
+                        newColumn = 14;
+                }
+                if (tableModel.isCellEditable(row, newColumn)) break;
             }
             moveToCell(row, newColumn);
         }
@@ -127,14 +136,17 @@ public class SamuraiCellEditor extends PuzzleCellEditor
         public void actionPerformed(ActionEvent e) {
             int row = table.getSelectedRow();
             int col = table.getSelectedColumn();
-            if (row < 0 || col < 0) return;
-            int newColumn = col + 1;
-            if (newColumn > 20) newColumn = 0;
-            if (!SamuraiTableModel.isVisible(row, newColumn)) {
-                if (row < 9 || row > 11)
-                    newColumn += 3;
-                else
-                    newColumn = 6;
+            int newColumn = col;
+            for (int i = 0; i < 21; i++) {
+                newColumn = newColumn + 1;
+                if (newColumn > 20) newColumn = 0;
+                if (!SamuraiTableModel.isVisible(row, newColumn)) {
+                    if (row < 9 || row > 11)
+                        newColumn += 3;
+                    else
+                        newColumn = 6;
+                }
+                if (tableModel.isCellEditable(row, newColumn)) break;
             }
             moveToCell(row, newColumn);
         }
