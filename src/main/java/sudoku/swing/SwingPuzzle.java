@@ -141,65 +141,21 @@ public abstract class SwingPuzzle implements StatusListener
 
         frame.getContentPane().add(table, BorderLayout.CENTER);
 
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setLayout(new BorderLayout());
+        JPanel bottomPanel = new JPanel(new BorderLayout(8, 4));
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         frame.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
 
-        JPanel buttons = new JPanel();
-        buttons.setLayout(new GridLayout(3, 3));
-        bottomPanel.add(buttons, BorderLayout.WEST);
-
-        createButtons(buttons);
-
-        JPanel reports = new JPanel();
-        reports.setLayout(new GridLayout(5,2,0,0));
-        Dimension reportSize = new Dimension(180,90);
-        reports.setMaximumSize(reportSize);
-        reports.setMinimumSize(reportSize);
-        reports.setPreferredSize(reportSize);
-        bottomPanel.add(reports, BorderLayout.EAST);
-
-        JLabel optionsLabel = new JLabel("Hints :");
-        reports.add(optionsLabel);
-
-        final JComboBox<String> hintOptions = new JComboBox<>();
-        hintOptions.addItem("None");
-        hintOptions.addItem("Markup");
-        hintOptions.addItem("Remove Uniques");
-        hintOptions.addItem("Remove Pairs");
-        hintOptions.addItem("Detect Single");
-        reports.add(hintOptions);
-
-        hintOptions.addActionListener(_ -> {
-            options.setHintLevel(hintOptions.getSelectedIndex());
-            tableModel.fireTableDataChanged();
-            if (table.isEditing())
-                table.getCellEditor().stopCellEditing();
-        });
-
-        JLabel solvedLabel = new JLabel("Status :");
-        reports.add(solvedLabel);
-
-        solved = new JLabel();
-        reports.add(solved);
-
-        JLabel filledCellsLabel = new JLabel("Filled cells :");
-        reports.add(filledCellsLabel);
-
-        filledCells = new JLabel();
-        reports.add(filledCells);
-
-        JLabel totalPotentialValuesLabel = new JLabel("Potentials :");
-        reports.add(totalPotentialValuesLabel);
-
-        totalPotentialValues = new JLabel();
-        reports.add(totalPotentialValues);
-
-        JLabel stepsToSolveLabel = new JLabel("Steps :");
-        reports.add(stepsToSolveLabel);
-
-        stepsToSolve = new JLabel();
-        reports.add(stepsToSolve);
+        if (isWideLayout()) {
+            JPanel row = new JPanel();
+            row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
+            row.add(createButtons());
+            row.add(Box.createHorizontalGlue());
+            row.add(createStatusPanel());
+            bottomPanel.add(row, BorderLayout.CENTER);
+        } else {
+            bottomPanel.add(createButtons(), BorderLayout.WEST);
+            bottomPanel.add(createStatusPanel(), BorderLayout.EAST);
+        }
 
         statusChanged();
 
@@ -208,67 +164,55 @@ public abstract class SwingPuzzle implements StatusListener
         frame.pack();
     }
 
-    private void createButtons(JPanel buttons) {
+    private JPanel buildPuzzleGroup() {
+        JPanel group = new JPanel(new GridLayout(2, 2, 4, 4));
+        group.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder("Puzzle"),
+                BorderFactory.createEmptyBorder(2, 2, 2, 2)));
+
         JButton newButton = new JButton("New");
         newButton.addActionListener(_ -> {
             clearTable();
-
             puzzle.reset();
             tableModel.fireTableDataChanged();
         });
-        buttons.add(newButton);
+        group.add(newButton);
 
         JButton createButton = new JButton("Create");
         createButton.addActionListener(_ -> {
             clearTable();
-
             puzzle.createRandomPuzzle();
             tableModel.fireTableDataChanged();
             statusChanged();
         });
-        buttons.add(createButton);
-
-        JButton solveButton = new JButton("Solve");
-        solveButton.addActionListener(_ -> {
-            clearTable();
-
-            puzzle.solveBruteForce();
-            tableModel.fireTableDataChanged();
-            statusChanged();
-            solved.setText("Cheated");
-        });
-        buttons.add(solveButton);
+        group.add(createButton);
 
         JButton loadButton = new JButton("Load");
         loadButton.addActionListener(_ -> {
             fileChooser.setCurrentDirectory(lastDirectory);
             int returnValue = fileChooser.showOpenDialog(null);
-
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
                 Path path = FileSystems.getDefault().getPath(file.getPath());
-
                 try {
                     clearTable();
                     puzzle.reset();
                     puzzle.importFile(path);
-                } catch (IOException |IllegalFileFormatException |CellContentException e1) {
+                } catch (IOException | IllegalFileFormatException | CellContentException e1) {
                     e1.printStackTrace();
                 }
             }
             statusChanged();
         });
-        buttons.add(loadButton);
+        group.add(loadButton);
 
         JButton saveButton = new JButton("Save");
         saveButton.addActionListener(_ -> {
             fileChooser.setCurrentDirectory(lastDirectory);
             int returnValue = fileChooser.showSaveDialog(null);
-
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
                 Path path = FileSystems.getDefault().getPath(file.getPath());
-
                 try {
                     puzzle.exportFile(path);
                 } catch (IOException e1) {
@@ -276,47 +220,170 @@ public abstract class SwingPuzzle implements StatusListener
                 }
             }
         });
-        buttons.add(saveButton);
+        group.add(saveButton);
 
-        JToggleButton readWriteButton = new JToggleButton("Write");
-        readWriteButton.addActionListener(_ -> {
+        return group;
+    }
+
+    private JPanel buildGameGroup() {
+        JPanel group = new JPanel(new GridLayout(2, 2, 4, 4));
+        group.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder("Game"),
+                BorderFactory.createEmptyBorder(2, 2, 2, 2)));
+
+        JButton solveButton = new JButton("Solve");
+        solveButton.addActionListener(_ -> {
             clearTable();
-
-            Consumer<Cell> command;
-
-            if (readWriteButton.getText().equals("Write")) {
-                readWriteButton.setText("R/O");
-                command = Cell::makeReadOnly;
-            }
-            else {
-                readWriteButton.setText("Write");
-                command = Cell::makeWritable;
-            }
-
-            for (Cell c : puzzle.getCells().values()) {
-                command.accept(c);
-            }
-
+            puzzle.solveBruteForce();
             tableModel.fireTableDataChanged();
+            statusChanged();
+            solved.setText("Cheated");
+            solved.setForeground(Color.MAGENTA.darker());
         });
-        buttons.add(readWriteButton);
+        group.add(solveButton);
 
         JButton resetButton = new JButton("Reset");
         resetButton.addActionListener(_ -> {
             clearTable();
             puzzle.resetToReadOnly();
-
             tableModel.fireTableDataChanged();
             statusChanged();
         });
-        buttons.add(resetButton);
+        group.add(resetButton);
 
+        JToggleButton readWriteButton = new JToggleButton("Write");
+        readWriteButton.addActionListener(_ -> {
+            clearTable();
+            Consumer<Cell> command;
+            if (readWriteButton.getText().equals("Write")) {
+                readWriteButton.setText("R/O");
+                command = Cell::makeReadOnly;
+            } else {
+                readWriteButton.setText("Write");
+                command = Cell::makeWritable;
+            }
+            for (Cell c : puzzle.getCells().values()) {
+                command.accept(c);
+            }
+            tableModel.fireTableDataChanged();
+        });
+        group.add(readWriteButton);
+        group.add(new JLabel()); // fill 2x2 grid
+
+        return group;
+    }
+
+    private JButton buildQuitButton() {
         JButton quitButton = new JButton("Quit");
         quitButton.addActionListener(_ -> {
             frame.dispose();
             System.exit(0);
         });
-        buttons.add(quitButton);
+        return quitButton;
+    }
+
+    private JPanel createButtons() {
+        JPanel puzzleGroup = buildPuzzleGroup();
+        JPanel gameGroup = buildGameGroup();
+        JButton quitButton = buildQuitButton();
+
+        if (isWideLayout()) {
+            JPanel container = new JPanel();
+            container.setLayout(new BoxLayout(container, BoxLayout.X_AXIS));
+            container.add(puzzleGroup);
+            container.add(Box.createHorizontalStrut(4));
+            container.add(gameGroup);
+            container.add(Box.createHorizontalStrut(8));
+            container.add(quitButton);
+            return container;
+        } else {
+            JPanel container = new JPanel();
+            container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+            puzzleGroup.setAlignmentX(Component.LEFT_ALIGNMENT);
+            gameGroup.setAlignmentX(Component.LEFT_ALIGNMENT);
+            container.add(puzzleGroup);
+            container.add(Box.createVerticalStrut(4));
+            container.add(gameGroup);
+            container.add(Box.createVerticalStrut(4));
+            JPanel quitPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+            quitPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            quitPanel.add(quitButton);
+            container.add(quitPanel);
+            return container;
+        }
+    }
+
+    private JPanel createStatusPanel() {
+        JPanel container = new JPanel();
+        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+
+        // --- Hints ---
+        JPanel hintsPanel = new JPanel(new BorderLayout(4, 0));
+        hintsPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder("Hints"),
+                BorderFactory.createEmptyBorder(2, 2, 2, 2)));
+        hintsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        final JComboBox<String> hintOptions = new JComboBox<>();
+        hintOptions.addItem("None");
+        hintOptions.addItem("Markup");
+        hintOptions.addItem("Remove Uniques");
+        hintOptions.addItem("Remove Pairs");
+        hintOptions.addItem("Detect Single");
+        hintOptions.addActionListener(_ -> {
+            options.setHintLevel(hintOptions.getSelectedIndex());
+            tableModel.fireTableDataChanged();
+            if (table.isEditing())
+                table.getCellEditor().stopCellEditing();
+        });
+        hintsPanel.add(hintOptions, BorderLayout.CENTER);
+
+        container.add(hintsPanel);
+        container.add(Box.createVerticalStrut(4));
+
+        // --- Status values ---
+        JPanel statusPanel = new JPanel(new GridLayout(4, 2, 4, 4));
+        statusPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder("Status"),
+                BorderFactory.createEmptyBorder(2, 2, 2, 2)));
+        statusPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        statusPanel.add(makeLabel("Status:"));
+        solved = makeValueLabel();
+        statusPanel.add(solved);
+
+        statusPanel.add(makeLabel("Filled:"));
+        filledCells = makeValueLabel();
+        statusPanel.add(filledCells);
+
+        statusPanel.add(makeLabel("Potentials:"));
+        totalPotentialValues = makeValueLabel();
+        statusPanel.add(totalPotentialValues);
+
+        statusPanel.add(makeLabel("Steps:"));
+        stepsToSolve = makeValueLabel();
+        statusPanel.add(stepsToSolve);
+
+        container.add(statusPanel);
+
+        return container;
+    }
+
+
+    protected boolean isWideLayout() {
+        return tableModel.getColumnCount() > 12;
+    }
+
+    private JLabel makeLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        return label;
+    }
+
+    private JLabel makeValueLabel() {
+        JLabel label = new JLabel();
+        label.setFont(label.getFont().deriveFont(Font.BOLD));
+        return label;
     }
 
     private void clearTable() {
@@ -340,19 +407,21 @@ public abstract class SwingPuzzle implements StatusListener
     public void statusChanged() {
         if (tableModel.anyIllegalValues()) {
             solved.setText("Illegal");
-        }
-        else {
-            if (puzzle.isSolved()) {
-                solved.setText("Solved!");
+            solved.setForeground(Color.RED);
+        } else if (puzzle.isSolved()) {
+            solved.setText("Solved!");
+            solved.setForeground(new Color(0, 128, 0));
+        } else {
+            int solutions = puzzle.isUnique();
+            if (solutions == 1) {
+                solved.setText("Unsolved");
+                solved.setForeground(Color.BLACK);
+            } else if (solutions == 0) {
+                solved.setText("No solutions");
+                solved.setForeground(Color.RED);
             } else {
-                int solutions = puzzle.isUnique();
-                if (solutions == 1) {
-                    solved.setText("Unsolved");
-                } else if (solutions == 0) {
-                    solved.setText("No solutions");
-                } else {
-                    solved.setText("Not unique");
-                }
+                solved.setText("Not unique");
+                solved.setForeground(Color.ORANGE.darker());
             }
         }
         filledCells.setText(Integer.toString(puzzle.getTotalFilledCells()));
@@ -360,8 +429,6 @@ public abstract class SwingPuzzle implements StatusListener
 
         Puzzle clone = puzzle.clone();
         clone.solveBruteForce();
-        var steps = clone.getTries();
-
-        stepsToSolve.setText(Integer.toString(steps));
+        stepsToSolve.setText(Integer.toString(clone.getTries()));
     }
 }
