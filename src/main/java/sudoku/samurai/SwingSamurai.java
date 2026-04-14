@@ -86,20 +86,28 @@ public class SwingSamurai extends SwingPuzzle
             final PuzzleCellEditor renderer = createCellEditor(options);
             final JPanel squarePanel = new SquarePanel();
 
+            {
+                setShowGrid(false);
+                setIntercellSpacing(new Dimension(0, 0));
+                setBackground(UIManager.getColor("Panel.background"));
+            }
+
             @Override
-            public Component prepareRenderer(
-                    TableCellRenderer renderer, int row, int column)
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column)
             {
                 Component c = super.prepareRenderer(renderer, row, column);
-                JComponent jc = (JComponent)c;
+                JComponent jc = (JComponent) c;
+
+                if (!SamuraiTableModel.isVisible(row, column)) {
+                    jc.setBorder(BorderFactory.createEmptyBorder());
+                    return c;
+                }
 
                 int top = 1;
                 int left = 1;
-                int bottom = ((row -2) % 3 == 0) ? 1 : 0;
-                int right = ((column - 2) % 3 == 0) ? 1 : 0;
-
-                jc.setBorder(new MatteBorder(top, left, bottom, right, Color.BLACK) );
-
+                int bottom = ((row - 2) % 3 == 0) ? 1 : 0;
+                int right  = ((column - 2) % 3 == 0) ? 1 : 0;
+                jc.setBorder(new MatteBorder(top, left, bottom, right, Color.BLACK));
                 return c;
             }
 
@@ -122,19 +130,15 @@ public class SwingSamurai extends SwingPuzzle
             class SquarePanel extends JPanel
             {
                 public SquarePanel() {
-                    setBorder(new LineBorder(Color.GRAY));
-                    setBackground(Color.DARK_GRAY);
+                    setBackground(UIManager.getColor("Panel.background"));
+                    setBorder(BorderFactory.createEmptyBorder());
                 }
 
                 @Override
-                public Dimension getMinimumSize() {
-                    return getPreferredSize();
-                }
+                public Dimension getMinimumSize() { return getPreferredSize(); }
 
                 @Override
-                public Dimension getMaximumSize() {
-                    return getPreferredSize();
-                }
+                public Dimension getMaximumSize() { return getPreferredSize(); }
 
                 @Override
                 public Dimension getPreferredSize() {
