@@ -54,6 +54,7 @@ public abstract class SwingPuzzle implements StatusListener
     protected Puzzle puzzle = createPuzzle();
 
     protected JFrame frame;
+    protected JPanel bottomPanel;
     protected JTable table;
     protected JLabel solved;
     protected JLabel filledCells;
@@ -62,7 +63,7 @@ public abstract class SwingPuzzle implements StatusListener
 
     protected Options options = new Options();
 
-    PuzzleTableModel tableModel;
+    protected PuzzleTableModel tableModel;
 
     JFileChooser fileChooser = new JFileChooser();
     File lastDirectory = new File(".");
@@ -141,21 +142,11 @@ public abstract class SwingPuzzle implements StatusListener
 
         frame.getContentPane().add(table, BorderLayout.CENTER);
 
-        JPanel bottomPanel = new JPanel(new BorderLayout(8, 4));
+        bottomPanel = new JPanel(new BorderLayout(8, 4));
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         frame.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
 
-        if (isWideLayout()) {
-            JPanel row = new JPanel();
-            row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
-            row.add(createButtons());
-            row.add(Box.createHorizontalGlue());
-            row.add(createStatusPanel());
-            bottomPanel.add(row, BorderLayout.CENTER);
-        } else {
-            bottomPanel.add(createButtons(), BorderLayout.WEST);
-            bottomPanel.add(createStatusPanel(), BorderLayout.EAST);
-        }
+        populateBottomPanel();
 
         statusChanged();
 
@@ -175,6 +166,7 @@ public abstract class SwingPuzzle implements StatusListener
             clearTable();
             puzzle.reset();
             tableModel.fireTableDataChanged();
+            afterBulkUpdate();
         });
         group.add(newButton);
 
@@ -184,6 +176,7 @@ public abstract class SwingPuzzle implements StatusListener
             puzzle.createRandomPuzzle();
             tableModel.fireTableDataChanged();
             statusChanged();
+            afterBulkUpdate();
         });
         group.add(createButton);
 
@@ -198,6 +191,7 @@ public abstract class SwingPuzzle implements StatusListener
                     clearTable();
                     puzzle.reset();
                     puzzle.importFile(path);
+                    afterLoadFile();
                 } catch (IOException | IllegalFileFormatException | CellContentException e1) {
                     e1.printStackTrace();
                 }
@@ -239,6 +233,7 @@ public abstract class SwingPuzzle implements StatusListener
             statusChanged();
             solved.setText("Cheated");
             solved.setForeground(Color.MAGENTA.darker());
+            afterBulkUpdate();
         });
         group.add(solveButton);
 
@@ -248,6 +243,7 @@ public abstract class SwingPuzzle implements StatusListener
             puzzle.resetToReadOnly();
             tableModel.fireTableDataChanged();
             statusChanged();
+            afterBulkUpdate();
         });
         group.add(resetButton);
 
@@ -266,6 +262,7 @@ public abstract class SwingPuzzle implements StatusListener
                 command.accept(c);
             }
             tableModel.fireTableDataChanged();
+            afterBulkUpdate();
         });
         group.add(readWriteButton);
         group.add(new JLabel()); // fill 2x2 grid
@@ -370,6 +367,27 @@ public abstract class SwingPuzzle implements StatusListener
     }
 
 
+    private void populateBottomPanel() {
+        if (isWideLayout()) {
+            JPanel row = new JPanel();
+            row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
+            row.add(createButtons());
+            row.add(Box.createHorizontalGlue());
+            row.add(createStatusPanel());
+            bottomPanel.add(row, BorderLayout.CENTER);
+        } else {
+            bottomPanel.add(createButtons(), BorderLayout.WEST);
+            bottomPanel.add(createStatusPanel(), BorderLayout.EAST);
+        }
+    }
+
+    protected void rebuildBottomPanel() {
+        bottomPanel.removeAll();
+        populateBottomPanel();
+        statusChanged();
+        bottomPanel.revalidate();
+    }
+
     protected boolean isWideLayout() {
         return tableModel.getColumnCount() > 12;
     }
@@ -386,11 +404,19 @@ public abstract class SwingPuzzle implements StatusListener
         return label;
     }
 
-    private void clearTable() {
+    protected void clearTable() {
         // Cheeky little trick to ensure editing is off
         table.editCellAt(-1, -1);
         table.getSelectionModel().clearSelection();
         tableModel.clearIllegal();
+    }
+
+    protected void afterLoadFile() {
+        // hook for subclasses that need to respond to file loads (e.g. size changes)
+    }
+
+    protected void afterBulkUpdate() {
+        // hook for subclasses that need to respond to bulk data changes (New/Create/Solve/Reset/Write)
     }
 
     protected abstract PuzzleTableModel createTableModel();

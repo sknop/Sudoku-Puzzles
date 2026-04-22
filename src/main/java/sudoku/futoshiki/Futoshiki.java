@@ -431,7 +431,7 @@ public class Futoshiki extends Puzzle
         b.append(" |\n");
     }
 
-    private String getRelation(int row, int col, Direction direction, String emptyString) {
+    String getRelation(int row, int col, Direction direction, String emptyString) {
         Point from = new Point(row, col);
 
         Point to;
@@ -541,6 +541,61 @@ public class Futoshiki extends Puzzle
             relations.put(from, forward);
             relations.put(to, back);
         }
+    }
+
+    void setHorizontalRelation(int row, int col, char symbol) {
+        Point from = new Point(row, col);
+        Point to = new Point(row, col + 1);
+        clearRelationInternal(from, to);
+        if (symbol == '-') return;
+
+        Cell source = getCells().get(from);
+        Cell target = getCells().get(to);
+        Relation forward, back;
+        if (symbol == '>') {
+            forward = new GreaterThan(source, target, maxValue);
+            back = new LessThan(target, source, maxValue);
+        } else {
+            forward = new LessThan(source, target, maxValue);
+            back = new GreaterThan(target, source, maxValue);
+        }
+        source.addConstraint(forward);
+        target.addConstraint(back);
+        relations.put(new Tuple(from, to), forward);
+        relations.put(new Tuple(to, from), back);
+    }
+
+    void setVerticalRelation(int row, int col, char symbol) {
+        Point from = new Point(row, col);
+        Point to = new Point(row + 1, col);
+        clearRelationInternal(from, to);
+        if (symbol == '-') return;
+
+        Cell source = getCells().get(from);
+        Cell target = getCells().get(to);
+        Relation forward, back;
+        if (symbol == 'v') {
+            forward = new GreaterThan(source, target, maxValue);
+            back = new LessThan(target, source, maxValue);
+        } else {
+            forward = new LessThan(source, target, maxValue);
+            back = new GreaterThan(target, source, maxValue);
+        }
+        source.addConstraint(forward);
+        target.addConstraint(back);
+        relations.put(new Tuple(from, to), forward);
+        relations.put(new Tuple(to, from), back);
+    }
+
+    private void clearRelationInternal(Point from, Point to) {
+        Relation forward = relations.get(new Tuple(from, to));
+        if (forward == null) return;
+        Relation back = relations.get(new Tuple(to, from));
+        Cell source = forward.getSource();
+        source.removeConstraintWithCheck(forward);
+        if (back != null) back.getSource().removeConstraintWithCheck(back);
+        relations.remove(new Tuple(from, to));
+        relations.remove(new Tuple(to, from));
     }
 
     @Override
