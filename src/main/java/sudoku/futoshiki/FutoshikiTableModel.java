@@ -19,7 +19,8 @@
  * For more details, see http://joinup.ec.europa.eu/software/page/eupl.
  *
  *  Contributors:
- *      2015 - Sven Erik Knop - initial API and implementation
+ *      2026 - Sven Erik Knop - initial API and implementation
+ *      2026 - Claude Code - execution
  *
  */
 package sudoku.futoshiki;
