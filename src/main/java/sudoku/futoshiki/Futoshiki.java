@@ -216,6 +216,15 @@ public class Futoshiki extends Puzzle
     }
 
     /**
+     * Reset in place, needed for "New"
+     */
+
+    @Override
+    public void reset() {
+        reset(maxValue);
+    }
+
+    /**
      *
      * Imports a Futoshiki puzzle from a file.
      * The expected format is
