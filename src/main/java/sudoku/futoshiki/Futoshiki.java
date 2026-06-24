@@ -46,9 +46,9 @@ import java.util.stream.Collectors;
 public class Futoshiki extends Puzzle
 {
 
-    private final List<Unit> rows = new ArrayList<>();
-    private final List<Unit> columns = new ArrayList<>();
-    private final Map<Tuple, Relation> relations = new HashMap<>();
+    private List<Unit> rows = new ArrayList<>();
+    private List<Unit> columns = new ArrayList<>();
+    private Map<Tuple, Relation> relations = new HashMap<>();
 
     // Default constructor for CLI - size 5 for typical Times Puzzle
     public Futoshiki() { this(5); }
@@ -72,29 +72,33 @@ public class Futoshiki extends Puzzle
                 }
             }
 
-            for (int x = 1; x <= maxValue; x++) {
-                Unit row = new Unit(maxValue, String.format("Row %d", x));
-                rows.add(row);
-                for (int y = 1; y <= maxValue; y++) {
-                    Point p = new Point(x,y);
-                    Cell cell = getCells().get(p);
-                    row.addCell(cell);
-                }
-            }
-
-            for (int y = 1; y <= maxValue; y++) {
-                Unit column = new Unit(maxValue, String.format("Column %d", y));
-                columns.add(column);
-                for (int x = 1; x <= maxValue; x++) {
-                    Point p = new Point(x,y);
-                    Cell cell = getCells().get(p);
-                    column.addCell(cell);
-                }
-            }
+            linkCellsToConstraints(maxValue);
         } catch (AddCellException e) {
             System.err.println("Should never happen:" + e);
         }
 
+    }
+
+    private void linkCellsToConstraints(int maxValue) throws AddCellException {
+        for (int x = 1; x <= maxValue; x++) {
+            Unit row = new Unit(maxValue, String.format("Row %d", x));
+            rows.add(row);
+            for (int y = 1; y <= maxValue; y++) {
+                Point p = new Point(x,y);
+                Cell cell = getCells().get(p);
+                row.addCell(cell);
+            }
+        }
+
+        for (int y = 1; y <= maxValue; y++) {
+            Unit column = new Unit(maxValue, String.format("Column %d", y));
+            columns.add(column);
+            for (int x = 1; x <= maxValue; x++) {
+                Point p = new Point(x,y);
+                Cell cell = getCells().get(p);
+                column.addCell(cell);
+            }
+        }
     }
 
     private int getSize(String line) throws IllegalFileFormatException
@@ -697,4 +701,26 @@ public class Futoshiki extends Puzzle
         relations.put(new Tuple(p1, p2), forward);
         relations.put(new Tuple(p2, p1), back);
     }
+
+    @Override
+    public Futoshiki clone() {
+        Futoshiki clone = (Futoshiki) super.clone();
+
+        clone.rows = new ArrayList<>();
+        clone.columns = new ArrayList<>();
+        clone.relations = new HashMap<>();
+
+        try {
+            clone.linkCellsToConstraints(maxValue);
+        } catch (AddCellException e) {
+            System.err.println("Should never happen:" + e);;
+        }
+
+        copyCellContentToClone(clone);
+
+        // TODO: what about relations?
+
+        return clone;
+    }
+
 }
