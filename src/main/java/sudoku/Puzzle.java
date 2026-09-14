@@ -92,7 +92,7 @@ public abstract class Puzzle implements Cloneable
 	}
 
 	private void times(StringBuilder b, int times) {
-		b.append("-".repeat(Math.max(0, times)));
+		b.repeat("-", Math.max(0, times));
 	}
 	
 	protected String getBigBorder(int size) {
