@@ -211,14 +211,14 @@ public abstract class Puzzle implements Cloneable
 	
 		tries++;
 
-        Cell head = empties.remove();
+		// several orders of magnitude faster to sort Cells by number of remaining entries
+		empties.sort(Comparator.comparingInt((Cell c) -> c.getMarkUp().cardinality()));
+
+		Cell head = empties.remove();
 		
 		for (int i : head) {
 			try {
 				head.setValue(i);
-				
-				// several orders of magnitude faster to sort Cells by number of remaining entries
-				empties.sort(Comparator.comparingInt((Cell c) -> c.getMarkUp().cardinality()));
 				
 				if (solveRecursive(empties)) {
 					return true;
@@ -249,15 +249,15 @@ public abstract class Puzzle implements Cloneable
 	
 		int result = solutions;
 
-        Cell head = empties.remove();
+		// several orders of magnitude faster to sort Cells by number of remaining entries
+		empties.sort(Comparator.comparingInt((Cell c) -> c.getMarkUp().cardinality()));
+
+		Cell head = empties.remove();
 		
 		for (int i : head) {
 			try {
 				head.setValue(i);
 				
-				// several orders of magnitude faster to sort Cells by number of remaining entries
-				empties.sort(Comparator.comparingInt((Cell c) -> c.getMarkUp().cardinality()));
-
 				result = uniqueRecursive(empties, result);
 				if (result > 1) {
 					head.reset(); // need to reset, or the puzzle is solved
