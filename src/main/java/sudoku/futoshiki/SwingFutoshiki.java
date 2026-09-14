@@ -64,7 +64,7 @@ public class SwingFutoshiki extends SwingPuzzle {
 
     @Override
     protected int getCellSize() {
-        return 40;
+        return 48;
     }
 
     @Override
