@@ -45,7 +45,6 @@ import java.util.stream.Collectors;
 
 public class Futoshiki extends Puzzle
 {
-
     private List<Unit> rows = new ArrayList<>();
     private List<Unit> columns = new ArrayList<>();
     private Map<Tuple, Relation> relations = new HashMap<>();
@@ -713,7 +712,7 @@ public class Futoshiki extends Puzzle
         try {
             clone.linkCellsToConstraints(maxValue);
         } catch (AddCellException e) {
-            System.err.println("Should never happen:" + e);;
+            System.err.println("Should never happen:" + e);
         }
 
         copyCellContentToClone(clone);
