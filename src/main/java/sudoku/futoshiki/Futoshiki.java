@@ -718,7 +718,7 @@ public class Futoshiki extends Puzzle
 
         copyCellContentToClone(clone);
 
-        // TODO: what about relations?
+        clone.relations.putAll(relations);
 
         return clone;
     }
