@@ -715,7 +715,7 @@ public class Futoshiki extends Puzzle
 
         clone.rows = new ArrayList<>();
         clone.columns = new ArrayList<>();
-        clone.relations = new HashMap<>();
+        clone.relations = relations;
 
         try {
             clone.linkCellsToConstraints(maxValue);
@@ -724,8 +724,6 @@ public class Futoshiki extends Puzzle
         }
 
         copyCellContentToClone(clone);
-
-        clone.relations.putAll(relations);
 
         return clone;
     }
