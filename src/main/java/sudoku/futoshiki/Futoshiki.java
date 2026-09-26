@@ -616,10 +616,12 @@ public class Futoshiki extends Puzzle
 
         createLatinSquare();
 
-        List<Removable> removables = getCells().values().
+        List<Removable> cellRemovables = getCells().values().
                 stream().
                 map(CellRemovable::new).
                 collect( Collectors.toCollection(LinkedList::new) );
+
+        List<Removable> relationRemovables = new ArrayList<>();
 
         // now add relations, might as well keep track of them, we are going to remove some of them again
         // first horizontal
@@ -627,7 +629,7 @@ public class Futoshiki extends Puzzle
             for (int col = 1; col < maxValue; col++) {
                 Point p1 = new Point(row, col);
                 Point p2 = new Point(row, col+1);
-                createRelations(removables, p1, p2);
+                createRelations(relationRemovables, p1, p2);
             }
         }
 
@@ -636,36 +638,42 @@ public class Futoshiki extends Puzzle
             for (int col = 1; col <= maxValue; col++) {
                 Point p1 = new Point(row, col);
                 Point p2 = new Point(row+1, col);
-                createRelations(removables, p1, p2);
+                createRelations(relationRemovables, p1, p2);
             }
         }
 
         // then we will remove stuff.
 
-        Collections.shuffle(removables);
+        Collections.shuffle(cellRemovables);
+        Collections.shuffle(relationRemovables);
 
-//        // idea - if the removable is a relation, roll a die
-//        // if below a certain threshold, move the relation to the end of the queue
-//
-//        double threshold = .4;
-//        Random random = new Random();
-//
-//        List<Removable> saved = new LinkedList<>();
-//        for (Removable r : removables) {
-//            if (r.getClass() == RelationRemovable.class) {
-//                if (random.nextDouble() > threshold) {
-//                    saved.add(r);
-//                }
-//            }
-//        }
+        // idea - insert into result list using weighted bias
 
-/*
-        for (Removable r : saved) {
-            removables.remove(r);
-            removables.add(r);
+        List<Removable> removables = new ArrayList<>();
+
+        Random random = new Random();
+
+        while (!cellRemovables.isEmpty() || !relationRemovables.isEmpty()) {
+            if (cellRemovables.isEmpty()) {
+                removables.addAll(relationRemovables);
+                relationRemovables.clear();
+            }
+            else if (relationRemovables.isEmpty()) {
+                removables.addAll(cellRemovables);
+                cellRemovables.clear();
+            }
+            else {
+                double scoreCells = 4.0 * cellRemovables.size();
+                double scoreRelations = 1.0 * relationRemovables.size();
+
+                if (random.nextDouble() < scoreCells / (scoreRelations + scoreCells)) {
+                    removables.add(cellRemovables.removeLast());
+                }
+                else {
+                    removables.add(relationRemovables.removeLast());
+                }
+            }
         }
-*/
-
         for (Removable r : removables) {
             r.remove();
             if (isUnique() > 1) {
