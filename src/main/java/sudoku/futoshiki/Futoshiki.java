@@ -663,7 +663,7 @@ public class Futoshiki extends Puzzle
                 cellRemovables.clear();
             }
             else {
-                double scoreCells = 4.0 * cellRemovables.size();
+                double scoreCells = 5.0 * cellRemovables.size();
                 double scoreRelations = 1.0 * relationRemovables.size();
 
                 if (random.nextDouble() < scoreCells / (scoreRelations + scoreCells)) {
