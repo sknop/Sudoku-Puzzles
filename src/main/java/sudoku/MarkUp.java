@@ -23,6 +23,8 @@
  *******************************************************************************/
 package sudoku;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Iterator;
 import java.util.Objects;
 
@@ -137,9 +139,11 @@ public class MarkUp implements Iterable<Integer>, Cloneable
 
         return "0".repeat(width - s.length()) + s;
 	}
-	
+
+
 	@Override
-	public Iterator<Integer> iterator() {
+    @NotNull
+    public Iterator<Integer> iterator() {
 		return new Iterator<>() {
             long current = bits;
 

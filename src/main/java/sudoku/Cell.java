@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import sudoku.exceptions.CellContentException;
 import sudoku.unit.Constraint;
 
@@ -253,6 +254,7 @@ public class Cell implements Iterable<Integer>, Cloneable
 		return location.toString() + " : " + getValueAsString();
 	}
 
+	@NotNull
 	@Override
 	public Iterator<Integer> iterator() {
 		return getMarkUp().iterator();
