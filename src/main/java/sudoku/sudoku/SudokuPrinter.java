@@ -100,7 +100,7 @@ public final class SudokuPrinter implements Printable {
         }
     }
 
-    public static void main(String[] args) throws PrinterException {
+    static void main() throws PrinterException {
         int[][] puzzle = {
                 {5, 3, 0, 0, 7, 0, 0, 0, 0},
                 {6, 0, 0, 1, 9, 5, 0, 0, 0},
