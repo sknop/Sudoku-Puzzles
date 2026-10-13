@@ -26,6 +26,8 @@ package sudoku;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 import sudoku.exceptions.CellContentException;
@@ -35,6 +37,9 @@ import sudoku.exceptions.ValueOutsideRangeException;
 
 public abstract class Puzzle implements Cloneable
 {
+	private static final Logger logger = LoggerFactory.getLogger(Puzzle.class);
+	private static int recursiveCounter = 0;
+
 	protected static final String Front = " |";
 	protected static final String Section = " %s %s %s |";
 
@@ -238,7 +243,15 @@ public abstract class Puzzle implements Cloneable
 	public int isUnique() {
 		LinkedList<Cell> emptyCells = getEmpties();
 
-        return uniqueRecursive(emptyCells, 0);
+//		logger.info("Entering isUnique(), empty size = {}", emptyCells.size());
+		recursiveCounter = 0;
+
+		int result = uniqueRecursive(emptyCells, 0);
+
+//		logger.info("Exiting isUnique(), empty size = {} result = {} recursiveCounter = {}",
+//				emptyCells.size(), result, recursiveCounter);
+
+        return result;
 	}
 	
 	private int uniqueRecursive(LinkedList<Cell> empties, int solutions) {
@@ -253,7 +266,11 @@ public abstract class Puzzle implements Cloneable
 		empties.sort(Comparator.comparingInt((Cell c) -> c.getMarkUp().cardinality()));
 
 		Cell head = empties.remove();
-		
+
+		if (head.getMarkUp().cardinality() > 3) {
+			logger.debug("UniqueRecursive head.markup.size = {}", head.getMarkUp().cardinality());
+		}
+
 		for (int i : head) {
 			try {
 				head.setValue(i);

@@ -31,6 +31,8 @@ import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sudoku.Cell;
 import sudoku.Puzzle;
 import sudoku.exceptions.CellContentException;
@@ -50,6 +52,7 @@ import java.util.function.Consumer;
 
 public abstract class SwingPuzzle implements StatusListener
 {
+    private static final Logger logger = LoggerFactory.getLogger(SwingPuzzle.class);
     protected final int cellSize = getCellSize();
     protected Puzzle puzzle = createPuzzle();
 
@@ -192,8 +195,8 @@ public abstract class SwingPuzzle implements StatusListener
                     puzzle.reset();
                     puzzle.importFile(path);
                     afterLoadFile();
-                } catch (IOException | IllegalFileFormatException | CellContentException e1) {
-                    e1.printStackTrace();
+                } catch (IOException | IllegalFileFormatException | CellContentException err) {
+                    logger.error(String.valueOf(err));
                 }
             }
             statusChanged();
@@ -209,8 +212,8 @@ public abstract class SwingPuzzle implements StatusListener
                 Path path = FileSystems.getDefault().getPath(file.getPath());
                 try {
                     puzzle.exportFile(path);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+                } catch (IOException err) {
+                    logger.error(String.valueOf(err));
                 }
             }
         });
@@ -265,7 +268,13 @@ public abstract class SwingPuzzle implements StatusListener
             afterBulkUpdate();
         });
         group.add(readWriteButton);
-        group.add(new JLabel()); // fill 2x2 grid
+
+        JButton printButton = new JButton("Print");
+        printButton.addActionListener(_ -> {
+            logger.debug("Printing Puzzle ... not yet implemented");
+        });
+        group.add(printButton);
+        // group.add(new JLabel()); // fill 2x2 grid
 
         return group;
     }
