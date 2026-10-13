@@ -96,7 +96,7 @@ public class SwingFutoshiki extends SwingPuzzle {
                         ? (FutoshikiTableModel.isHorizontalRelation(row, col) ? H_PLACEHOLDER : V_PLACEHOLDER)
                         : symbol;
                 JLabel label = new JLabel(display, SwingConstants.CENTER);
-                label.setFont(new Font("Lucida Grande", Font.PLAIN, empty ? 12 : 14));
+                label.setFont(new Font("Lucida Grande", Font.PLAIN, empty ? 12 : 18));
                 label.setForeground(empty ? Color.GRAY : Color.BLACK);
                 label.setOpaque(true);
                 label.setBackground(UIManager.getColor("Panel.background"));
