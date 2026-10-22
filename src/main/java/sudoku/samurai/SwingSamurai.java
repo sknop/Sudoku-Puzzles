@@ -38,6 +38,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.awt.print.Printable;
 import java.io.IOException;
 
 
@@ -74,6 +75,11 @@ public class SwingSamurai extends SwingPuzzle
     @Override
     protected PuzzleCellEditor createCellEditor(Options options) {
         return new SamuraiCellEditor(options);
+    }
+
+    @Override
+    public Printable getPrintable() {
+        return null;
     }
 
     protected SamuraiTableModel createTableModel() {

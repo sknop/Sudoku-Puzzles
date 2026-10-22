@@ -44,6 +44,9 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -55,6 +58,7 @@ public abstract class SwingPuzzle implements StatusListener
     private static final Logger logger = LoggerFactory.getLogger(SwingPuzzle.class);
     protected final int cellSize = getCellSize();
     protected Puzzle puzzle = createPuzzle();
+    protected String name;
 
     protected JFrame frame;
     protected JPanel bottomPanel;
@@ -76,6 +80,7 @@ public abstract class SwingPuzzle implements StatusListener
             IllegalFileFormatException,
             CellContentException
     {
+        this.name = name;
         tableModel = createTableModel();
         tableModel.addListener(this);
 
@@ -271,13 +276,28 @@ public abstract class SwingPuzzle implements StatusListener
 
         JButton printButton = new JButton("Print");
         printButton.addActionListener(_ -> {
-            logger.debug("Printing Puzzle ... not yet implemented");
+            Printable printable = getPrintable();
+
+            PrinterJob job = PrinterJob.getPrinterJob();
+            job.setJobName(name + " puzzle");
+            job.setPrintable(printable);
+
+            if (job.printDialog()) {
+                try {
+                    job.print();
+                } catch (PrinterException e) {
+                    logger.error(String.valueOf(e));
+                }
+            }
+
         });
         group.add(printButton);
         // group.add(new JLabel()); // fill 2x2 grid
 
         return group;
     }
+
+    public abstract Printable getPrintable();
 
     private JButton buildQuitButton() {
         JButton quitButton = new JButton("Quit");

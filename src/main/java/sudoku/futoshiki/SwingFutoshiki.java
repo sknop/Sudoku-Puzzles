@@ -43,6 +43,7 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.print.Printable;
 import java.io.IOException;
 
 public class SwingFutoshiki extends SwingPuzzle {
@@ -167,6 +168,11 @@ public class SwingFutoshiki extends SwingPuzzle {
         contentPane.add(createSizePanel(), BorderLayout.NORTH);
         addRelationMouseListener();
         frame.pack();
+    }
+
+    @Override
+    public Printable getPrintable() {
+        return null;
     }
 
     @Override

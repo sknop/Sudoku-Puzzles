@@ -41,6 +41,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.awt.print.Printable;
 import java.io.IOException;
 
 public class SwingSuper extends SwingPuzzle
@@ -74,6 +75,11 @@ public class SwingSuper extends SwingPuzzle
     @Override
     protected PuzzleCellEditor createCellEditor(Options options) {
         return new SuperCellEditor(options);
+    }
+
+    @Override
+    public Printable getPrintable() {
+        return null;
     }
 
     @Override
