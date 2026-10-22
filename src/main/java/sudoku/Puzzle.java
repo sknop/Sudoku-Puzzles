@@ -267,8 +267,10 @@ public abstract class Puzzle implements Cloneable
 
 		Cell head = empties.remove();
 
-		if (head.getMarkUp().cardinality() > 3) {
-			logger.debug("UniqueRecursive head.markup.size = {}", head.getMarkUp().cardinality());
+		recursiveCounter++;
+
+		if (head.getMarkUp().cardinality() > 2) {
+			logger.debug("UniqueRecursive counter = {} head.markup.size = {}", recursiveCounter, head.getMarkUp().cardinality());
 		}
 
 		for (int i : head) {
