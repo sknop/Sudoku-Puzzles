@@ -137,7 +137,7 @@ public class SwingSudoku extends SwingPuzzle
 	/**
 	 * Launch the application.
 	 */
-	public static void main(final String[] args) {
+    static void main(final String[] args) {
 		EventQueue.invokeLater( () -> {
             try {
                 SwingSudoku window = new SwingSudoku(args);
