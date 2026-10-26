@@ -12,13 +12,16 @@ import java.awt.print.*;
 
 import sudoku.MarkUp;
 import sudoku.Point;
+import sudoku.swing.Options;
 
 public final class SudokuPrinter implements Printable {
 
     private final Sudoku puzzle;
+    private final Options options;
 
-    public SudokuPrinter(Sudoku puzzle) {
+    public SudokuPrinter(Sudoku puzzle, Options options) {
         this.puzzle = puzzle;
+        this.options = options;
     }
 
     @Override
@@ -111,9 +114,10 @@ public final class SudokuPrinter implements Printable {
                 double cellTop = top + row * cell;
 
                 if (value == 0) {
-                    MarkUp hints = puzzle.getHints(point, 3);
-                    drawHints(g, hints, cellLeft, cellTop, cell);
-
+                    if (options.getHintLevel() > 0) {
+                        MarkUp hints = puzzle.getHints(point, options.getHintLevel());
+                        drawHints(g, hints, cellLeft, cellTop, cell);
+                    }
                     continue;
                 }
 
@@ -131,7 +135,7 @@ public final class SudokuPrinter implements Printable {
         }
     }
 
-    private static void drawHints(Graphics2D g,
+    private void drawHints(Graphics2D g,
                                   MarkUp hints,
                                   double cellLeft,
                                   double cellTop,

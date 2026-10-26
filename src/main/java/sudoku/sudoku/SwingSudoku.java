@@ -77,7 +77,7 @@ public class SwingSudoku extends SwingPuzzle
 
     @Override
     public Printable getPrintable() {
-        return new SudokuPrinter((Sudoku) this.puzzle);
+        return new SudokuPrinter((Sudoku) this.puzzle, options);
     }
 
     @Override
